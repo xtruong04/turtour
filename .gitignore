@@ -1,0 +1,25 @@
+# --- Backend (.NET) ---
+backend/bin/
+backend/obj/
+backend/.vs/
+backend/build_output.txt
+backend/*.user
+backend/appsettings.json
+backend/appsettings.*.json
+!backend/appsettings.Example.json
+!backend/appsettings.Development.json
+
+# --- Frontend (Node/Vite) ---
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.env
+frontend/.env.*
+frontend/*.local
+
+# --- Root ---
+.vs/
+obj/
+*.user
+*.suo
+.DS_Store

@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>TurTour - User Portal</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="assets/css/main.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: Dewi
+  * Template URL: https://bootstrapmade.com/dewi-free-multi-purpose-html-template/
+  * Updated: Aug 07 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body class="index-page">
+
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center">
+
+      <a href="index.html" class="logo d-flex align-items-center me-auto">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+        <!-- <img src="assets/img/logo.png" alt=""> -->
+        <h1 class="sitename">TurTour</h1>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="#hero" class="active">Trang chủ</a></li>
+          <li><a href="#about">Giới thiệu</a></li>
+          <li><a href="#services">Dịch vụ</a></li>
+          <li><a href="#portfolio">Tour</a></li>
+          <li><a href="#team">Đối tác</a></li>
+          <!-- <li><a href="/auth/sign-in" target="_top">Đăng nhập</a></li> -->
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+      <a id="auth-guest" class="cta-btn" href="/auth/sign-in" target="_top">Đăng Nhập</a>
+
+      <div id="notif-bell" class="notif-bell dropdown" style="display:none;">
+        <a href="#" class="notif-bell-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-bell"></i>
+          <span id="notif-badge" class="notif-badge" style="display:none;">0</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-end notif-dropdown">
+          <div class="notif-dropdown-header">
+            <span>Thông báo</span>
+            <a href="notifications.html">Xem tất cả</a>
+          </div>
+          <div id="notif-dropdown-list" class="notif-dropdown-list">
+            <div class="notif-dropdown-empty">Đang tải...</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="auth-profile" class="auth-profile dropdown" style="display:none;">
+        <a href="#" class="auth-profile-toggle d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-person-circle"></i>
+          <span id="auth-profile-name" class="auth-profile-name"></span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="profile.html">Hồ sơ của tôi</a></li>
+          <li id="auth-mytours-item" style="display:none;"><a class="dropdown-item" href="my-tours.html">Tour của tôi</a></li>
+          <li><a class="dropdown-item" href="notifications.html">Thông báo</a></li>
+          <li id="auth-dashboard-item" style="display:none;"><a class="dropdown-item" href="/admin/dashboard" target="_top">Trang quản trị</a></li>
+          <li><button type="button" class="dropdown-item" id="auth-logout-btn">Đăng xuất</button></li>
+        </ul>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero section dark-background">
+
+      <img src="assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
+
+      <div class="container d-flex flex-column align-items-center">
+        <h2 data-aos="fade-up" data-aos-delay="100">Khám phá. Kết nối. Trải nghiệm.</h2>
+        <p data-aos="fade-up" data-aos-delay="200">Nền tảng đăng ký tour tham quan doanh nghiệp dành cho sinh viên và đối tác tổ chức.</p>
+        <!-- <div class="d-flex mt-4" data-aos="fade-up" data-aos-delay="300">
+          <a href="/auth/sign-up" target="_top" class="btn-get-started">Đăng ký ngay</a>
+          <a href="/auth/sign-in" target="_top" class="btn-watch-video d-flex align-items-center"><i class="bi bi-box-arrow-in-right"></i><span>Đăng nhập</span></a>
+        </div> -->
+      </div>
+
+    </section><!-- /Hero Section -->
+
+    <!-- About Section -->
+    <section id="about" class="about section">
+
+      <div class="container">
+
+        <div class="row gy-4">
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <h3>Voluptatem dignissimos provident laboris nisi ut aliquip ex ea commodo</h3>
+            <img src="assets/img/about.jpg" class="img-fluid rounded-4 mb-4" alt="">
+            <p>Ut fugiat ut sunt quia veniam. Voluptate perferendis perspiciatis quod nisi et. Placeat debitis quia recusandae odit et consequatur voluptatem. Dignissimos pariatur consectetur fugiat voluptas ea.</p>
+            <p>Temporibus nihil enim deserunt sed ea. Provident sit expedita aut cupiditate nihil vitae quo officia vel. Blanditiis eligendi possimus et in cum. Quidem eos ut sint rem veniam qui. Ut ut repellendus nobis tempore doloribus debitis explicabo similique sit. Accusantium sed ut omnis beatae neque deleniti repellendus.</p>
+          </div>
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="250">
+            <div class="content ps-0 ps-lg-5">
+              <p class="fst-italic">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+                magna aliqua.
+              </p>
+              <ul>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
+              </ul>
+              <p>
+                Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+                velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident
+              </p>
+
+              <div class="position-relative mt-4">
+                <img src="assets/img/about-2.jpg" class="img-fluid rounded-4" alt="">
+                <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /About Section -->
+
+    <!-- Stats Section -->
+    <section id="stats" class="stats section light-background">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-4">
+
+          <div class="col-lg-3 col-md-6">
+            <div class="stats-item d-flex align-items-center w-100 h-100">
+              <i class="bi bi-emoji-smile color-blue flex-shrink-0"></i>
+              <div>
+                <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
+                <p>Happy Clients</p>
+              </div>
+            </div>
+          </div><!-- End Stats Item -->
+
+          <div class="col-lg-3 col-md-6">
+            <div class="stats-item d-flex align-items-center w-100 h-100">
+              <i class="bi bi-journal-richtext color-orange flex-shrink-0"></i>
+              <div>
+                <span data-purecounter-start="0" data-purecounter-end="521" data-purecounter-duration="1" class="purecounter"></span>
+                <p>Projects</p>
+              </div>
+            </div>
+          </div><!-- End Stats Item -->
+
+          <div class="col-lg-3 col-md-6">
+            <div class="stats-item d-flex align-items-center w-100 h-100">
+              <i class="bi bi-headset color-green flex-shrink-0"></i>
+              <div>
+                <span data-purecounter-start="0" data-purecounter-end="1463" data-purecounter-duration="1" class="purecounter"></span>
+                <p>Hours Of Support</p>
+              </div>
+            </div>
+          </div><!-- End Stats Item -->
+
+          <div class="col-lg-3 col-md-6">
+            <div class="stats-item d-flex align-items-center w-100 h-100">
+              <i class="bi bi-people color-pink flex-shrink-0"></i>
+              <div>
+                <span data-purecounter-start="0" data-purecounter-end="15" data-purecounter-duration="1" class="purecounter"></span>
+                <p>Hard Workers</p>
+              </div>
+            </div>
+          </div><!-- End Stats Item -->
+
+        </div>
+
+      </div>
+
+    </section><!-- /Stats Section -->
+
+    <!-- Services Section -->
+    <section id="services" class="services section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Services</h2>
+        <p>Featured Srvices<br></p>
+      </div><!-- End Section Title -->
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-5">
+
+          <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="200">
+            <div class="service-item">
+              <div class="img">
+                <img src="assets/img/services-1.jpg" class="img-fluid" alt="">
+              </div>
+              <div class="details position-relative">
+                <div class="icon">
+                  <i class="bi bi-activity"></i>
+                </div>
+                <a href="service-details.html" class="stretched-link">
+                  <h3>Nesciunt Mete</h3>
+                </a>
+                <p>Provident nihil minus qui consequatur non omnis maiores. Eos accusantium minus dolores iure perferendis.</p>
+              </div>
+            </div>
+          </div><!-- End Service Item -->
+
+          <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="300">
+            <div class="service-item">
+              <div class="img">
+                <img src="assets/img/services-2.jpg" class="img-fluid" alt="">
+              </div>
+              <div class="details position-relative">
+                <div class="icon">
+                  <i class="bi bi-broadcast"></i>
+                </div>
+                <a href="service-details.html" class="stretched-link">
+                  <h3>Eosle Commodi</h3>
+                </a>
+                <p>Ut autem aut autem non a. Sint sint sit facilis nam iusto sint. Libero corrupti neque eum hic non ut nesciunt dolorem.</p>
+              </div>
+            </div>
+          </div><!-- End Service Item -->
+
+          <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="400">
+            <div class="service-item">
+              <div class="img">
+                <img src="assets/img/services-3.jpg" class="img-fluid" alt="">
+              </div>
+              <div class="details position-relative">
+                <div class="icon">
+                  <i class="bi bi-easel"></i>
+                </div>
+                <a href="service-details.html" class="stretched-link">
+                  <h3>Ledo Markt</h3>
+                </a>
+                <p>Ut excepturi voluptatem nisi sed. Quidem fuga consequatur. Minus ea aut. Vel qui id voluptas adipisci eos earum corrupti.</p>
+              </div>
+            </div>
+          </div><!-- End Service Item -->
+
+        </div>
+
+      </div>
+
+    </section><!-- /Services Section -->
+
+    <!-- Clients Section -->
+    <section id="clients" class="clients section light-background">
+
+      <div class="container" data-aos="fade-up">
+
+        <div class="row gy-4">
+
+          <div class="col-xl-2 col-md-3 col-6 client-logo">
+            <img src="assets/img/clients/client-1.png" class="img-fluid" alt="">
+          </div><!-- End Client Item -->
+
+          <div class="col-xl-2 col-md-3 col-6 client-logo">
+            <img src="assets/img/clients/client-2.png" class="img-fluid" alt="">
+          </div><!-- End Client Item -->
+
+          <div class="col-xl-2 col-md-3 col-6 client-logo">
+            <img src="assets/img/clients/client-3.png" class="img-fluid" alt="">
+          </div><!-- End Client Item -->
+
+          <div class="col-xl-2 col-md-3 col-6 client-logo">
+            <img src="assets/img/clients/client-4.png" class="img-fluid" alt="">
+          </div><!-- End Client Item -->
+
+          <div class="col-xl-2 col-md-3 col-6 client-logo">
+            <img src="assets/img/clients/client-5.png" class="img-fluid" alt="">
+          </div><!-- End Client Item -->
+
+          <div class="col-xl-2 col-md-3 col-6 client-logo">
+            <img src="assets/img/clients/client-6.png" class="img-fluid" alt="">
+          </div><!-- End Client Item -->
+
+        </div>
+
+      </div>
+
+    </section><!-- /Clients Section -->
+
+    <!-- Features Section -->
+    <section id="features" class="features section">
+
+      <div class="container">
+
+        <ul class="nav nav-tabs row  d-flex" data-aos="fade-up" data-aos-delay="100">
+          <li class="nav-item col-3">
+            <a class="nav-link active show" data-bs-toggle="tab" data-bs-target="#features-tab-1">
+              <i class="bi bi-binoculars"></i>
+              <h4 class="d-none d-lg-block">Modi sit est dela pireda nest</h4>
+            </a>
+          </li>
+          <li class="nav-item col-3">
+            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#features-tab-2">
+              <i class="bi bi-box-seam"></i>
+              <h4 class="d-none d-lg-block">Unde praesenti mara setra le</h4>
+            </a>
+          </li>
+          <li class="nav-item col-3">
+            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#features-tab-3">
+              <i class="bi bi-brightness-high"></i>
+              <h4 class="d-none d-lg-block">Pariatur explica nitro dela</h4>
+            </a>
+          </li>
+          <li class="nav-item col-3">
+            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#features-tab-4">
+              <i class="bi bi-command"></i>
+              <h4 class="d-none d-lg-block">Nostrum qui dile node</h4>
+            </a>
+          </li>
+        </ul><!-- End Tab Nav -->
+
+        <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
+
+          <div class="tab-pane fade active show" id="features-tab-1">
+            <div class="row">
+              <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
+                <h3>Voluptatem dignissimos provident quasi corporis voluptates sit assumenda.</h3>
+                <p class="fst-italic">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+                  magna aliqua.
+                </p>
+                <ul>
+                  <li><i class="bi bi-check2-all"></i>
+                    <spab>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</spab>
+                  </li>
+                  <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit</span>.</li>
+                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
+                </ul>
+                <p>
+                  Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+                  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+                  culpa qui officia deserunt mollit anim id est laborum
+                </p>
+              </div>
+              <div class="col-lg-6 order-1 order-lg-2 text-center">
+                <img src="assets/img/working-1.jpg" alt="" class="img-fluid">
+              </div>
+            </div>
+          </div><!-- End Tab Content Item -->
+
+          <div class="tab-pane fade" id="features-tab-2">
+            <div class="row">
+              <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
+                <h3>Neque exercitationem debitis soluta quos debitis quo mollitia officia est</h3>
+                <p>
+                  Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+                  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+                  culpa qui officia deserunt mollit anim id est laborum
+                </p>
+                <p class="fst-italic">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+                  magna aliqua.
+                </p>
+                <ul>
+                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
+                  <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
+                  <li><i class="bi bi-check2-all"></i> <span>Provident mollitia neque rerum asperiores dolores quos qui a. Ipsum neque dolor voluptate nisi sed.</span></li>
+                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
+                </ul>
+              </div>
+              <div class="col-lg-6 order-1 order-lg-2 text-center">
+                <img src="assets/img/working-2.jpg" alt="" class="img-fluid">
+              </div>
+            </div>
+          </div><!-- End Tab Content Item -->
+
+          <div class="tab-pane fade" id="features-tab-3">
+            <div class="row">
+              <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
+                <h3>Voluptatibus commodi ut accusamus ea repudiandae ut autem dolor ut assumenda</h3>
+                <p>
+                  Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+                  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+                  culpa qui officia deserunt mollit anim id est laborum
+                </p>
+                <ul>
+                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
+                  <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
+                  <li><i class="bi bi-check2-all"></i> <span>Provident mollitia neque rerum asperiores dolores quos qui a. Ipsum neque dolor voluptate nisi sed.</span></li>
+                </ul>
+                <p class="fst-italic">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+                  magna aliqua.
+                </p>
+              </div>
+              <div class="col-lg-6 order-1 order-lg-2 text-center">
+                <img src="assets/img/working-3.jpg" alt="" class="img-fluid">
+              </div>
+            </div>
+          </div><!-- End Tab Content Item -->
+
+          <div class="tab-pane fade" id="features-tab-4">
+            <div class="row">
+              <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
+                <h3>Omnis fugiat ea explicabo sunt dolorum asperiores sequi inventore rerum</h3>
+                <p>
+                  Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+                  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+                  culpa qui officia deserunt mollit anim id est laborum
+                </p>
+                <p class="fst-italic">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+                  magna aliqua.
+                </p>
+                <ul>
+                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
+                  <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
+                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
+                </ul>
+              </div>
+              <div class="col-lg-6 order-1 order-lg-2 text-center">
+                <img src="assets/img/working-4.jpg" alt="" class="img-fluid">
+              </div>
+            </div>
+          </div><!-- End Tab Content Item -->
+
+        </div>
+
+      </div>
+
+    </section><!-- /Features Section -->
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="testimonials section dark-background">
+
+      <img src="assets/img/testimonials-bg.jpg" class="testimonials-bg" alt="">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="swiper init-swiper">
+          <script type="application/json" class="swiper-config">
+            {
+              "loop": true,
+              "speed": 600,
+              "autoplay": {
+                "delay": 5000
+              },
+              "slidesPerView": "auto",
+              "pagination": {
+                "el": ".swiper-pagination",
+                "type": "bullets",
+                "clickable": true
+              }
+            }
+          </script>
+          <div class="swiper-wrapper">
+
+            <div class="swiper-slide">
+              <div class="testimonial-item">
+                <img src="assets/img/testimonials/testimonials-1.jpg" class="testimonial-img" alt="">
+                <h3>Saul Goodman</h3>
+                <h4>Ceo &amp; Founder</h4>
+                <div class="stars">
+                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                </div>
+                <p>
+                  <i class="bi bi-quote quote-icon-left"></i>
+                  <span>Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.</span>
+                  <i class="bi bi-quote quote-icon-right"></i>
+                </p>
+              </div>
+            </div><!-- End testimonial item -->
+
+            <div class="swiper-slide">
+              <div class="testimonial-item">
+                <img src="assets/img/testimonials/testimonials-2.jpg" class="testimonial-img" alt="">
+                <h3>Sara Wilsson</h3>
+                <h4>Designer</h4>
+                <div class="stars">
+                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                </div>
+                <p>
+                  <i class="bi bi-quote quote-icon-left"></i>
+                  <span>Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.</span>
+                  <i class="bi bi-quote quote-icon-right"></i>
+                </p>
+              </div>
+            </div><!-- End testimonial item -->
+
+            <div class="swiper-slide">
+              <div class="testimonial-item">
+                <img src="assets/img/testimonials/testimonials-3.jpg" class="testimonial-img" alt="">
+                <h3>Jena Karlis</h3>
+                <h4>Store Owner</h4>
+                <div class="stars">
+                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                </div>
+                <p>
+                  <i class="bi bi-quote quote-icon-left"></i>
+                  <span>Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.</span>
+                  <i class="bi bi-quote quote-icon-right"></i>
+                </p>
+              </div>
+            </div><!-- End testimonial item -->
+
+            <div class="swiper-slide">
+              <div class="testimonial-item">
+                <img src="assets/img/testimonials/testimonials-4.jpg" class="testimonial-img" alt="">
+                <h3>Matt Brandon</h3>
+                <h4>Freelancer</h4>
+                <div class="stars">
+                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                </div>
+                <p>
+                  <i class="bi bi-quote quote-icon-left"></i>
+                  <span>Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat minim velit minim dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.</span>
+                  <i class="bi bi-quote quote-icon-right"></i>
+                </p>
+              </div>
+            </div><!-- End testimonial item -->
+
+            <div class="swiper-slide">
+              <div class="testimonial-item">
+                <img src="assets/img/testimonials/testimonials-5.jpg" class="testimonial-img" alt="">
+                <h3>John Larson</h3>
+                <h4>Entrepreneur</h4>
+                <div class="stars">
+                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                </div>
+                <p>
+                  <i class="bi bi-quote quote-icon-left"></i>
+                  <span>Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam enim culpa labore duis sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.</span>
+                  <i class="bi bi-quote quote-icon-right"></i>
+                </p>
+              </div>
+            </div><!-- End testimonial item -->
+
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+
+      </div>
+
+    </section><!-- /Testimonials Section -->
+
+    <!-- Tours Section -->
+    <section id="portfolio" class="portfolio section">
+
+      <style>
+        /* ── Tour card styles ── */
+        .tour-card {
+          background: #fff;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 4px 20px rgba(0,0,0,.08);
+          transition: transform .3s ease, box-shadow .3s ease;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+        .tour-card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 12px 32px rgba(0,0,0,.14);
+        }
+        .tour-card .tc-thumb {
+          position: relative;
+          height: 210px;
+          overflow: hidden;
+          background: #f0f4f8;
+        }
+        .tour-card .tc-thumb img {
+          width: 100%; height: 100%;
+          object-fit: cover;
+          transition: transform .4s ease;
+        }
+        .tour-card:hover .tc-thumb img { transform: scale(1.06); }
+        .tour-card .tc-thumb .tc-status {
+          position: absolute;
+          top: 12px; right: 12px;
+          padding: 5px 12px;
+          border-radius: 20px;
+          font-size: .72rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: .04em;
+          color: #fff;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+          text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        }
+        /* Bảng màu theo chuẩn Bootstrap (primary/success/warning/danger/secondary) */
+        .tc-status.pendingapproval { background: #A18F7A; }
+        .tc-status.upcoming  { background: #0d6efd; }
+        .tc-status.open      { background: #198754; }
+        .tc-status.ongoing   { background: #198754; }
+        .tc-status.closed    { background: #ffc107; color: #212529; text-shadow: none; }
+        .tc-status.completed { background: #6c757d; }
+        .tc-status.cancelled { background: #dc3545; }
+        .tour-card .tc-body {
+          padding: 20px;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .tour-card .tc-title {
+          font-size: 1rem;
+          font-weight: 700;
+          color: #1a1a2e;
+          margin: 0;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        .tour-card .tc-company {
+          font-size: .8rem;
+          color: #e84545;
+          font-weight: 600;
+        }
+        .tour-card .tc-meta {
+          font-size: .8rem;
+          color: #666;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .tour-card .tc-meta i { color: #aaa; flex-shrink: 0; }
+        .tour-card .tc-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-top: 1px solid #f0f0f0;
+          padding: 14px 20px;
+          margin-top: auto;
+        }
+        .tour-card .tc-price {
+          font-size: 1.05rem;
+          font-weight: 800;
+          color: #e84545;
+        }
+        .tour-card .tc-price.free { color: #4caf50; }
+        .tour-card .tc-slots {
+          font-size: .75rem;
+          color: #888;
+        }
+        .tc-placeholder {
+          width: 100%; height: 100%;
+          display: flex; align-items: center; justify-content: center;
+          background: linear-gradient(135deg,#e8f4fd,#d1ecf1);
+          color: #5bc0de;
+          font-size: 3rem;
+        }
+        #tours-loading, #tours-error, #tours-empty {
+          text-align: center;
+          padding: 48px 20px;
+          color: #888;
+        }
+        .tours-grid { --bs-gutter-y: 1.5rem; }
+        .btn-detail, .btn-register {
+          flex: 1;
+        }
+        .btn-detail {
+          background-color: #fff;
+          color: #e84545;
+          border: 1.5px solid #e84545;
+          padding: 10px 16px;
+          border-radius: 6px;
+          font-weight: 600;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.1s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          text-decoration: none;
+        }
+        .btn-detail:hover {
+          background-color: #fdf2f2;
+          color: #d33c3c;
+          border-color: #d33c3c;
+        }
+        .btn-detail:active {
+          transform: translateY(1px);
+        }
+        .btn-register {
+          background-color: #e84545;
+          color: #fff;
+          border: none;
+          padding: 10px 16px;
+          border-radius: 6px;
+          font-weight: 600;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: background-color 0.2s, transform 0.1s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+        }
+        .btn-register:hover {
+          background-color: #d33c3c;
+          color: #fff;
+          transform: translateY(-1px);
+        }
+        .btn-register:active {
+          transform: translateY(1px);
+        }
+        .btn-register:disabled {
+          background-color: #b0b8c4;
+          color: #fff;
+          cursor: not-allowed;
+          transform: none !important;
+        }
+      </style>
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Tour</h2>
+        <p>DANH SÁCH TOUR THAM QUAN</p>
+      </div><!-- End Section Title -->
+
+      <div class="container">
+
+        <!-- Search / filter bar -->
+        <div class="row gy-2 align-items-end mb-4" id="tours-filter-bar" style="display:none;" data-aos="fade-up">
+          <div class="col-md-4">
+            <input type="text" id="tour-filter-search" class="form-control" placeholder="Tìm theo tên tour, doanh nghiệp...">
+          </div>
+          <div class="col-md-3 col-6">
+            <select id="tour-filter-status" class="form-select">
+              <option value="">Tất cả trạng thái</option>
+              <option value="upcoming">Sắp diễn ra</option>
+              <option value="open">Mở đăng ký</option>
+              <option value="closed">Đã đóng</option>
+              <option value="cancelled">Đã hủy</option>
+              <option value="completed">Đã kết thúc</option>
+            </select>
+          </div>
+          <div class="col-md-3 col-6">
+            <select id="tour-filter-company" class="form-select">
+              <option value="">Tất cả doanh nghiệp</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button type="button" id="tour-filter-clear" class="btn btn-outline-secondary w-100">Xóa lọc</button>
+          </div>
+        </div>
+
+        <!-- Loading state -->
+        <div id="tours-loading" data-aos="fade-up">
+          <div class="spinner-border text-primary mb-3" role="status"></div>
+          <p>Đang tải danh sách tour…</p>
+        </div>
+
+        <!-- Error state -->
+        <div id="tours-error" style="display:none;" data-aos="fade-up">
+          <i class="bi bi-exclamation-triangle" style="font-size:2.5rem;"></i>
+          <p id="tours-error-msg" class="mt-2">Không thể tải danh sách tour.</p>
+        </div>
+
+        <!-- Empty state -->
+        <div id="tours-empty" style="display:none;" data-aos="fade-up">
+          <i class="bi bi-calendar-x" style="font-size:2.5rem;"></i>
+          <p class="mt-2">Chưa có tour nào được đăng.</p>
+        </div>
+
+        <!-- Tour cards grid -->
+        <div id="tours-grid" class="row gy-4 tours-grid" style="display:none;" data-aos="fade-up" data-aos-delay="100">
+        </div><!-- End Tours Grid -->
+
+      </div>
+
+    </section><!-- /Tours Section -->
+
+    <script>
+    (function () {
+      var API = 'http://localhost:5041/api/tours';
+
+      function getSession() {
+        try {
+          return JSON.parse(localStorage.getItem('turtour.admin.session'));
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function authHeaders() {
+        var session = getSession();
+        return session && session.token ? { Authorization: 'Bearer ' + session.token } : {};
+      }
+
+      function fmt(dateStr) {
+        if (!dateStr) return '—';
+        var d = new Date(dateStr);
+        return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      }
+
+      function fmtDateTime(dateStr) {
+        if (!dateStr) return '—';
+        var d = new Date(dateStr);
+        return d.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      }
+
+      function statusLabel(s) {
+        if (!s) return '';
+        switch (s.toLowerCase()) {
+          case 'pendingapproval': return 'Chờ duyệt';
+          case 'upcoming':  return 'Sắp diễn ra';
+          case 'open':      return 'Mở đăng ký';
+          case 'ongoing':   return 'Đang diễn ra';
+          case 'closed':    return 'Đã đóng';
+          case 'completed': return 'Đã kết thúc';
+          case 'cancelled': return 'Đã hủy';
+          default: return s;
+        }
+      }
+
+      function thumbnail(tour) {
+        var imgs = tour.tourImages || [];
+        var thumb = imgs.find(function(i){ return i.isthumbnail || i.isThumbnail || i.Isthumbnail; });
+        return (thumb || imgs[0] || {}).imageUrl || '';
+      }
+
+      function priceText(fee) {
+        if (!fee || fee === 0) return { text: 'Miễn phí', free: true };
+        return { text: Number(fee).toLocaleString('vi-VN') + ' ₫', free: false };
+      }
+
+      function slots(tour) {
+        var current = tour.currentParticipants || 0;
+        var max = tour.maxParticipants || 0;
+        return (max - current) + '/' + max + ' chỗ trống';
+      }
+
+      window.toggleInterest = function (tourId, btn) {
+        var session = getSession();
+
+        if (!session || !session.token) {
+          showToast('Bạn cần đăng nhập bằng tài khoản Sinh viên để đánh dấu quan tâm tour.', 'info', {
+            actionLabel: 'Đăng nhập ngay',
+            actionHref: '/auth/sign-in'
+          });
+          return;
+        }
+
+        var roles = session.roles || [];
+        if (roles.indexOf('Student') === -1) {
+          showToast('Chỉ tài khoản Sinh viên mới có thể đánh dấu quan tâm tour.', 'error');
+          return;
+        }
+
+        var isInterested = btn.getAttribute('data-interested') === 'true';
+        btn.disabled = true;
+
+        fetch(API + '/' + tourId + '/interest', {
+          method: isInterested ? 'DELETE' : 'POST',
+          headers: authHeaders()
+        })
+          .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function (data) {
+            var nowInterested = !!data.interested;
+            btn.setAttribute('data-interested', nowInterested);
+            btn.innerHTML = '<i class="bi ' + (nowInterested ? 'bi-heart-fill' : 'bi-heart') + '"></i> '
+              + (nowInterested ? 'Đã quan tâm' : 'Quan tâm');
+            btn.disabled = false;
+
+            var tourInList = allTours.find(function (t) { return t.id === tourId; });
+            if (tourInList) tourInList.isInterested = nowInterested;
+
+            showToast(nowInterested
+              ? 'Đã đánh dấu quan tâm, bạn sẽ được báo khi tour mở đăng ký!'
+              : 'Đã bỏ quan tâm.', 'success');
+          })
+          .catch(function () {
+            btn.disabled = false;
+            showToast('Thao tác thất bại, vui lòng thử lại.', 'error');
+          });
+      };
+
+      window.registerTour = function (tourId, btn) {
+        var session = getSession();
+
+        if (!session || !session.token) {
+          showToast('Bạn cần đăng nhập bằng tài khoản Sinh viên để đăng ký tham gia tour.', 'info', {
+            actionLabel: 'Đăng nhập ngay',
+            actionHref: '/auth/sign-in'
+          });
+          return;
+        }
+
+        var roles = session.roles || [];
+        if (!roles.includes('Student')) {
+          showToast('Chỉ tài khoản Sinh viên mới có thể đăng ký tham gia các tour du lịch.', 'error');
+          return;
+        }
+
+        var originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Đang xử lý...';
+
+        fetch('http://localhost:5041/api/registrations', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + session.token
+          },
+          body: JSON.stringify({ tourId: tourId, notes: 'Đăng ký từ trang chủ' })
+        })
+        .then(function(res) {
+          if (res.status === 401) {
+            throw new Error('Hết phiên làm việc. Vui lòng đăng nhập lại.');
+          }
+          return res.json().then(function(data) {
+            if (!res.ok) {
+              throw new Error(data.message || 'Đăng ký thất bại.');
+            }
+            return data;
+          });
+        })
+        .then(function(data) {
+          showToast('Đăng ký tham gia tour thành công! Trạng thái đăng ký của bạn là: ' + (data.status === 'Waitinglisted' ? 'Danh sách chờ (Tour đã đầy)' : 'Chờ duyệt') + '.', 'success');
+          setTimeout(function () { window.location.reload(); }, 1200);
+        })
+        .catch(function(err) {
+          showToast(err.message || 'Không thể đăng ký lúc này.', 'error');
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        });
+      };
+
+      function renderCard(tour) {
+        var imgUrl = thumbnail(tour);
+        var status = (tour.status || '').toLowerCase();
+        var p = priceText(tour.fee);
+        var company = (tour.company && tour.company.name) ? tour.company.name : '';
+        var loc = tour.location || '';
+        var title = tour.tittle || tour.title || '(Chưa đặt tên)';
+
+        var thumbHtml = imgUrl
+          ? '<img src="' + imgUrl + '" alt="' + title + '" loading="lazy" onerror="this.style.display=\'none\'; this.parentNode.querySelector(\'.tc-placeholder\').style.display=\'flex\';">'
+            + '<div class="tc-placeholder" style="display:none; width: 100%; height: 100%; align-items: center; justify-content: center; background: linear-gradient(135deg,#e8f4fd,#d1ecf1); color: #5bc0de; font-size: 3rem;"><i class="bi bi-image"></i></div>'
+          : '<div class="tc-placeholder"><i class="bi bi-image"></i></div>';
+
+        // Chỉ cho đăng ký khi tour đang ở trạng thái "Mở đăng ký". Tour "Sắp diễn ra" thì cho
+        // sinh viên đánh dấu "Quan tâm" để được báo khi tour đó mở đăng ký.
+        var btnHtml;
+        if (status === 'upcoming') {
+          var interested = !!tour.isInterested;
+          btnHtml = '<div class="d-flex gap-2 mt-3">'
+            + '<a href="tour-details.html?id=' + tour.id + '" class="btn-detail"><i class="bi bi-info-circle"></i> Chi tiết</a>'
+            + '<button class="btn-register" onclick="toggleInterest(\'' + tour.id + '\', this)" data-interested="' + interested + '">'
+            + '<i class="bi ' + (interested ? 'bi-heart-fill' : 'bi-heart') + '"></i> ' + (interested ? 'Đã quan tâm' : 'Quan tâm')
+            + '</button>'
+            + '</div>';
+        } else {
+          var canRegisterStatus = status === 'open';
+          var btnText = 'Đăng ký ngay';
+          if (status === 'completed') btnText = 'Đã kết thúc';
+          else if (status === 'cancelled') btnText = 'Đã hủy';
+          else if (status === 'closed') btnText = 'Đã đóng';
+          else if (status === 'pendingapproval') btnText = 'Chờ duyệt';
+
+          btnHtml = '<div class="d-flex gap-2 mt-3">'
+            + '<a href="tour-details.html?id=' + tour.id + '" class="btn-detail"><i class="bi bi-info-circle"></i> Chi tiết</a>'
+            + '<button class="btn-register" onclick="registerTour(\'' + tour.id + '\', this)"'
+            + (canRegisterStatus ? '' : ' disabled') + '>'
+            + '<i class="bi bi-send-fill"></i> ' + btnText
+            + '</button>'
+            + '</div>';
+        }
+
+        return '<div class="col-xl-4 col-md-6">'
+          + '<div class="tour-card">'
+            + '<div class="tc-thumb">'
+              + thumbHtml
+              + '<span class="tc-status ' + status + '">' + statusLabel(tour.status) + '</span>'
+            + '</div>'
+            + '<div class="tc-body">'
+              + '<h4 class="tc-title">' + title + '</h4>'
+              + (company ? '<div class="tc-company"><i class="bi bi-building me-1"></i>' + company + '</div>' : '')
+              + (loc ? '<div class="tc-meta"><i class="bi bi-geo-alt"></i><span>' + loc + '</span></div>' : '')
+              + '<div class="tc-meta"><i class="bi bi-calendar3"></i><span>' + fmtDateTime(tour.startDate) + ' — ' + fmtDateTime(tour.endDate) + '</span></div>'
+              + btnHtml
+            + '</div>'
+            + '<div class="tc-footer">'
+              + '<span class="tc-price' + (p.free ? ' free' : '') + '">' + p.text + '</span>'
+              + '<span class="tc-slots"><i class="bi bi-people me-1"></i>' + slots(tour) + '</span>'
+            + '</div>'
+          + '</div>'
+        + '</div>';
+      }
+
+      var allTours = [];
+
+      function applyFilters() {
+        var searchEl = document.getElementById('tour-filter-search');
+        var statusEl = document.getElementById('tour-filter-status');
+        var companyEl = document.getElementById('tour-filter-company');
+        var grid = document.getElementById('tours-grid');
+        var emptyEl = document.getElementById('tours-empty');
+
+        var term = (searchEl.value || '').trim().toLowerCase();
+        var statusVal = statusEl.value;
+        var companyVal = companyEl.value;
+
+        var filtered = allTours.filter(function (tour) {
+          if (term) {
+            var title = (tour.tittle || tour.title || '').toLowerCase();
+            var company = (tour.company && tour.company.name ? tour.company.name : '').toLowerCase();
+            if (title.indexOf(term) === -1 && company.indexOf(term) === -1) return false;
+          }
+          if (statusVal && (tour.status || '').toLowerCase() !== statusVal) return false;
+          if (companyVal && (!tour.company || tour.company.name !== companyVal)) return false;
+          return true;
+        });
+
+        if (filtered.length === 0) {
+          grid.style.display = 'none';
+          grid.innerHTML = '';
+          emptyEl.style.display = 'block';
+        } else {
+          emptyEl.style.display = 'none';
+          grid.innerHTML = filtered.map(renderCard).join('');
+          grid.style.display = '';
+        }
+      }
+
+      function populateCompanyFilter() {
+        var companyEl = document.getElementById('tour-filter-company');
+        var names = [];
+        allTours.forEach(function (tour) {
+          var name = tour.company && tour.company.name;
+          if (name && names.indexOf(name) === -1) names.push(name);
+        });
+        names.sort();
+        names.forEach(function (name) {
+          var opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          companyEl.appendChild(opt);
+        });
+      }
+
+      document.getElementById('tour-filter-search').addEventListener('input', applyFilters);
+      document.getElementById('tour-filter-status').addEventListener('change', applyFilters);
+      document.getElementById('tour-filter-company').addEventListener('change', applyFilters);
+      document.getElementById('tour-filter-clear').addEventListener('click', function () {
+        document.getElementById('tour-filter-search').value = '';
+        document.getElementById('tour-filter-status').value = '';
+        document.getElementById('tour-filter-company').value = '';
+        applyFilters();
+      });
+
+      fetch(API, { headers: authHeaders() })
+        .then(function(res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function(tours) {
+          document.getElementById('tours-loading').style.display = 'none';
+          if (!Array.isArray(tours) || tours.length === 0) {
+            document.getElementById('tours-empty').style.display = 'block';
+            return;
+          }
+          allTours = tours;
+          document.getElementById('tours-filter-bar').style.display = '';
+          populateCompanyFilter();
+          applyFilters();
+        })
+        .catch(function(err) {
+          document.getElementById('tours-loading').style.display = 'none';
+          document.getElementById('tours-error').style.display = 'block';
+          document.getElementById('tours-error-msg').textContent = 'Không thể tải danh sách tour: ' + err.message;
+        });
+
+      // Tour bị đổi trạng thái (mở/đóng đăng ký...) từ admin — cập nhật ngay trên trang,
+      // không cần F5.
+      if (window.TurTourRealtime) {
+        window.TurTourRealtime.onTourUpdated(function (payload) {
+          if (!payload) return;
+          var tour = allTours.find(function (t) { return t.id === payload.tourId; });
+          if (tour) {
+            tour.status = payload.status;
+            applyFilters();
+          }
+        });
+      }
+    })();
+    </script>
+
+    <!-- Team Section -->
+    <section id="team" class="team section light-background">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Team</h2>
+        <p>CHECK OUR TEAM</p>
+      </div><!-- End Section Title -->
+
+      <div class="container">
+
+        <div class="row gy-5">
+
+          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="member">
+              <div class="pic"><img src="assets/img/team/team-1.jpg" class="img-fluid" alt=""></div>
+              <div class="member-info">
+                <h4>Walter White</h4>
+                <span>Chief Executive Officer</span>
+                <div class="social">
+                  <a href=""><i class="bi bi-twitter-x"></i></a>
+                  <a href=""><i class="bi bi-facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Team Member -->
+
+          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+            <div class="member">
+              <div class="pic"><img src="assets/img/team/team-2.jpg" class="img-fluid" alt=""></div>
+              <div class="member-info">
+                <h4>Sarah Jhonson</h4>
+                <span>Product Manager</span>
+                <div class="social">
+                  <a href=""><i class="bi bi-twitter-x"></i></a>
+                  <a href=""><i class="bi bi-facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Team Member -->
+
+          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+            <div class="member">
+              <div class="pic"><img src="assets/img/team/team-3.jpg" class="img-fluid" alt=""></div>
+              <div class="member-info">
+                <h4>William Anderson</h4>
+                <span>CTO</span>
+                <div class="social">
+                  <a href=""><i class="bi bi-twitter-x"></i></a>
+                  <a href=""><i class="bi bi-facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Team Member -->
+
+        </div>
+
+      </div>
+
+    </section><!-- /Team Section -->
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Contact</h2>
+        <p>Necessitatibus eius consequatur</p>
+      </div><!-- End Section Title -->
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-4">
+          <div class="col-lg-6 ">
+            <div class="row gy-4">
+
+              <div class="col-lg-12">
+                <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="200">
+                  <i class="bi bi-geo-alt"></i>
+                  <h3>Address</h3>
+                  <p>Gia Định, TP.HCM</p>
+                </div>
+              </div><!-- End Info Item -->
+
+              <div class="col-md-6">
+                <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="300">
+                  <i class="bi bi-telephone"></i>
+                  <h3>Call Us</h3>
+                  <p>Upcoming</p>
+                </div>
+              </div><!-- End Info Item -->
+
+              <div class="col-md-6">
+                <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="400">
+                  <i class="bi bi-envelope"></i>
+                  <h3>Email Us</h3>
+                  <p>Upcoming</p>
+                </div>
+              </div><!-- End Info Item -->
+
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="500">
+              <div class="row gy-4">
+
+                <div class="col-md-6">
+                  <input type="text" name="name" class="form-control" placeholder="Your Name" required="">
+                </div>
+
+                <div class="col-md-6 ">
+                  <input type="email" class="form-control" name="email" placeholder="Your Email" required="">
+                </div>
+
+                <div class="col-md-12">
+                  <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
+                </div>
+
+                <div class="col-md-12">
+                  <textarea class="form-control" name="message" rows="4" placeholder="Message" required=""></textarea>
+                </div>
+
+                <div class="col-md-12 text-center">
+                  <div class="loading">Loading</div>
+                  <div class="error-message"></div>
+                  <div class="sent-message">Your message has been sent. Thank you!</div>
+
+                  <button type="submit">Send Message</button>
+                </div>
+
+              </div>
+            </form>
+          </div><!-- End Contact Form -->
+
+        </div>
+
+      </div>
+
+    </section><!-- /Contact Section -->
+
+  </main>
+
+  <footer id="footer" class="footer dark-background">
+
+    <div class="container footer-top">
+      <div class="row gy-4">
+        <div class="col-lg-4 col-md-6 footer-about">
+          <a href="index.html" class="logo d-flex align-items-center">
+            <span class="sitename">TurTour</span>
+          </a>
+          <div class="footer-contact pt-3">
+            <p>Gia Định, TP.HCM</p>
+            <p class="mt-3"><strong>Phone:</strong> <span>Upcoming</span></p>
+            <p><strong>Email:</strong> <span>Upcoming</span></p>
+          </div>
+          <div class="social-links d-flex mt-4">
+            <a href=""><i class="bi bi-twitter-x"></i></a>
+            <a href=""><i class="bi bi-facebook"></i></a>
+            <a href=""><i class="bi bi-instagram"></i></a>
+            <a href=""><i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+
+        <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Useful Links</h4>
+          <ul>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Home</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">About us</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Services</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Terms of service</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Privacy policy</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Our Services</h4>
+          <ul>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Design</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Development</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Product Management</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Marketing</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Graphic Design</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12 footer-newsletter">
+          <h4>Our Newsletter</h4>
+          <p>Subscribe to our newsletter and receive the latest news about our products and services!</p>
+          <form action="forms/newsletter.php" method="post" class="php-email-form">
+            <div class="newsletter-form"><input type="email" name="email"><input type="submit" value="Subscribe"></div>
+            <div class="loading">Loading</div>
+            <div class="error-message"></div>
+            <div class="sent-message">Your subscription request has been sent. Thank you!</div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">TurTour</strong> <span>All Rights Reserved</span></p>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you've purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed by <a href=“https://themewagon.com>ThemeWagon
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+
+  <!-- Main JS File -->
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/auth-guard.js"></script>
+    <script src="assets/vendor/signalr/signalr.min.js"></script>
+  <script src="assets/js/realtime.js"></script>
+<script src="assets/js/notifications-badge.js"></script>
+
+  <script>
+    (function () {
+      var guestBtn = document.getElementById('auth-guest');
+      var profileBox = document.getElementById('auth-profile');
+      var profileName = document.getElementById('auth-profile-name');
+      var dashboardItem = document.getElementById('auth-dashboard-item');
+      var myToursItem = document.getElementById('auth-mytours-item');
+      var logoutBtn = document.getElementById('auth-logout-btn');
+
+      var session = null;
+      try {
+        session = JSON.parse(localStorage.getItem('turtour.admin.session'));
+      } catch (e) {}
+
+      if (session && session.token) {
+        guestBtn.style.display = 'none';
+        profileBox.style.display = 'block';
+        profileName.textContent = session.fullName || session.email || 'Tài khoản';
+
+        var roles = session.roles || [];
+        if (roles.includes('Admin') || roles.includes('Organizator') || roles.includes('Company')) {
+          dashboardItem.style.display = 'block';
+        }
+        if (roles.includes('Student')) {
+          myToursItem.style.display = 'block';
+        }
+      } else {
+        guestBtn.style.display = '';
+        profileBox.style.display = 'none';
+      }
+
+      logoutBtn.addEventListener('click', function () {
+        localStorage.removeItem('turtour.admin.session');
+        window.parent.location.href = '/auth/sign-in';
+      });
+    })();
+  </script>
+
+</body>
+
+</html>
