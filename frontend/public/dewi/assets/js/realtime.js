@@ -1,5 +1,5 @@
 (function () {
-  var HUB_URL = 'http://localhost:5041/hubs/app';
+  var HUB_URL = 'https://turtour-production.up.railway.app/hubs/app';
   var AUTH_STORAGE_KEY = 'turtour.admin.session';
 
   function getToken() {
