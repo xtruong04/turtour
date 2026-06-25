@@ -533,7 +533,7 @@
         window.parent.location.href = '/auth/sign-in';
       });
 
-      var API = 'http://localhost:5041/api/tours/' + tourId;
+      var API = 'https://turtour-production.up.railway.app/api/tours/' + tourId;
 
       function sanitizeHtml(html) {
         return window.DOMPurify ? window.DOMPurify.sanitize(html) : html;
@@ -689,7 +689,7 @@
               var isInterestedNow = btnReg.getAttribute('data-interested') === 'true';
               btnReg.disabled = true;
 
-              fetch('http://localhost:5041/api/tours/' + tourId + '/interest', {
+              fetch('https://turtour-production.up.railway.app/api/tours/' + tourId + '/interest', {
                 method: isInterestedNow ? 'DELETE' : 'POST',
                 headers: { Authorization: 'Bearer ' + session.token }
               })
@@ -741,7 +741,7 @@
             btnReg.disabled = true;
             btnReg.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Đang xử lý...';
 
-            fetch('http://localhost:5041/api/registrations', {
+            fetch('https://turtour-production.up.railway.app/api/registrations', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

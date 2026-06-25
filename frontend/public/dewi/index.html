@@ -801,7 +801,7 @@
 
     <script>
     (function () {
-      var API = 'http://localhost:5041/api/tours';
+      var API = 'https://turtour-production.up.railway.app/api/tours';
 
       function getSession() {
         try {
@@ -928,7 +928,7 @@
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Đang xử lý...';
 
-        fetch('http://localhost:5041/api/registrations', {
+        fetch('https://turtour-production.up.railway.app/api/registrations', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
