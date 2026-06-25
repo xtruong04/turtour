@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using TurTour.Data;
 using TurTour.Hubs;
+using TurTour.Models.Entities;
 using TurTour.Services;
 using Microsoft.OpenApi.Models;
 
@@ -17,7 +18,7 @@ namespace TurTour
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             var builder = WebApplication.CreateBuilder(args);
@@ -193,7 +194,9 @@ namespace TurTour
             // (Railway...) vì không thể chạy "dotnet ef database update" thủ công dễ dàng.
             using (var scope = app.Services.CreateScope())
             {
-                scope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.Migrate();
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                dbContext.Database.Migrate();
+                await SeedRolesAsync(dbContext);
             }
 
             // Configure the HTTP request pipeline.
@@ -237,7 +240,28 @@ namespace TurTour
             app.MapControllers();
             app.MapHub<AppHub>("/hubs/app");
 
-            app.Run();
+            await app.RunAsync();
+        }
+
+        // Đảm bảo 4 role bắt buộc (Auth Controller tra theo tên, không tự tạo) luôn tồn tại
+        // sau khi deploy lên môi trường mới — chỉ thêm role nào còn thiếu, không tạo trùng.
+        private static async Task SeedRolesAsync(ApplicationDbContext context)
+        {
+            string[] requiredRoles = ["Student", "Admin", "Company", "Organizator"];
+
+            var existingNames = await context.Roles
+                .Where(r => requiredRoles.Contains(r.Name))
+                .Select(r => r.Name)
+                .ToListAsync();
+
+            var missingRoles = requiredRoles.Except(existingNames);
+
+            foreach (var roleName in missingRoles)
+            {
+                context.Roles.Add(new Role { Name = roleName });
+            }
+
+            await context.SaveChangesAsync();
         }
     }
 }
