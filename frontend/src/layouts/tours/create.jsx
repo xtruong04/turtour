@@ -1,11 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import Alert from "@mui/material/Alert";
 import Card from "@mui/material/Card";
 import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
-import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -36,12 +35,14 @@ import SoftInput from "components/SoftInput";
 import SoftButton from "components/SoftButton";
 import TourDescriptionEditor from "components/TourDescriptionEditor";
 import TourThumbnailField from "components/TourThumbnailField";
+import NeoDropdown from "components/NeoDropdown";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
 import apiService from "../../services/apiService";
+import useTourBasePath from "../../hooks/useTourBasePath";
 
 const initialForm = {
   code: "",
@@ -51,9 +52,10 @@ const initialForm = {
   location: "",
   startDate: "",
   endDate: "",
+  bookingOpenAt: "",
+  bookingCloseAt: "",
   capacity: "30",
   price: "100000",
-  status: "Upcoming",
   requirement: "",
   companyId: "",
   companyName: "",
@@ -66,8 +68,6 @@ const emptySchedule = () => ({
   endDate: "",
   orderIndex: 0,
 });
-
-const statusOptions = ["Upcoming", "Open", "Closed", "Cancelled", "Completed"];
 
 function extractPlainText(html) {
   return html
@@ -108,9 +108,18 @@ function getValidationMessage(form, schedules, skipCompanyName) {
   if (new Date(form.endDate) < new Date(form.startDate)) {
     return "Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.";
   }
+  if (!form.bookingOpenAt || !form.bookingCloseAt) {
+    return "Vui lòng chọn thời gian mở và đóng đăng ký.";
+  }
+  if (new Date(form.bookingCloseAt) <= new Date(form.bookingOpenAt)) {
+    return "Thời gian đóng đăng ký phải lớn hơn thời gian mở đăng ký.";
+  }
+  if (new Date(form.bookingCloseAt) > new Date(form.startDate)) {
+    return "Thời gian đóng đăng ký phải trước hoặc bằng ngày khởi hành.";
+  }
   if (Number(form.capacity) <= 0) return "Sức chứa phải lớn hơn 0.";
   if (Number(form.price) <= 0) return "Chi phí phải lớn hơn 0.";
-  if (!skipCompanyName && !form.companyName.trim()) return "Vui lòng nhập tên doanh nghiệp.";
+  if (!skipCompanyName && !form.companyId) return "Vui lòng chọn doanh nghiệp.";
   if (form.thumbnail.trim() && !isSupportedImageSource(form.thumbnail.trim())) {
     return "Thumbnail phải là đường dẫn ảnh http/https hợp lệ hoặc data URL của ảnh.";
   }
@@ -139,6 +148,7 @@ function getValidationMessage(form, schedules, skipCompanyName) {
 
 function TourCreate() {
   const navigate = useNavigate();
+  const base = useTourBasePath();
   const [form, setForm] = useState(initialForm);
   const [schedules, setSchedules] = useState([]);
   const [submitting, setSubmitting] = useState(false);
@@ -149,6 +159,23 @@ function TourCreate() {
   const isAdmin = roles.includes("Admin");
   const isCompanyUser = roles.includes("Company");
 
+  const [companies, setCompanies] = useState([]);
+
+  useEffect(() => {
+    if (isCompanyUser) return;
+
+    async function fetchCompanies() {
+      try {
+        const companyList = await apiService.getCompanies();
+        setCompanies(Array.isArray(companyList) ? companyList.filter((company) => company?.id && company?.name) : []);
+      } catch {
+        // Không chặn form nếu tải danh sách doanh nghiệp thất bại — chỉ là dropdown rỗng.
+      }
+    }
+
+    fetchCompanies();
+  }, [isCompanyUser]);
+
   const canSubmit = useMemo(() => {
     return (
       form.code.trim() &&
@@ -157,9 +184,11 @@ function TourCreate() {
       form.location.trim() &&
       form.startDate &&
       form.endDate &&
+      form.bookingOpenAt &&
+      form.bookingCloseAt &&
       form.capacity &&
       form.price &&
-      (isCompanyUser || form.companyName.trim())
+      (isCompanyUser || form.companyId)
     );
   }, [form, isCompanyUser]);
 
@@ -200,6 +229,8 @@ function TourCreate() {
         ...form,
         startDate: dateTimeToISO(form.startDate),
         endDate: dateTimeToISO(form.endDate),
+        bookingOpenAt: dateTimeToISO(form.bookingOpenAt),
+        bookingCloseAt: dateTimeToISO(form.bookingCloseAt),
       };
 
       // Gửi tour + lịch trình trong 1 request — backend tạo trong 1 transaction,
@@ -216,7 +247,10 @@ function TourCreate() {
 
       const created = await apiService.createTour(formToSend, schedulesToSend);
 
-      navigate(`/admin/tours/${created.id}`, { replace: true });
+      const toastMessage = isAdmin
+        ? "Tạo tour thành công."
+        : "Tạo tour thành công, đang chờ Admin xét duyệt.";
+      navigate(`${base}/tours/${created.id}`, { replace: true, state: { toast: toastMessage } });
     } catch (error) {
       setErrorMessage(error?.message || "Tạo tour thất bại.");
     } finally {
@@ -235,7 +269,7 @@ function TourCreate() {
                 <SoftTypography variant="h5" fontWeight="bold">Tạo Tour</SoftTypography>
                 <SoftTypography variant="button" color="text">Tạo tour mới cho doanh nghiệp hoặc tổ chức.</SoftTypography>
               </div>
-              <SoftButton component={Link} to="/admin/tours" variant="outlined" color="dark">
+              <SoftButton component={Link} to={`${base}/tours`} variant="outlined" color="dark">
                 Quay lại danh sách
               </SoftButton>
             </SoftBox>
@@ -267,8 +301,13 @@ function TourCreate() {
                 </Grid>
                 {!isCompanyUser ? (
                   <Grid item xs={12} md={6}>
-                    <SoftTypography variant="caption" fontWeight="bold">Tên doanh nghiệp *</SoftTypography>
-                    <SoftInput placeholder="VD: Công ty Du lịch ABC" value={form.companyName} onChange={(e) => handleChange("companyName", e.target.value)} />
+                    <SoftTypography variant="caption" fontWeight="bold">Doanh nghiệp *</SoftTypography>
+                    <NeoDropdown
+                      value={form.companyId}
+                      placeholder="-- Chọn doanh nghiệp --"
+                      options={companies.map((company) => ({ value: company.id, label: company.name }))}
+                      onChange={(value) => handleChange("companyId", value)}
+                    />
                   </Grid>
                 ) : null}
                 <Grid item xs={12} md={6}>
@@ -279,6 +318,17 @@ function TourCreate() {
                   <SoftTypography variant="caption" fontWeight="bold">Ngày kết thúc *</SoftTypography>
                   <SoftInput type="datetime-local" value={form.endDate} onChange={(e) => handleChange("endDate", e.target.value)} />
                 </Grid>
+                <Grid item xs={12} md={6}>
+                  <SoftTypography variant="caption" fontWeight="bold">Mở đăng ký từ *</SoftTypography>
+                  <SoftInput type="datetime-local" value={form.bookingOpenAt} onChange={(e) => handleChange("bookingOpenAt", e.target.value)} />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <SoftTypography variant="caption" fontWeight="bold">Đóng đăng ký lúc *</SoftTypography>
+                  <SoftInput type="datetime-local" value={form.bookingCloseAt} onChange={(e) => handleChange("bookingCloseAt", e.target.value)} />
+                  <SoftTypography variant="caption" color="text" display="block" mt={0.5}>
+                    Phải trước hoặc bằng ngày khởi hành. Ngoài khoảng này, khách chỉ xem được tour, không đăng ký được.
+                  </SoftTypography>
+                </Grid>
                 <Grid item xs={12} md={4}>
                   <SoftTypography variant="caption" fontWeight="bold">Sức chứa *</SoftTypography>
                   <SoftInput type="number" min="1" value={form.capacity} onChange={(e) => handleChange("capacity", e.target.value)} />
@@ -287,21 +337,14 @@ function TourCreate() {
                   <SoftTypography variant="caption" fontWeight="bold">Chi phí *</SoftTypography>
                   <SoftInput type="number" min="1" value={form.price} onChange={(e) => handleChange("price", e.target.value)} />
                 </Grid>
-                {isAdmin ? (
-                  <Grid item xs={12} md={4}>
-                    <SoftTypography variant="caption" fontWeight="bold">Trạng thái</SoftTypography>
-                    <TextField select fullWidth size="small" value={form.status} onChange={(e) => handleChange("status", e.target.value)}>
-                      {statusOptions.map((s) => <MenuItem key={s} value={s}>{s}</MenuItem>)}
-                    </TextField>
-                  </Grid>
-                ) : (
-                  <Grid item xs={12} md={4}>
-                    <SoftTypography variant="caption" fontWeight="bold">Trạng thái</SoftTypography>
-                    <SoftTypography variant="button" color="text" display="block" mt={0.5}>
-                      Tour sẽ ở trạng thái <strong>Chờ duyệt</strong> sau khi tạo, Admin sẽ xét duyệt trước khi hiển thị công khai.
-                    </SoftTypography>
-                  </Grid>
-                )}
+                <Grid item xs={12} md={4}>
+                  <SoftTypography variant="caption" fontWeight="bold">Trạng thái</SoftTypography>
+                  <SoftTypography variant="button" color="text" display="block" mt={0.5}>
+                    {isAdmin
+                      ? "Tour được duyệt ngay, tự động mở đăng ký hoặc đóng theo ngày khởi hành."
+                      : <>Tour sẽ ở trạng thái <strong>Chờ duyệt</strong> sau khi tạo, Admin sẽ xét duyệt trước khi hiển thị công khai.</>}
+                  </SoftTypography>
+                </Grid>
                 <Grid item xs={12}>
                   <SoftTypography variant="caption" fontWeight="bold">Yêu cầu</SoftTypography>
                   <TextField fullWidth size="small" multiline minRows={2} placeholder="VD: Mang thẻ sinh viên khi tham gia" value={form.requirement} onChange={(e) => handleChange("requirement", e.target.value)} />
@@ -393,7 +436,7 @@ function TourCreate() {
               {errorMessage ? <SoftBox mt={2}><Alert severity="error">{errorMessage}</Alert></SoftBox> : null}
 
               <SoftBox mt={3} display="flex" justifyContent="flex-end" gap={1}>
-                <SoftButton component={Link} to="/admin/tours" variant="outlined" color="dark">Hủy</SoftButton>
+                <SoftButton component={Link} to={`${base}/tours`} variant="outlined" color="dark">Hủy</SoftButton>
                 <SoftButton type="submit" variant="gradient" color="info" disabled={!canSubmit || submitting}>
                   {submitting ? "Đang tạo..." : "Tạo Tour"}
                 </SoftButton>

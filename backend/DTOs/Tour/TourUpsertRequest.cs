@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using TurTour.Models.Enums;
 
 namespace TurTour.DTOs.Tour
 {
@@ -29,12 +28,17 @@ namespace TurTour.DTOs.Tour
         [Required(ErrorMessage = "Ngày kết thúc là bắt buộc.")]
         public DateTime EndDate { get; set; }
 
+        [Required(ErrorMessage = "Ngày mở đăng ký là bắt buộc.")]
+        public DateTime BookingOpenAt { get; set; }
+
+        [Required(ErrorMessage = "Ngày đóng đăng ký là bắt buộc.")]
+        public DateTime BookingCloseAt { get; set; }
+
         [Range(1, int.MaxValue, ErrorMessage = "Số lượng tham gia tối đa phải lớn hơn 0.")]
         public int MaxParticipants { get; set; }
 
         [Range(typeof(decimal), "0.01", "9999999999999999", ErrorMessage = "Chi phí tour phải lớn hơn 0.")]
         public decimal Fee { get; set; }
-        public TourStatus Status { get; set; } = TourStatus.Upcoming;
 
         [MaxLength(1000, ErrorMessage = "Yêu cầu không được vượt quá 1000 ký tự.")]
         public string? Requirement { get; set; }
@@ -60,6 +64,20 @@ namespace TurTour.DTOs.Tour
                     new[] { nameof(EndDate) });
             }
 
+            if (BookingCloseAt <= BookingOpenAt)
+            {
+                yield return new ValidationResult(
+                    "Ngày đóng đăng ký phải lớn hơn ngày mở đăng ký.",
+                    new[] { nameof(BookingCloseAt) });
+            }
+
+            if (BookingCloseAt > StartDate)
+            {
+                yield return new ValidationResult(
+                    "Ngày đóng đăng ký phải trước hoặc bằng ngày khởi hành.",
+                    new[] { nameof(BookingCloseAt) });
+            }
+
             if (!string.IsNullOrWhiteSpace(ThumbnailUrl) && !IsSupportedImageSource(ThumbnailUrl))
             {
                 yield return new ValidationResult(
@@ -67,12 +85,9 @@ namespace TurTour.DTOs.Tour
                     new[] { nameof(ThumbnailUrl) });
             }
 
-            if (CompanyId == null && string.IsNullOrWhiteSpace(CompanyName))
-            {
-                yield return new ValidationResult(
-                    "Vui lòng nhập tên công ty hoặc cung cấp CompanyId.",
-                    new[] { nameof(CompanyName), nameof(CompanyId) });
-            }
+            // Không validate CompanyId/CompanyName ở đây — tài khoản Company tự tạo tour cho
+            // chính mình nên không gửi 2 field này. Validation thuộc về controller, chỉ áp dụng
+            // khi Admin/Organizator cần chọn doanh nghiệp.
         }
 
         private static bool IsSupportedImageSource(string value)

@@ -39,6 +39,21 @@ namespace TurTour.Controllers
             return company == null ? NotFound() : Ok(company);
         }
 
+        // Doanh nghiệp tự xem thông tin công ty của chính mình — dùng cho trang dashboard đối tác.
+        [HttpGet("me")]
+        [Authorize(Roles = "Company")]
+        public async Task<IActionResult> GetMine()
+        {
+            var userId = CurrentUserHelper.GetUserId(User);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var company = await _context.Companies.FirstOrDefaultAsync(c => c.UserId == userId);
+            return company == null ? NotFound() : Ok(company);
+        }
+
         //[HttpPost]
         //[Authorize(Roles = "Admin")]
         //public async Task<IActionResult> Create(CompanyUpsertRequest request)
@@ -90,6 +105,9 @@ namespace TurTour.Controllers
             company.LogoUrl = request.LogoUrl;
             company.Industry = request.Industry;
             company.IsActive = request.IsActive;
+            company.BankBin = request.BankBin;
+            company.BankAccountNo = request.BankAccountNo;
+            company.BankAccountName = request.BankAccountName;
             company.UpdatedAt = DateTime.UtcNow;
 
             if (company.UserId.HasValue)

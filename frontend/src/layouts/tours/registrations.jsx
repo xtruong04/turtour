@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 
 import Alert from "@mui/material/Alert";
 import Card from "@mui/material/Card";
+import Tooltip from "@mui/material/Tooltip";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -29,6 +30,7 @@ import Footer from "examples/Footer";
 
 import apiService from "../../services/apiService";
 import realtimeService from "../../services/realtime";
+import useTourBasePath from "../../hooks/useTourBasePath";
 
 // Bảng màu theo chuẩn Bootstrap, đồng bộ với badge trạng thái ở các trang admin khác.
 const statusBadgeColors = {
@@ -53,6 +55,7 @@ const statusLabel = {
 
 function TourRegistrations() {
   const { id } = useParams();
+  const base = useTourBasePath();
 
   const [tour, setTour] = useState(null);
   const [registrations, setRegistrations] = useState([]);
@@ -266,7 +269,7 @@ function TourRegistrations() {
                 <SoftTypography variant="h5" fontWeight="bold">Quản lý đăng ký</SoftTypography>
                 <SoftTypography variant="button" color="text">{tour?.title || "Đang tải..."}</SoftTypography>
               </div>
-              <SoftButton component={Link} to={`/admin/tours/${id}`} variant="outlined" color="dark">
+              <SoftButton component={Link} to={`${base}/tours/${id}`} variant="outlined" color="dark">
                 Quay lại tour
               </SoftButton>
             </SoftBox>
@@ -355,15 +358,18 @@ function TourRegistrations() {
                             />
                           </TableCell>
                           <TableCell align="center">
-                            <NeoBadge
-                              label={isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
-                              bgColor={isPaid ? "#198754" : "#6c757d"}
-                            />
-                            {isPaid && reg.payment?.paidAt ? (
-                              <SoftTypography variant="caption" color="text" display="block">
-                                {new Date(reg.payment.paidAt).toLocaleDateString("vi-VN")}
-                              </SoftTypography>
-                            ) : null}
+                            <Tooltip
+                              title={isPaid && reg.payment?.paidAt ? `Thanh toán ngày ${new Date(reg.payment.paidAt).toLocaleDateString("vi-VN")}` : ""}
+                              disableHoverListener={!isPaid || !reg.payment?.paidAt}
+                              arrow
+                            >
+                              <SoftBox display="inline-flex">
+                                <NeoBadge
+                                  label={isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
+                                  bgColor={isPaid ? "#198754" : "#6c757d"}
+                                />
+                              </SoftBox>
+                            </Tooltip>
                           </TableCell>
                           <TableCell title={reg.notes}>{reg.notes || "-"}</TableCell>
                           <TableCell align="center" sx={{ overflow: "visible" }}>

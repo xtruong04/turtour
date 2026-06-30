@@ -68,6 +68,15 @@ namespace TurTour.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("BankAccountName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("BankAccountNo")
+                        .HasColumnType("text");
+
+                    b.Property<string>("BankBin")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
@@ -163,6 +172,9 @@ namespace TurTour.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("TourId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("text");
@@ -174,6 +186,8 @@ namespace TurTour.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TourId");
 
                     b.HasIndex("UserId");
 
@@ -360,6 +374,15 @@ namespace TurTour.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int>("ApprovalStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("BookingCloseAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("BookingOpenAt")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("text");
@@ -397,14 +420,14 @@ namespace TurTour.Migrations
                     b.Property<Guid?>("OrganizatorId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("PublishStatus")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Requirement")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Tittle")
                         .IsRequired()
@@ -536,6 +559,15 @@ namespace TurTour.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("EmailConfirmationToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("EmailConfirmationTokenExpiresAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -631,11 +663,17 @@ namespace TurTour.Migrations
 
             modelBuilder.Entity("TurTour.Models.Entities.Notification", b =>
                 {
+                    b.HasOne("TurTour.Models.Entities.Tour", "Tour")
+                        .WithMany()
+                        .HasForeignKey("TourId");
+
                     b.HasOne("TurTour.Models.Entities.User", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Tour");
 
                     b.Navigation("User");
                 });

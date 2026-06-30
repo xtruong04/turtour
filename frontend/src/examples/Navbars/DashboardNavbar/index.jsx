@@ -98,15 +98,23 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
   const handleNotificationClick = async (notification) => {
     handleCloseMenu();
-    if (notification.isRead) return;
-    try {
-      await apiService.markNotificationRead(notification.id);
-      setNotifications((current) =>
-        current.map((n) => (n.id === notification.id ? { ...n, isRead: true } : n))
-      );
-    } catch {
-      // ignore — non-critical, will just retry to mark as read next time
+    if (!notification.isRead) {
+      try {
+        await apiService.markNotificationRead(notification.id);
+        setNotifications((current) =>
+          current.map((n) => (n.id === notification.id ? { ...n, isRead: true } : n))
+        );
+      } catch {
+        // ignore — non-critical, will just retry to mark as read next time
+      }
     }
+
+    const tourId = notification.raw?.tourId;
+    if (!tourId) return;
+    const type = notification.raw?.type;
+    const roles = apiService.getAuthSession()?.roles || [];
+    const base = roles.includes("Admin") ? "/admin" : "/partner";
+    navigate(type === "Tour" ? `${base}/tours/${tourId}` : `${base}/tours/${tourId}/registrations`);
   };
 
   const handleLogout = async () => {
@@ -143,9 +151,13 @@ function DashboardNavbar({ absolute, light, isMini }) {
     }
 
     fetchNotifications();
+    // Poll mỗi 60s làm dự phòng — khi real-time hoạt động, danh sách cập nhật ngay lúc có
+    // thông báo mới; phòng trường hợp socket rớt/chưa kết nối lại thì vẫn có thông báo sau tối đa 60s.
+    const intervalId = setInterval(fetchNotifications, 60000);
 
     return () => {
       isMounted = false;
+      clearInterval(intervalId);
     };
   }, [isAuthenticated]);
 

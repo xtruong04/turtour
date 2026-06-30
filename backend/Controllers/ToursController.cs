@@ -23,19 +23,45 @@ namespace TurTour.Controllers
             _realtime = realtime;
         }
 
-        // Tour đã qua ngày kết thúc thì hiển thị là "Đã đóng", trừ khi đã bị hủy hoặc
-        // đã đánh dấu hoàn thành thủ công — không ghi xuống DB, chỉ áp cho dữ liệu trả về.
-        internal static TourStatus ComputeEffectiveStatus(Tour tour)
+        // StartDate/EndDate/BookingOpenAt/BookingCloseAt được lưu theo giờ địa phương người dùng
+        // chọn (Frontend không quy đổi sang UTC — xem dateTimeToISO ở create.jsx), nên phải so
+        // sánh với thời điểm hiện tại theo giờ VN (UTC+7), không phải DateTime.UtcNow thật — nếu
+        // không sẽ lệch 7 giờ (tour đã mở đăng ký vẫn báo "chưa mở").
+        internal static DateTime VietnamNow => DateTime.UtcNow.AddHours(7);
+
+        // Đọc trạng thái hiển thị hiệu lực — chỉ "decay" 1 chiều Published -> Expired khi tour đã
+        // qua EndDate (tour đang diễn ra giữa StartDate..EndDate vẫn tính là Published, chỉ chặn
+        // đăng ký qua booking window, không đổi PublishStatus). Hidden/Expired đã lưu thì giữ
+        // nguyên — chỉ có DecidePublishStatusOnApproval (gọi lúc duyệt/company sửa lại ngày) mới
+        // tái đánh giá Published/Expired từ đầu theo StartDate.
+        internal static PublishStatus ComputeEffectivePublishStatus(Tour tour)
         {
-            if (tour.Status == TourStatus.Cancelled || tour.Status == TourStatus.Completed)
+            if (tour.PublishStatus == PublishStatus.Archived)
             {
-                return tour.Status;
+                return PublishStatus.Archived;
             }
 
-            return DateTime.UtcNow > tour.EndDate ? TourStatus.Closed : tour.Status;
+            if (tour.ApprovalStatus != ApprovalStatus.Approved)
+            {
+                return PublishStatus.Hidden;
+            }
+
+            if (tour.PublishStatus == PublishStatus.Published)
+            {
+                return VietnamNow > tour.EndDate ? PublishStatus.Expired : PublishStatus.Published;
+            }
+
+            return tour.PublishStatus;
         }
 
-        // Vai trò quản lý (Admin/Organizator/Company) được thấy cả tour đang chờ duyệt —
+        // Quyết định Published/Expired tại các mốc rời rạc: Admin duyệt tour Pending, hoặc Company
+        // sửa lại ngày khởi hành cho 1 tour đã Approved nhưng đang Expired (duyệt muộn / quá hạn).
+        private static PublishStatus DecidePublishStatusOnApproval(Tour tour)
+        {
+            return tour.StartDate > VietnamNow ? PublishStatus.Published : PublishStatus.Expired;
+        }
+
+        // Vai trò quản lý (Admin/Organizator/Company) được thấy cả tour chưa duyệt/bị từ chối —
         // người ngoài (khách/sinh viên) thì không, vì tour chưa được Admin duyệt công khai.
         private bool CanSeePendingTours()
         {
@@ -55,15 +81,56 @@ namespace TurTour.Controllers
 
             foreach (var tour in tours)
             {
-                tour.Status = ComputeEffectiveStatus(tour);
+                tour.PublishStatus = ComputeEffectivePublishStatus(tour);
             }
 
             if (!CanSeePendingTours())
             {
-                tours = tours.Where(t => t.Status != TourStatus.PendingApproval).ToList();
+                tours = tours.Where(t => t.ApprovalStatus == ApprovalStatus.Approved).ToList();
             }
 
             await ApplyInterestFlagAsync(tours);
+
+            return Ok(tours);
+        }
+
+        // Tour của riêng tài khoản đang đăng nhập — dùng cho dashboard đối tác (Company/Organizator),
+        // tách biệt với GetAll (vốn trả về toàn bộ tour, dùng cho Admin).
+        [HttpGet("mine")]
+        [Authorize(Roles = "Organizator,Company")]
+        public async Task<IActionResult> GetMine()
+        {
+            var userId = CurrentUserHelper.GetUserId(User);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var query = _context.Tours
+                .Include(t => t.Company)
+                .Include(t => t.TourSchedules.OrderBy(s => s.OrderIndex))
+                .Include(t => t.TourImages.OrderBy(i => i.DisplayOrder));
+
+            IQueryable<Tour> scoped;
+            if (User.IsInRole("Company"))
+            {
+                var company = await _context.Companies.FirstOrDefaultAsync(c => c.UserId == userId);
+                if (company == null)
+                {
+                    return Ok(Array.Empty<Tour>());
+                }
+                scoped = query.Where(t => t.CompanyId == company.Id);
+            }
+            else
+            {
+                scoped = query.Where(t => t.CreatedBy == userId);
+            }
+
+            var tours = await scoped.OrderByDescending(t => t.StartDate).ToListAsync();
+            foreach (var tour in tours)
+            {
+                tour.PublishStatus = ComputeEffectivePublishStatus(tour);
+            }
 
             return Ok(tours);
         }
@@ -83,9 +150,9 @@ namespace TurTour.Controllers
                 return NotFound();
             }
 
-            tour.Status = ComputeEffectiveStatus(tour);
+            tour.PublishStatus = ComputeEffectivePublishStatus(tour);
 
-            if (tour.Status == TourStatus.PendingApproval && !CanSeePendingTours())
+            if (tour.ApprovalStatus != ApprovalStatus.Approved && !CanSeePendingTours())
             {
                 return NotFound();
             }
@@ -94,8 +161,8 @@ namespace TurTour.Controllers
             return Ok(tour);
         }
 
-        // Sinh viên đang đăng nhập có thể đánh dấu "Quan tâm" tour đang Sắp diễn ra, để được
-        // báo khi tour mở đăng ký. Bấm lại lần nữa để bỏ quan tâm.
+        // Sinh viên đang đăng nhập có thể đánh dấu "Quan tâm" tour đang mở (Published), để
+        // tiện theo dõi/nhắc bản thân đăng ký. Bấm lại lần nữa để bỏ quan tâm.
         [HttpPost("{id:guid}/interest")]
         [Authorize(Roles = "Student")]
         public async Task<IActionResult> MarkInterest(Guid id)
@@ -112,9 +179,9 @@ namespace TurTour.Controllers
                 return NotFound(new { message = "Tour not found." });
             }
 
-            if (ComputeEffectiveStatus(tour) != TourStatus.Upcoming)
+            if (ComputeEffectivePublishStatus(tour) != PublishStatus.Published)
             {
-                return BadRequest(new { message = "Chỉ có thể đánh dấu quan tâm tour đang ở trạng thái sắp diễn ra." });
+                return BadRequest(new { message = "Chỉ có thể đánh dấu quan tâm tour đang mở đăng ký." });
             }
 
             var existed = await _context.TourInterests
@@ -205,9 +272,11 @@ namespace TurTour.Controllers
                 return BadRequest(new { message = "EndDate must be greater than StartDate." });
             }
 
-            // Chỉ Admin tạo tour mới được xuất bản ngay theo trạng thái yêu cầu — Organizator/Company
-            // tạo tour luôn vào "Chờ duyệt", chờ Admin xét duyệt trước khi hiển thị công khai.
-            var initialStatus = User.IsInRole("Admin") ? request.Status : TourStatus.PendingApproval;
+            // Chỉ Admin tạo tour mới được duyệt ngay (và xuất bản tự động theo ngày khởi hành) —
+            // Organizator/Company tạo tour luôn vào "Chờ duyệt", chờ Admin xét duyệt trước khi
+            // hiển thị công khai.
+            var isAdmin = User.IsInRole("Admin");
+            var approvalStatus = isAdmin ? ApprovalStatus.Approved : ApprovalStatus.Pending;
 
             var tour = new Tour
             {
@@ -217,14 +286,23 @@ namespace TurTour.Controllers
                 Location = request.Location,
                 StartDate = request.StartDate,
                 EndDate = request.EndDate,
+                BookingOpenAt = request.BookingOpenAt,
+                BookingCloseAt = request.BookingCloseAt,
                 MaxParticipants = request.MaxParticipants,
                 CurrentParticipants = 0,
                 Fee = request.Fee,
-                Status = initialStatus,
+                ApprovalStatus = approvalStatus,
+                PublishStatus = PublishStatus.Hidden,
                 Requirement = request.Requirement,
                 CompanyId = company.Id,
                 CreatedBy = createdBy.Value
             };
+            // Admin tạo tour là duyệt ngay — quyết định Published/Expired ngay tại đây theo
+            // StartDate, không phải tính decay (tour vừa tạo chưa từng Published).
+            if (approvalStatus == ApprovalStatus.Approved)
+            {
+                tour.PublishStatus = DecidePublishStatusOnApproval(tour);
+            }
 
             if (!string.IsNullOrWhiteSpace(request.ThumbnailUrl))
             {
@@ -274,12 +352,30 @@ namespace TurTour.Controllers
                 throw;
             }
 
-            if (initialStatus == TourStatus.PendingApproval)
+            if (approvalStatus == ApprovalStatus.Pending)
             {
                 await NotifyAdminsOfPendingTourAsync(tour, company.Name);
+                await NotifyCreatorTourSubmittedAsync(tour);
             }
 
             return CreatedAtAction(nameof(GetById), new { id = tour.Id }, tour);
+        }
+
+        // Báo cho chính người tạo tour biết tour đã được tạo và đang chờ Admin xét duyệt.
+        private async Task NotifyCreatorTourSubmittedAsync(Tour tour)
+        {
+            var notification = new Notification
+            {
+                UserId = tour.CreatedBy,
+                Title = "Tour đã được tạo",
+                Content = $"Tour \"{tour.Tittle}\" đã được tạo và đang chờ Admin xét duyệt.",
+                Type = "Tour",
+                TourId = tour.Id,
+                IsRead = false
+            };
+            _context.Notifications.Add(notification);
+            await _context.SaveChangesAsync();
+            await _realtime.NotifyUserAsync(notification);
         }
 
         // Báo cho mọi Admin biết có tour mới đang chờ duyệt.
@@ -301,6 +397,7 @@ namespace TurTour.Controllers
                 Title = "Có tour mới đang chờ duyệt",
                 Content = $"Tour \"{tour.Tittle}\" của doanh nghiệp \"{companyName}\" đang chờ bạn duyệt.",
                 Type = "Tour",
+                TourId = tour.Id,
                 IsRead = false
             }).ToList();
 
@@ -313,8 +410,10 @@ namespace TurTour.Controllers
             }
         }
 
+        // Chỉ Organizator/Company được sửa nội dung tour — Admin chỉ Duyệt/Từ chối/Huỷ, không
+        // trực tiếp sửa nội dung (nội dung sai thì Reject kèm lý do, để company tự sửa và nộp lại).
         [HttpPut("{id:guid}")]
-        [Authorize(Roles = "Admin,Organizator,Company")]
+        [Authorize(Roles = "Organizator,Company")]
         public async Task<IActionResult> Update(Guid id, TourUpsertRequest request)
         {
             var tour = await _context.Tours
@@ -356,12 +455,16 @@ namespace TurTour.Controllers
                 return BadRequest(new { message = "Không tìm thấy doanh nghiệp đang hoạt động với tên đã nhập." });
             }
 
-            if (IsLockedAsCompleted(tour) && request.Status != TourStatus.Completed)
+            if (tour.PublishStatus == PublishStatus.Archived)
             {
-                return BadRequest(new { message = "Tour đã hoàn thành và qua ngày kết thúc, không thể đổi trạng thái." });
+                return BadRequest(new { message = "Tour đã lưu trữ/huỷ, không thể chỉnh sửa." });
             }
 
-            var previousStatus = tour.Status;
+            var previousApproval = tour.ApprovalStatus;
+            var previousPublish = tour.PublishStatus;
+            // Phải so sánh nội dung TRƯỚC khi gán giá trị mới — chỉ sửa ngày khởi hành (không đổi
+            // nội dung cần kiểm duyệt) thì tour đã Approved không phải duyệt lại từ đầu.
+            var hasContentChanges = HasContentChanges(tour, request);
 
             tour.Code = request.Code;
             tour.Tittle = request.Tittle;
@@ -369,26 +472,45 @@ namespace TurTour.Controllers
             tour.Location = request.Location;
             tour.StartDate = request.StartDate;
             tour.EndDate = request.EndDate;
+            tour.BookingOpenAt = request.BookingOpenAt;
+            tour.BookingCloseAt = request.BookingCloseAt;
             tour.MaxParticipants = request.MaxParticipants;
             tour.Fee = request.Fee;
-            // Chỉ Admin được đổi trạng thái thoát khỏi "Chờ duyệt" — Organizator/Company sửa tour
-            // đang chờ duyệt thì trạng thái vẫn giữ nguyên là Chờ duyệt (không thể tự duyệt cho mình).
-            tour.Status = (previousStatus == TourStatus.PendingApproval && !User.IsInRole("Admin"))
-                ? TourStatus.PendingApproval
-                : request.Status;
             tour.Requirement = request.Requirement;
             tour.CompanyId = company.Id;
             tour.UpdatedAt = DateTime.UtcNow;
 
             SyncThumbnail(tour, request.ThumbnailUrl);
-            var interestNotifications = await NotifyInterestedStudentsIfNowOpenAsync(tour, previousStatus);
+
+            if (hasContentChanges || previousApproval != ApprovalStatus.Approved)
+            {
+                // Sửa nội dung cần kiểm duyệt (lịch trình/giá/điểm đến/mô tả...), hoặc tour chưa
+                // từng được duyệt (đang Pending/Rejected) → về lại Chờ duyệt.
+                tour.ApprovalStatus = ApprovalStatus.Pending;
+                tour.PublishStatus = PublishStatus.Hidden;
+            }
+            else
+            {
+                // Chỉ đổi ngày khởi hành/kết thúc, nội dung đã được duyệt từ trước — đây là đường
+                // hồi phục Expired -> Published khi company sửa lại ngày, nên tái đánh giá từ đầu
+                // theo StartDate mới (không phải decay).
+                tour.PublishStatus = DecidePublishStatusOnApproval(tour);
+            }
+
+            var interestNotifications = await NotifyInterestedStudentsIfNowPublishedAsync(tour, previousPublish);
 
             await _context.SaveChangesAsync();
 
-            if (tour.Status != previousStatus)
+            if (tour.ApprovalStatus != previousApproval || tour.PublishStatus != previousPublish)
             {
-                await _realtime.NotifyTourUpdatedAsync(tour.Id, tour.Status.ToString());
-                await NotifyCreatorIfApprovedAsync(tour, previousStatus);
+                await _realtime.NotifyTourUpdatedAsync(tour.Id, tour.ApprovalStatus.ToString(), tour.PublishStatus.ToString());
+
+                if (tour.ApprovalStatus == ApprovalStatus.Pending)
+                {
+                    // Tour vừa được nộp lại (mới tạo, hoặc bị đẩy lại Pending do sửa nội dung) —
+                    // báo Admin xét duyệt.
+                    await NotifyAdminsOfPendingTourAsync(tour, company.Name);
+                }
             }
             foreach (var notification in interestNotifications)
             {
@@ -398,9 +520,33 @@ namespace TurTour.Controllers
             return Ok(tour);
         }
 
-        [HttpPatch("{id:guid}/status")]
-        [Authorize(Roles = "Admin,Organizator,Company")]
-        public async Task<IActionResult> UpdateStatus(Guid id, UpdateTourStatusRequest request)
+        // "Nội dung cần kiểm duyệt" theo workflow đề ra: tiêu đề, mô tả, địa điểm, giá, yêu cầu,
+        // ảnh đại diện — đổi ngày khởi hành/kết thúc hoặc sức chứa không tính, vì không ảnh hưởng
+        // nội dung tour mà Admin đã duyệt.
+        private static bool HasContentChanges(Tour tour, TourUpsertRequest request)
+        {
+            var currentThumbnail = tour.TourImages
+                .Where(image => image.Isthumbnail)
+                .OrderBy(image => image.DisplayOrder)
+                .Select(image => image.ImageUrl)
+                .FirstOrDefault() ?? "";
+            var requestedThumbnail = request.ThumbnailUrl?.Trim() ?? "";
+
+            return tour.Code != request.Code
+                || tour.Tittle != request.Tittle
+                || tour.Decriptions != request.Decriptions
+                || tour.Location != request.Location
+                || tour.Fee != request.Fee
+                || (tour.Requirement ?? "") != (request.Requirement ?? "")
+                || currentThumbnail != requestedThumbnail;
+        }
+
+        // Admin duyệt tour đang Chờ duyệt — Published ngay nếu chưa quá ngày khởi hành, ngược
+        // lại Expired (nội dung đã duyệt nhưng không hiển thị/không đặt được, chờ company sửa
+        // lại ngày khởi hành).
+        [HttpPatch("{id:guid}/approve")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Approve(Guid id)
         {
             var tour = await _context.Tours
                 .Include(t => t.Company)
@@ -413,36 +559,21 @@ namespace TurTour.Controllers
                 return NotFound();
             }
 
-            var ownershipError = await CheckCompanyOwnershipAsync(tour);
-            if (ownershipError != null)
+            if (tour.ApprovalStatus != ApprovalStatus.Pending)
             {
-                return ownershipError;
+                return BadRequest(new { message = "Chỉ duyệt được tour đang ở trạng thái Chờ duyệt." });
             }
 
-            if (IsLockedAsCompleted(tour) && request.Status != TourStatus.Completed)
-            {
-                return BadRequest(new { message = "Tour đã hoàn thành và qua ngày kết thúc, không thể đổi trạng thái." });
-            }
-
-            // Chỉ Admin được duyệt tour ra khỏi trạng thái "Chờ duyệt".
-            if (tour.Status == TourStatus.PendingApproval && !User.IsInRole("Admin"))
-            {
-                return Forbid();
-            }
-
-            var previousStatus = tour.Status;
-            tour.Status = request.Status;
+            var previousPublish = tour.PublishStatus;
+            tour.ApprovalStatus = ApprovalStatus.Approved;
+            tour.PublishStatus = DecidePublishStatusOnApproval(tour);
             tour.UpdatedAt = DateTime.UtcNow;
 
-            var interestNotifications = await NotifyInterestedStudentsIfNowOpenAsync(tour, previousStatus);
-
+            var interestNotifications = await NotifyInterestedStudentsIfNowPublishedAsync(tour, previousPublish);
             await _context.SaveChangesAsync();
 
-            if (tour.Status != previousStatus)
-            {
-                await _realtime.NotifyTourUpdatedAsync(tour.Id, tour.Status.ToString());
-                await NotifyCreatorIfApprovedAsync(tour, previousStatus);
-            }
+            await _realtime.NotifyTourUpdatedAsync(tour.Id, tour.ApprovalStatus.ToString(), tour.PublishStatus.ToString());
+            await NotifyCreatorOfApprovalDecisionAsync(tour, isRejected: false, reason: null);
             foreach (var notification in interestNotifications)
             {
                 await _realtime.NotifyUserAsync(notification);
@@ -451,11 +582,68 @@ namespace TurTour.Controllers
             return Ok(tour);
         }
 
-        // Tour đã đánh dấu Hoàn thành và đã qua ngày kết thúc thì khóa trạng thái, không cho
-        // đổi sang trạng thái khác nữa (tránh sửa nhầm sau khi tour đã xong thật).
-        private static bool IsLockedAsCompleted(Tour tour)
+        // Admin từ chối tour đang Chờ duyệt — kèm lý do tuỳ chọn, báo cho người tạo tour.
+        [HttpPatch("{id:guid}/reject")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Reject(Guid id, RejectTourRequest request)
         {
-            return tour.Status == TourStatus.Completed && DateTime.UtcNow > tour.EndDate;
+            var tour = await _context.Tours
+                .Include(t => t.Company)
+                .Include(t => t.TourSchedules.OrderBy(s => s.OrderIndex))
+                .Include(t => t.TourImages.OrderBy(i => i.DisplayOrder))
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (tour == null)
+            {
+                return NotFound();
+            }
+
+            if (tour.ApprovalStatus != ApprovalStatus.Pending)
+            {
+                return BadRequest(new { message = "Chỉ từ chối được tour đang ở trạng thái Chờ duyệt." });
+            }
+
+            tour.ApprovalStatus = ApprovalStatus.Rejected;
+            tour.PublishStatus = PublishStatus.Hidden;
+            tour.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            await _realtime.NotifyTourUpdatedAsync(tour.Id, tour.ApprovalStatus.ToString(), tour.PublishStatus.ToString());
+            await NotifyCreatorOfApprovalDecisionAsync(tour, isRejected: true, reason: request.Reason);
+
+            return Ok(tour);
+        }
+
+        // Company/Organizator tự huỷ tour của mình (sau khi đã Published), hoặc Admin lưu trữ
+        // tour bất kỳ — Archived là trạng thái chấm hết, không có đường quay lại (phải tạo tour
+        // mới nếu muốn mở lại).
+        [HttpPatch("{id:guid}/archive")]
+        [Authorize(Roles = "Admin,Organizator,Company")]
+        public async Task<IActionResult> Archive(Guid id)
+        {
+            var tour = await _context.Tours.FirstOrDefaultAsync(t => t.Id == id);
+            if (tour == null)
+            {
+                return NotFound();
+            }
+
+            var ownershipError = await CheckCompanyOwnershipAsync(tour);
+            if (ownershipError != null)
+            {
+                return ownershipError;
+            }
+
+            if (tour.PublishStatus == PublishStatus.Archived)
+            {
+                return Ok(tour);
+            }
+
+            tour.PublishStatus = PublishStatus.Archived;
+            tour.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            await _realtime.NotifyTourUpdatedAsync(tour.Id, tour.ApprovalStatus.ToString(), tour.PublishStatus.ToString());
+            return Ok(tour);
         }
 
         // Doanh nghiệp (role Company) chỉ được quản lý tour của chính công ty mình —
@@ -482,20 +670,19 @@ namespace TurTour.Controllers
             return null;
         }
 
-        // Khi tour vừa được Admin duyệt ra khỏi "Chờ duyệt", báo cho người đã tạo tour đó.
-        private async Task NotifyCreatorIfApprovedAsync(Tour tour, TourStatus previousStatus)
+        // Báo cho người tạo tour biết kết quả xét duyệt — duyệt thì kèm Publish hiện tại
+        // (Published nếu còn hạn, Expired nếu đã quá ngày khởi hành), từ chối thì kèm lý do nếu có.
+        private async Task NotifyCreatorOfApprovalDecisionAsync(Tour tour, bool isRejected, string? reason)
         {
-            if (previousStatus != TourStatus.PendingApproval)
-            {
-                return;
-            }
-
             var notification = new Notification
             {
                 UserId = tour.CreatedBy,
-                Title = "Tour của bạn đã được duyệt",
-                Content = $"Tour \"{tour.Tittle}\" đã được Admin duyệt và chuyển sang trạng thái \"{tour.Status}\".",
+                Title = isRejected ? "Tour của bạn đã bị từ chối" : "Tour của bạn đã được duyệt",
+                Content = isRejected
+                    ? $"Tour \"{tour.Tittle}\" đã bị Admin từ chối." + (string.IsNullOrWhiteSpace(reason) ? "" : $" Lý do: {reason.Trim()}")
+                    : $"Tour \"{tour.Tittle}\" đã được Admin duyệt, hiện đang ở trạng thái \"{tour.PublishStatus}\".",
                 Type = "Tour",
+                TourId = tour.Id,
                 IsRead = false
             };
             _context.Notifications.Add(notification);
@@ -503,12 +690,13 @@ namespace TurTour.Controllers
             await _realtime.NotifyUserAsync(notification);
         }
 
-        // Tour vừa mở đăng ký — báo cho các sinh viên đã đánh dấu "Quan tâm" lúc tour còn Sắp
-        // diễn ra, rồi xoá danh sách quan tâm (đã báo xong, tránh báo lại lần sau).
-        private async Task<List<Notification>> NotifyInterestedStudentsIfNowOpenAsync(Tour tour, TourStatus previousStatus)
+        // Tour vừa chuyển sang Published (mới duyệt xong còn hạn, hoặc company sửa lại ngày
+        // khởi hành cho 1 tour đã Expired) — báo cho các sinh viên đã đánh dấu "Quan tâm", rồi
+        // xoá khỏi danh sách quan tâm (đã báo xong, tránh báo lại lần sau).
+        private async Task<List<Notification>> NotifyInterestedStudentsIfNowPublishedAsync(Tour tour, PublishStatus previousPublish)
         {
             var notifications = new List<Notification>();
-            if (previousStatus == TourStatus.Open || tour.Status != TourStatus.Open)
+            if (previousPublish == PublishStatus.Published || tour.PublishStatus != PublishStatus.Published)
             {
                 return notifications;
             }
@@ -522,6 +710,7 @@ namespace TurTour.Controllers
                     Title = "Tour bạn quan tâm đã mở đăng ký",
                     Content = $"Tour \"{tour.Tittle}\" mà bạn đánh dấu quan tâm đã mở đăng ký, hãy đăng ký ngay!",
                     Type = "Tour",
+                    TourId = tour.Id,
                     IsRead = false
                 };
                 _context.Notifications.Add(notification);
@@ -531,8 +720,10 @@ namespace TurTour.Controllers
             return notifications;
         }
 
+        // Chỉ Organizator/Company xoá tour của mình — Admin không xoá tour của doanh nghiệp/tổ
+        // chức, chỉ Duyệt/Từ chối/Huỷ (Archive). Tour vi phạm thì Reject hoặc Archive, không xoá hẳn.
         [HttpDelete("{id:guid}")]
-        [Authorize(Roles = "Admin,Organizator,Company")]
+        [Authorize(Roles = "Organizator,Company")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var tour = await _context.Tours.FindAsync(id);
@@ -553,7 +744,7 @@ namespace TurTour.Controllers
         }
 
         [HttpPost("{id:guid}/schedules")]
-        [Authorize(Roles = "Admin,Organizator,Company")]
+        [Authorize(Roles = "Organizator,Company")]
         public async Task<IActionResult> AddSchedule(Guid id, CreateTourScheduleRequest request)
         {
             var tour = await _context.Tours.FirstOrDefaultAsync(t => t.Id == id);
@@ -585,12 +776,14 @@ namespace TurTour.Controllers
             };
 
             _context.Add(schedule);
+            var demoted = DemoteToPendingForContentChange(tour);
             await _context.SaveChangesAsync();
+            await NotifyIfDemotedAsync(tour, demoted);
             return Ok(schedule);
         }
 
         [HttpPut("{id:guid}/schedules/{scheduleId:guid}")]
-        [Authorize(Roles = "Admin,Organizator,Company")]
+        [Authorize(Roles = "Organizator,Company")]
         public async Task<IActionResult> UpdateSchedule(Guid id, Guid scheduleId, CreateTourScheduleRequest request)
         {
             var tour = await _context.Tours.FirstOrDefaultAsync(t => t.Id == id);
@@ -624,12 +817,14 @@ namespace TurTour.Controllers
             schedule.OrderIndex = request.OrderIndex;
             schedule.UpdatedAt = DateTime.UtcNow;
 
+            var demoted = DemoteToPendingForContentChange(tour);
             await _context.SaveChangesAsync();
+            await NotifyIfDemotedAsync(tour, demoted);
             return Ok(schedule);
         }
 
         [HttpDelete("{id:guid}/schedules/{scheduleId:guid}")]
-        [Authorize(Roles = "Admin,Organizator,Company")]
+        [Authorize(Roles = "Organizator,Company")]
         public async Task<IActionResult> DeleteSchedule(Guid id, Guid scheduleId)
         {
             var tour = await _context.Tours.FirstOrDefaultAsync(t => t.Id == id);
@@ -651,8 +846,37 @@ namespace TurTour.Controllers
             }
 
             _context.ToursSchedules.Remove(schedule);
+            var demoted = DemoteToPendingForContentChange(tour);
             await _context.SaveChangesAsync();
+            await NotifyIfDemotedAsync(tour, demoted);
             return NoContent();
+        }
+
+        // Company/Organizator sửa lịch trình (thêm/sửa/xoá) của 1 tour đã Approved tính là sửa
+        // nội dung cần kiểm duyệt theo workflow — phải duyệt lại.
+        private bool DemoteToPendingForContentChange(Tour tour)
+        {
+            if (tour.ApprovalStatus != ApprovalStatus.Approved)
+            {
+                return false;
+            }
+
+            tour.ApprovalStatus = ApprovalStatus.Pending;
+            tour.PublishStatus = PublishStatus.Hidden;
+            tour.UpdatedAt = DateTime.UtcNow;
+            return true;
+        }
+
+        private async Task NotifyIfDemotedAsync(Tour tour, bool demoted)
+        {
+            if (!demoted)
+            {
+                return;
+            }
+
+            await _realtime.NotifyTourUpdatedAsync(tour.Id, tour.ApprovalStatus.ToString(), tour.PublishStatus.ToString());
+            var company = await _context.Companies.FindAsync(tour.CompanyId);
+            await NotifyAdminsOfPendingTourAsync(tour, company?.Name);
         }
 
         private static string? ValidateScheduleRange(Tour tour, DateTime startDate, DateTime endDate)
@@ -674,7 +898,7 @@ namespace TurTour.Controllers
         }
 
         [HttpPost("{id:guid}/images")]
-        [Authorize(Roles = "Admin,Organizator,Company")]
+        [Authorize(Roles = "Organizator,Company")]
         public async Task<IActionResult> AddImage(Guid id, CreateTourImageRequest request)
         {
             var tour = await _context.Tours.FirstOrDefaultAsync(t => t.Id == id);

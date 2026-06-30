@@ -37,6 +37,7 @@ namespace TurTour.Controllers
             var items = await _context.Registrations
                 .Where(r => r.StudentId == userId)
                 .Include(r => r.Tour)
+                .ThenInclude(t => t!.Company)
                 .Include(r => r.Payment)
                 .OrderByDescending(r => r.RegistrationDate)
                 .ToListAsync();
@@ -54,8 +55,10 @@ namespace TurTour.Controllers
             return Ok(items);
         }
 
+        // Quản lý đăng ký là việc vận hành tour của Company/Organizator — Admin không can thiệp,
+        // chỉ Duyệt/Từ chối/Huỷ tour ở ToursController.
         [HttpGet("tour/{tourId:guid}")]
-        [Authorize(Roles = "Admin,Organizator,Company")]
+        [Authorize(Roles = "Organizator,Company")]
         public async Task<IActionResult> GetByTour(Guid tourId)
         {
             var items = await _context.Registrations
@@ -84,13 +87,28 @@ namespace TurTour.Controllers
                 return NotFound(new { message = "Tour not found." });
             }
 
-            var effectiveStatus = ToursController.ComputeEffectiveStatus(tour);
-            if (effectiveStatus != TourStatus.Open)
+            var effectivePublish = ToursController.ComputeEffectivePublishStatus(tour);
+            if (effectivePublish != PublishStatus.Published)
             {
-                var message = effectiveStatus == TourStatus.Upcoming
-                    ? "Tour chưa mở đăng ký."
+                var message = effectivePublish == PublishStatus.Hidden
+                    ? "Tour chưa được duyệt hoặc chưa mở đăng ký."
                     : "Tour đã đóng đăng ký.";
                 return BadRequest(new { message });
+            }
+
+            // Published chỉ nghĩa là "xem được" — đăng ký được hay không còn phụ thuộc cửa sổ
+            // nhận đăng ký riêng (BookingOpenAt..BookingCloseAt), tách biệt khỏi PublishStatus.
+            // Dùng giờ VN (không phải UtcNow thật) vì các mốc thời gian của tour được lưu theo
+            // giờ địa phương — xem ToursController.VietnamNow.
+            var now = ToursController.VietnamNow;
+            if (now < tour.BookingOpenAt)
+            {
+                return BadRequest(new { message = $"Đăng ký mở từ {tour.BookingOpenAt:dd/MM/yyyy HH:mm}." });
+            }
+            if (now > tour.BookingCloseAt)
+            {
+                var stillRunning = now <= tour.EndDate;
+                return BadRequest(new { message = stillRunning ? "Tour đang diễn ra, đã đóng đăng ký." : "Đã đóng đăng ký." });
             }
 
             var existed = await _context.Registrations
@@ -121,8 +139,28 @@ namespace TurTour.Controllers
             };
 
             _context.Registrations.Add(registration);
+
+            Notification? organizerNotification = null;
+            if (tour.CreatedBy != Guid.Empty)
+            {
+                organizerNotification = new Notification
+                {
+                    UserId = tour.CreatedBy,
+                    Title = "Có đăng ký mới",
+                    Content = $"Có sinh viên vừa đăng ký tham gia tour \"{tour.Tittle}\".",
+                    Type = "Registration",
+                    TourId = tour.Id,
+                    IsRead = false
+                };
+                _context.Notifications.Add(organizerNotification);
+            }
+
             await _context.SaveChangesAsync();
 
+            if (organizerNotification != null)
+            {
+                await _realtime.NotifyUserAsync(organizerNotification);
+            }
             await _realtime.NotifyAdminBoardAsync(tour.Id, "new-registration");
 
             return Ok(registration);
@@ -234,6 +272,7 @@ namespace TurTour.Controllers
                 Title = "Sinh viên báo đã chuyển khoản",
                 Content = $"{registration.Student?.FullName ?? "Một sinh viên"} báo đã chuyển khoản cho tour \"{registration.Tour.Tittle}\". Vui lòng kiểm tra và xác nhận thanh toán.",
                 Type = "Payment",
+                TourId = registration.TourId,
                 IsRead = false
             };
 
@@ -246,8 +285,37 @@ namespace TurTour.Controllers
             return Ok(new { message = "Đã gửi thông báo cho doanh nghiệp/tổ chức." });
         }
 
+        // Doanh nghiệp (role Company) chỉ được duyệt/từ chối/hoàn thành đăng ký của tour
+        // thuộc chính công ty mình — Admin/Organizator không bị giới hạn theo công ty.
+        private async Task<IActionResult?> CheckTourOwnershipAsync(Tour? tour)
+        {
+            if (!User.IsInRole("Company"))
+            {
+                return null;
+            }
+
+            if (tour == null)
+            {
+                return BadRequest(new { message = "Tour data missing." });
+            }
+
+            var userId = CurrentUserHelper.GetUserId(User);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var ownCompany = await _context.Companies.FirstOrDefaultAsync(c => c.UserId == userId);
+            if (ownCompany == null || ownCompany.Id != tour.CompanyId)
+            {
+                return Forbid();
+            }
+
+            return null;
+        }
+
         [HttpPut("{id:guid}/approve")]
-        [Authorize(Roles = "Admin,Organizator")]
+        [Authorize(Roles = "Organizator,Company")]
         public async Task<IActionResult> Approve(Guid id)
         {
             var approverId = CurrentUserHelper.GetUserId(User);
@@ -267,6 +335,12 @@ namespace TurTour.Controllers
             if (registration.Tour == null)
             {
                 return BadRequest(new { message = "Tour data missing." });
+            }
+
+            var ownershipError = await CheckTourOwnershipAsync(registration.Tour);
+            if (ownershipError != null)
+            {
+                return ownershipError;
             }
 
             if (registration.Status == RegistrationStatus.Rejected || registration.Status == RegistrationStatus.Completed)
@@ -294,6 +368,7 @@ namespace TurTour.Controllers
                     Title = "Tour đã đầy chỗ",
                     Content = $"Tour \"{registration.Tour.Tittle}\" đã đủ số lượng. Đăng ký của bạn được chuyển vào danh sách chờ, bạn sẽ được duyệt tự động nếu có người hủy.",
                     Type = "Registration",
+                    TourId = registration.TourId,
                     IsRead = false
                 };
                 _context.Notifications.Add(waitlistNotification);
@@ -320,6 +395,7 @@ namespace TurTour.Controllers
                 Title = "Đăng ký tour đã được duyệt",
                 Content = $"Đăng ký tham gia tour \"{registration.Tour.Tittle}\" của bạn đã được duyệt.",
                 Type = "Registration",
+                TourId = registration.TourId,
                 IsRead = false
             };
             _context.Notifications.Add(approvedNotification);
@@ -333,7 +409,7 @@ namespace TurTour.Controllers
         }
 
         [HttpPut("{id:guid}/reject")]
-        [Authorize(Roles = "Admin,Organizator")]
+        [Authorize(Roles = "Organizator,Company")]
         public async Task<IActionResult> Reject(Guid id, RejectRegistrationRequest request)
         {
             var approverId = CurrentUserHelper.GetUserId(User);
@@ -348,6 +424,12 @@ namespace TurTour.Controllers
             if (registration == null)
             {
                 return NotFound();
+            }
+
+            var ownershipError = await CheckTourOwnershipAsync(registration.Tour);
+            if (ownershipError != null)
+            {
+                return ownershipError;
             }
 
             if (registration.Status == RegistrationStatus.Paid ||
@@ -379,6 +461,7 @@ namespace TurTour.Controllers
                 Title = "Đăng ký tour bị từ chối",
                 Content = $"Đăng ký tham gia tour \"{registration.Tour?.Tittle}\" của bạn đã bị từ chối. Lý do: {request.Reason}",
                 Type = "Registration",
+                TourId = registration.TourId,
                 IsRead = false
             };
             _context.Notifications.Add(rejectedNotification);
@@ -425,6 +508,7 @@ namespace TurTour.Controllers
                 Title = "Bạn đã được duyệt từ danh sách chờ",
                 Content = $"Đã có chỗ trống cho tour \"{tour.Tittle}\". Đăng ký của bạn được tự động duyệt từ danh sách chờ.",
                 Type = "Registration",
+                TourId = tour.Id,
                 IsRead = false
             };
             _context.Notifications.Add(notification);
@@ -432,13 +516,21 @@ namespace TurTour.Controllers
         }
 
         [HttpPut("{id:guid}/complete")]
-        [Authorize(Roles = "Admin,Organizator")]
+        [Authorize(Roles = "Organizator,Company")]
         public async Task<IActionResult> Complete(Guid id)
         {
-            var registration = await _context.Registrations.FindAsync(id);
+            var registration = await _context.Registrations
+                .Include(r => r.Tour)
+                .FirstOrDefaultAsync(r => r.Id == id);
             if (registration == null)
             {
                 return NotFound();
+            }
+
+            var ownershipError = await CheckTourOwnershipAsync(registration.Tour);
+            if (ownershipError != null)
+            {
+                return ownershipError;
             }
 
             if (registration.Status != RegistrationStatus.CheckedIn)

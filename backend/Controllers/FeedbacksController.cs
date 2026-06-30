@@ -50,7 +50,10 @@ namespace TurTour.Controllers
                 return BadRequest(new { message = "Chỉ có thể đánh giá sau khi đã thanh toán tour." });
             }
 
-            if (registration.Tour == null || registration.Tour.Status != TourStatus.Completed)
+            // Dùng RegistrationStatus.Completed (đánh dấu riêng cho từng lượt đăng ký, qua
+            // CompleteRegistration) thay vì tour.Status cũ — chính xác hơn vì không gộp lẫn
+            // với tour bị huỷ (giờ cùng PublishStatus.Archived với tour hoàn thành thật).
+            if (registration.Status != RegistrationStatus.Completed)
             {
                 return BadRequest(new { message = "Chỉ có thể đánh giá khi tour đã hoàn thành." });
             }
