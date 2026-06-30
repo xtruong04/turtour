@@ -22,13 +22,25 @@ namespace TurTour.Controllers
         }
 
         [HttpPost("generate/{registrationId:guid}")]
-        [Authorize(Roles = "Admin,Organizator")]
+        [Authorize(Roles = "Admin,Organizator,Company")]
         public async Task<IActionResult> Generate(Guid registrationId)
         {
-            var registration = await _context.Registrations.FindAsync(registrationId);
+            var registration = await _context.Registrations
+                .Include(r => r.Tour)
+                .FirstOrDefaultAsync(r => r.Id == registrationId);
             if (registration == null)
             {
                 return NotFound(new { message = "Registration not found." });
+            }
+
+            if (User.IsInRole("Company"))
+            {
+                var userId = CurrentUserHelper.GetUserId(User);
+                var ownCompany = userId == null ? null : await _context.Companies.FirstOrDefaultAsync(c => c.UserId == userId);
+                if (ownCompany == null || registration.Tour == null || ownCompany.Id != registration.Tour.CompanyId)
+                {
+                    return Forbid();
+                }
             }
 
             if (registration.Status != RegistrationStatus.Paid && registration.Status != RegistrationStatus.Approved)
@@ -43,7 +55,7 @@ namespace TurTour.Controllers
         }
 
         [HttpPost("scan")]
-        [Authorize(Roles = "Admin,Organizator")]
+        [Authorize(Roles = "Admin,Organizator,Company")]
         public async Task<IActionResult> Scan(ScanQrRequest request)
         {
             var userId = CurrentUserHelper.GetUserId(User);

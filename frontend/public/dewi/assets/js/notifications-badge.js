@@ -1,5 +1,5 @@
 (function () {
-  var API_BASE = 'https://turtour-production.up.railway.app/api';
+  var API_BASE = window.TURTOUR_API_BASE;
 
   function fmtDate(dateStr) {
     if (!dateStr) return '';
@@ -9,6 +9,16 @@
 
   function iconForType(type) {
     return type === 'Payment' ? 'bi-cash-coin' : 'bi-bell-fill';
+  }
+
+  // "Tour" = tour mình quan tâm vừa mở đăng ký -> đi tới trang chi tiết tour đó.
+  // "Registration"/"Payment" = liên quan đăng ký của chính mình -> đi tới "Tour của tôi".
+  function linkForNotification(n) {
+    if (!n) return null;
+    if (n.type === 'Tour') {
+      return n.tourId ? 'tour-details.html?id=' + n.tourId : null;
+    }
+    return 'my-tours.html';
   }
 
   function init() {
@@ -55,8 +65,15 @@
 
       listEl.querySelectorAll('[data-notif-id]').forEach(function (el) {
         el.addEventListener('click', function () {
-          if (!el.classList.contains('unread')) return;
           var id = el.getAttribute('data-notif-id');
+          var notif = currentNotifications.find(function (n) { return n.id === id; });
+          var link = linkForNotification(notif);
+
+          if (!el.classList.contains('unread')) {
+            if (link) window.location.href = link;
+            return;
+          }
+
           fetch(API_BASE + '/notifications/' + id + '/read', {
             method: 'PUT',
             headers: { Authorization: 'Bearer ' + session.token }
@@ -73,7 +90,10 @@
                 return n.id === id ? Object.assign({}, n, { isRead: true }) : n;
               });
             })
-            .catch(function () {});
+            .catch(function () {})
+            .finally(function () {
+              if (link) window.location.href = link;
+            });
         });
       });
     }

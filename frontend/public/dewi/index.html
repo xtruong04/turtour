@@ -1,12 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE html>
+<html lang="vi">
 
 <head>
+  <script src="assets/js/env-config.js"></script>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>TurTour - User Portal</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
+  <title>TurTour - Nền tảng đăng ký tour tham quan doanh nghiệp</title>
+  <meta name="description" content="TurTour kết nối sinh viên với các doanh nghiệp tổ chức tour tham quan thực tế.">
+  <meta name="keywords" content="turtour, tour, doanh nghiệp, sinh viên, tham quan">
 
   <!-- Favicons -->
   <link href="assets/img/favicon.png" rel="icon">
@@ -51,11 +52,11 @@
         <ul>
           <li><a href="#hero" class="active">Trang chủ</a></li>
           <li><a href="#about">Giới thiệu</a></li>
-          <li><a href="#services">Dịch vụ</a></li>
+          <li><a href="#services">Cách hoạt động</a></li>
           <li><a href="#portfolio">Tour</a></li>
           <li><a href="#team">Đối tác</a></li>
-          <!-- <li><a href="/auth/sign-in" target="_top">Đăng nhập</a></li> -->
-          <li><a href="#contact">Contact</a></li>
+          <li><a href="team.html">Đội ngũ</a></li>
+          <li><a href="#contact">Liên hệ</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
@@ -83,12 +84,13 @@
           <i class="bi bi-person-circle"></i>
           <span id="auth-profile-name" class="auth-profile-name"></span>
         </a>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="profile.html">Hồ sơ của tôi</a></li>
-          <li id="auth-mytours-item" style="display:none;"><a class="dropdown-item" href="my-tours.html">Tour của tôi</a></li>
-          <li><a class="dropdown-item" href="notifications.html">Thông báo</a></li>
-          <li id="auth-dashboard-item" style="display:none;"><a class="dropdown-item" href="/admin/dashboard" target="_top">Trang quản trị</a></li>
-          <li><button type="button" class="dropdown-item" id="auth-logout-btn">Đăng xuất</button></li>
+        <ul class="dropdown-menu dropdown-menu-end auth-profile-menu">
+          <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person"></i>Hồ sơ của tôi</a></li>
+          <li id="auth-mytours-item" style="display:none;"><a class="dropdown-item" href="my-tours.html"><i class="bi bi-calendar-check"></i>Tour của tôi</a></li>
+          <li><a class="dropdown-item" href="notifications.html"><i class="bi bi-bell"></i>Thông báo</a></li>
+          <li id="auth-dashboard-item" style="display:none;"><a class="dropdown-item" href="/admin/dashboard" target="_top"><i class="bi bi-speedometer2"></i>Trang quản trị</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><button type="button" class="dropdown-item logout-item" id="auth-logout-btn"><i class="bi bi-box-arrow-right"></i>Đăng xuất</button></li>
         </ul>
       </div>
 
@@ -120,30 +122,27 @@
 
         <div class="row gy-4">
           <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-            <h3>Voluptatem dignissimos provident laboris nisi ut aliquip ex ea commodo</h3>
+            <h3>TurTour là gì?</h3>
             <img src="assets/img/about.jpg" class="img-fluid rounded-4 mb-4" alt="">
-            <p>Ut fugiat ut sunt quia veniam. Voluptate perferendis perspiciatis quod nisi et. Placeat debitis quia recusandae odit et consequatur voluptatem. Dignissimos pariatur consectetur fugiat voluptas ea.</p>
-            <p>Temporibus nihil enim deserunt sed ea. Provident sit expedita aut cupiditate nihil vitae quo officia vel. Blanditiis eligendi possimus et in cum. Quidem eos ut sint rem veniam qui. Ut ut repellendus nobis tempore doloribus debitis explicabo similique sit. Accusantium sed ut omnis beatae neque deleniti repellendus.</p>
+            <p>TurTour là nền tảng kết nối sinh viên với các doanh nghiệp tổ chức tour tham quan thực tế, giúp sinh viên có cơ hội tìm hiểu quy trình vận hành và môi trường làm việc ngay tại doanh nghiệp.</p>
+            <p>Thay vì tìm kiếm thông tin tour rải rác qua nhiều kênh, sinh viên có thể xem toàn bộ danh sách tour đang mở đăng ký, theo dõi lịch trình chi tiết và đăng ký tham gia chỉ trong vài bước trên cùng một nền tảng.</p>
           </div>
           <div class="col-lg-6" data-aos="fade-up" data-aos-delay="250">
             <div class="content ps-0 ps-lg-5">
               <p class="fst-italic">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                magna aliqua.
+                Đăng ký tour minh bạch, theo dõi trạng thái rõ ràng, nhận thông báo ngay khi có thay đổi.
               </p>
               <ul>
-                <li><i class="bi bi-check-circle-fill"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-                <li><i class="bi bi-check-circle-fill"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-                <li><i class="bi bi-check-circle-fill"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Tìm và lọc tour theo doanh nghiệp, trạng thái đăng ký và thời gian diễn ra.</span></li>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Đăng ký tham gia trực tuyến, theo dõi trạng thái duyệt hoặc danh sách chờ theo thời gian thực.</span></li>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Nhận thông báo tức thời khi tour mở đăng ký, được duyệt hoặc có thay đổi lịch trình.</span></li>
               </ul>
               <p>
-                Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident
+                Toàn bộ quy trình — từ tìm tour, đăng ký, đến nhận thông báo — đều được thực hiện ngay trên nền tảng, giúp sinh viên chủ động hơn trong việc lựa chọn trải nghiệm thực tế phù hợp.
               </p>
 
               <div class="position-relative mt-4">
                 <img src="assets/img/about-2.jpg" class="img-fluid rounded-4" alt="">
-                <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a>
               </div>
             </div>
           </div>
@@ -162,40 +161,40 @@
 
           <div class="col-lg-3 col-md-6">
             <div class="stats-item d-flex align-items-center w-100 h-100">
-              <i class="bi bi-emoji-smile color-blue flex-shrink-0"></i>
+              <i class="bi bi-search color-blue flex-shrink-0"></i>
               <div>
-                <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
-                <p>Happy Clients</p>
+                <p class="mb-0 fw-bold">Tìm tour dễ dàng</p>
+                <p>Lọc theo doanh nghiệp, trạng thái và thời gian diễn ra</p>
               </div>
             </div>
           </div><!-- End Stats Item -->
 
           <div class="col-lg-3 col-md-6">
             <div class="stats-item d-flex align-items-center w-100 h-100">
-              <i class="bi bi-journal-richtext color-orange flex-shrink-0"></i>
+              <i class="bi bi-send-check color-orange flex-shrink-0"></i>
               <div>
-                <span data-purecounter-start="0" data-purecounter-end="521" data-purecounter-duration="1" class="purecounter"></span>
-                <p>Projects</p>
+                <p class="mb-0 fw-bold">Đăng ký nhanh chóng</p>
+                <p>Gửi đăng ký và theo dõi trạng thái duyệt ngay trên hệ thống</p>
               </div>
             </div>
           </div><!-- End Stats Item -->
 
           <div class="col-lg-3 col-md-6">
             <div class="stats-item d-flex align-items-center w-100 h-100">
-              <i class="bi bi-headset color-green flex-shrink-0"></i>
+              <i class="bi bi-bell color-green flex-shrink-0"></i>
               <div>
-                <span data-purecounter-start="0" data-purecounter-end="1463" data-purecounter-duration="1" class="purecounter"></span>
-                <p>Hours Of Support</p>
+                <p class="mb-0 fw-bold">Thông báo tức thời</p>
+                <p>Cập nhật ngay khi tour mở đăng ký hoặc thay đổi lịch trình</p>
               </div>
             </div>
           </div><!-- End Stats Item -->
 
           <div class="col-lg-3 col-md-6">
             <div class="stats-item d-flex align-items-center w-100 h-100">
-              <i class="bi bi-people color-pink flex-shrink-0"></i>
+              <i class="bi bi-building color-pink flex-shrink-0"></i>
               <div>
-                <span data-purecounter-start="0" data-purecounter-end="15" data-purecounter-duration="1" class="purecounter"></span>
-                <p>Hard Workers</p>
+                <p class="mb-0 fw-bold">Doanh nghiệp uy tín</p>
+                <p>Hợp tác cùng các doanh nghiệp đã xác thực trên hệ thống</p>
               </div>
             </div>
           </div><!-- End Stats Item -->
@@ -211,8 +210,8 @@
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
-        <h2>Services</h2>
-        <p>Featured Srvices<br></p>
+        <h2>Cách thức hoạt động</h2>
+        <p>Ba bước để tham gia một tour tham quan doanh nghiệp<br></p>
       </div><!-- End Section Title -->
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -226,12 +225,10 @@
               </div>
               <div class="details position-relative">
                 <div class="icon">
-                  <i class="bi bi-activity"></i>
+                  <i class="bi bi-search"></i>
                 </div>
-                <a href="service-details.html" class="stretched-link">
-                  <h3>Nesciunt Mete</h3>
-                </a>
-                <p>Provident nihil minus qui consequatur non omnis maiores. Eos accusantium minus dolores iure perferendis.</p>
+                <h3>1. Tìm tour phù hợp</h3>
+                <p>Duyệt qua danh sách tour theo doanh nghiệp, địa điểm, thời gian diễn ra và mức phí tham gia.</p>
               </div>
             </div>
           </div><!-- End Service Item -->
@@ -243,12 +240,10 @@
               </div>
               <div class="details position-relative">
                 <div class="icon">
-                  <i class="bi bi-broadcast"></i>
+                  <i class="bi bi-send-fill"></i>
                 </div>
-                <a href="service-details.html" class="stretched-link">
-                  <h3>Eosle Commodi</h3>
-                </a>
-                <p>Ut autem aut autem non a. Sint sint sit facilis nam iusto sint. Libero corrupti neque eum hic non ut nesciunt dolorem.</p>
+                <h3>2. Đăng ký tham gia</h3>
+                <p>Gửi yêu cầu đăng ký chỉ với một cú nhấp, theo dõi trạng thái chờ duyệt hoặc danh sách chờ.</p>
               </div>
             </div>
           </div><!-- End Service Item -->
@@ -260,12 +255,10 @@
               </div>
               <div class="details position-relative">
                 <div class="icon">
-                  <i class="bi bi-easel"></i>
+                  <i class="bi bi-emoji-smile"></i>
                 </div>
-                <a href="service-details.html" class="stretched-link">
-                  <h3>Ledo Markt</h3>
-                </a>
-                <p>Ut excepturi voluptatem nisi sed. Quidem fuga consequatur. Minus ea aut. Vel qui id voluptas adipisci eos earum corrupti.</p>
+                <h3>3. Tham gia &amp; trải nghiệm</h3>
+                <p>Check-in tại điểm hẹn, tham quan thực tế theo lịch trình và nhận thông báo trong suốt chuyến đi.</p>
               </div>
             </div>
           </div><!-- End Service Item -->
@@ -275,299 +268,6 @@
       </div>
 
     </section><!-- /Services Section -->
-
-    <!-- Clients Section -->
-    <section id="clients" class="clients section light-background">
-
-      <div class="container" data-aos="fade-up">
-
-        <div class="row gy-4">
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="assets/img/clients/client-1.png" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="assets/img/clients/client-2.png" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="assets/img/clients/client-3.png" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="assets/img/clients/client-4.png" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="assets/img/clients/client-5.png" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="assets/img/clients/client-6.png" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-        </div>
-
-      </div>
-
-    </section><!-- /Clients Section -->
-
-    <!-- Features Section -->
-    <section id="features" class="features section">
-
-      <div class="container">
-
-        <ul class="nav nav-tabs row  d-flex" data-aos="fade-up" data-aos-delay="100">
-          <li class="nav-item col-3">
-            <a class="nav-link active show" data-bs-toggle="tab" data-bs-target="#features-tab-1">
-              <i class="bi bi-binoculars"></i>
-              <h4 class="d-none d-lg-block">Modi sit est dela pireda nest</h4>
-            </a>
-          </li>
-          <li class="nav-item col-3">
-            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#features-tab-2">
-              <i class="bi bi-box-seam"></i>
-              <h4 class="d-none d-lg-block">Unde praesenti mara setra le</h4>
-            </a>
-          </li>
-          <li class="nav-item col-3">
-            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#features-tab-3">
-              <i class="bi bi-brightness-high"></i>
-              <h4 class="d-none d-lg-block">Pariatur explica nitro dela</h4>
-            </a>
-          </li>
-          <li class="nav-item col-3">
-            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#features-tab-4">
-              <i class="bi bi-command"></i>
-              <h4 class="d-none d-lg-block">Nostrum qui dile node</h4>
-            </a>
-          </li>
-        </ul><!-- End Tab Nav -->
-
-        <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
-
-          <div class="tab-pane fade active show" id="features-tab-1">
-            <div class="row">
-              <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
-                <h3>Voluptatem dignissimos provident quasi corporis voluptates sit assumenda.</h3>
-                <p class="fst-italic">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                  magna aliqua.
-                </p>
-                <ul>
-                  <li><i class="bi bi-check2-all"></i>
-                    <spab>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</spab>
-                  </li>
-                  <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit</span>.</li>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
-                </ul>
-                <p>
-                  Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                  culpa qui officia deserunt mollit anim id est laborum
-                </p>
-              </div>
-              <div class="col-lg-6 order-1 order-lg-2 text-center">
-                <img src="assets/img/working-1.jpg" alt="" class="img-fluid">
-              </div>
-            </div>
-          </div><!-- End Tab Content Item -->
-
-          <div class="tab-pane fade" id="features-tab-2">
-            <div class="row">
-              <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
-                <h3>Neque exercitationem debitis soluta quos debitis quo mollitia officia est</h3>
-                <p>
-                  Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                  culpa qui officia deserunt mollit anim id est laborum
-                </p>
-                <p class="fst-italic">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                  magna aliqua.
-                </p>
-                <ul>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Provident mollitia neque rerum asperiores dolores quos qui a. Ipsum neque dolor voluptate nisi sed.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
-                </ul>
-              </div>
-              <div class="col-lg-6 order-1 order-lg-2 text-center">
-                <img src="assets/img/working-2.jpg" alt="" class="img-fluid">
-              </div>
-            </div>
-          </div><!-- End Tab Content Item -->
-
-          <div class="tab-pane fade" id="features-tab-3">
-            <div class="row">
-              <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
-                <h3>Voluptatibus commodi ut accusamus ea repudiandae ut autem dolor ut assumenda</h3>
-                <p>
-                  Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                  culpa qui officia deserunt mollit anim id est laborum
-                </p>
-                <ul>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Provident mollitia neque rerum asperiores dolores quos qui a. Ipsum neque dolor voluptate nisi sed.</span></li>
-                </ul>
-                <p class="fst-italic">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                  magna aliqua.
-                </p>
-              </div>
-              <div class="col-lg-6 order-1 order-lg-2 text-center">
-                <img src="assets/img/working-3.jpg" alt="" class="img-fluid">
-              </div>
-            </div>
-          </div><!-- End Tab Content Item -->
-
-          <div class="tab-pane fade" id="features-tab-4">
-            <div class="row">
-              <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
-                <h3>Omnis fugiat ea explicabo sunt dolorum asperiores sequi inventore rerum</h3>
-                <p>
-                  Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                  culpa qui officia deserunt mollit anim id est laborum
-                </p>
-                <p class="fst-italic">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                  magna aliqua.
-                </p>
-                <ul>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
-                </ul>
-              </div>
-              <div class="col-lg-6 order-1 order-lg-2 text-center">
-                <img src="assets/img/working-4.jpg" alt="" class="img-fluid">
-              </div>
-            </div>
-          </div><!-- End Tab Content Item -->
-
-        </div>
-
-      </div>
-
-    </section><!-- /Features Section -->
-
-    <!-- Testimonials Section -->
-    <section id="testimonials" class="testimonials section dark-background">
-
-      <img src="assets/img/testimonials-bg.jpg" class="testimonials-bg" alt="">
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="swiper init-swiper">
-          <script type="application/json" class="swiper-config">
-            {
-              "loop": true,
-              "speed": 600,
-              "autoplay": {
-                "delay": 5000
-              },
-              "slidesPerView": "auto",
-              "pagination": {
-                "el": ".swiper-pagination",
-                "type": "bullets",
-                "clickable": true
-              }
-            }
-          </script>
-          <div class="swiper-wrapper">
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="assets/img/testimonials/testimonials-1.jpg" class="testimonial-img" alt="">
-                <h3>Saul Goodman</h3>
-                <h4>Ceo &amp; Founder</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!-- End testimonial item -->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="assets/img/testimonials/testimonials-2.jpg" class="testimonial-img" alt="">
-                <h3>Sara Wilsson</h3>
-                <h4>Designer</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!-- End testimonial item -->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="assets/img/testimonials/testimonials-3.jpg" class="testimonial-img" alt="">
-                <h3>Jena Karlis</h3>
-                <h4>Store Owner</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!-- End testimonial item -->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="assets/img/testimonials/testimonials-4.jpg" class="testimonial-img" alt="">
-                <h3>Matt Brandon</h3>
-                <h4>Freelancer</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat minim velit minim dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!-- End testimonial item -->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="assets/img/testimonials/testimonials-5.jpg" class="testimonial-img" alt="">
-                <h3>John Larson</h3>
-                <h4>Entrepreneur</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam enim culpa labore duis sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!-- End testimonial item -->
-
-          </div>
-          <div class="swiper-pagination"></div>
-        </div>
-
-      </div>
-
-    </section><!-- /Testimonials Section -->
 
     <!-- Tours Section -->
     <section id="portfolio" class="portfolio section">
@@ -613,14 +313,12 @@
           box-shadow: 0 2px 8px rgba(0,0,0,0.3);
           text-shadow: 0 1px 1px rgba(0,0,0,0.2);
         }
-        /* Bảng màu theo chuẩn Bootstrap (primary/success/warning/danger/secondary) */
-        .tc-status.pendingapproval { background: #A18F7A; }
-        .tc-status.upcoming  { background: #0d6efd; }
-        .tc-status.open      { background: #198754; }
-        .tc-status.ongoing   { background: #198754; }
-        .tc-status.closed    { background: #ffc107; color: #212529; text-shadow: none; }
-        .tc-status.completed { background: #6c757d; }
-        .tc-status.cancelled { background: #dc3545; }
+        /* Bảng màu theo chuẩn Bootstrap (primary/success/warning/danger/secondary) — dùng
+           publishStatus (Published/Expired/Archived) thay cho status cũ (Upcoming/Open/...). */
+        .tc-status.hidden    { background: #A18F7A; }
+        .tc-status.published { background: #198754; }
+        .tc-status.expired   { background: #ffc107; color: #212529; text-shadow: none; }
+        .tc-status.archived  { background: #6c757d; }
         .tour-card .tc-body {
           padding: 20px;
           flex: 1;
@@ -634,7 +332,8 @@
           color: #1a1a2e;
           margin: 0;
           display: -webkit-box;
-          -webkit-line-clamp: 2;
+          line-clamp: 2;          /* Thuộc tính chuẩn */
+          -webkit-line-clamp: 2;  /* Hỗ trợ trình duyệt hiện tại */
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
@@ -756,11 +455,8 @@
           <div class="col-md-3 col-6">
             <select id="tour-filter-status" class="form-select">
               <option value="">Tất cả trạng thái</option>
-              <option value="upcoming">Sắp diễn ra</option>
-              <option value="open">Mở đăng ký</option>
-              <option value="closed">Đã đóng</option>
-              <option value="cancelled">Đã hủy</option>
-              <option value="completed">Đã kết thúc</option>
+              <option value="published">Mở đăng ký</option>
+              <option value="expired">Đã đóng</option>
             </select>
           </div>
           <div class="col-md-3 col-6">
@@ -801,7 +497,8 @@
 
     <script>
     (function () {
-      var API = 'https://turtour-production.up.railway.app/api/tours';
+      var API_BASE = window.TURTOUR_API_BASE;
+      var API = API_BASE + '/tours';
 
       function getSession() {
         try {
@@ -828,16 +525,30 @@
         return d.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
       }
 
+      // 4 giai đoạn của cửa sổ nhận đăng ký — tách biệt khỏi publishStatus (chỉ quyết định
+      // tour có hiển thị hay không, không quyết định đăng ký được hay không).
+      function getBookingPhase(tour) {
+        var now = new Date();
+        var start = tour.startDate ? new Date(tour.startDate) : null;
+        var end = tour.endDate ? new Date(tour.endDate) : null;
+        if (start && end && now >= start && now <= end) return 'ongoing';
+
+        var openAt = tour.bookingOpenAt ? new Date(tour.bookingOpenAt) : null;
+        if (openAt && now < openAt) return 'before-open';
+
+        var closeAt = tour.bookingCloseAt ? new Date(tour.bookingCloseAt) : null;
+        if (closeAt && now > closeAt) return 'after-close';
+
+        return 'open';
+      }
+
       function statusLabel(s) {
         if (!s) return '';
         switch (s.toLowerCase()) {
-          case 'pendingapproval': return 'Chờ duyệt';
-          case 'upcoming':  return 'Sắp diễn ra';
-          case 'open':      return 'Mở đăng ký';
-          case 'ongoing':   return 'Đang diễn ra';
-          case 'closed':    return 'Đã đóng';
-          case 'completed': return 'Đã kết thúc';
-          case 'cancelled': return 'Đã hủy';
+          case 'published': return 'Mở đăng ký';
+          case 'expired':   return 'Đã đóng';
+          case 'archived':  return 'Đã hủy/Lưu trữ';
+          case 'hidden':    return 'Chờ duyệt';
           default: return s;
         }
       }
@@ -928,7 +639,7 @@
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Đang xử lý...';
 
-        fetch('https://turtour-production.up.railway.app/api/registrations', {
+        fetch(API_BASE + '/registrations', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -960,7 +671,7 @@
 
       function renderCard(tour) {
         var imgUrl = thumbnail(tour);
-        var status = (tour.status || '').toLowerCase();
+        var status = (tour.publishStatus || '').toLowerCase();
         var p = priceText(tour.fee);
         var company = (tour.company && tour.company.name) ? tour.company.name : '';
         var loc = tour.location || '';
@@ -971,39 +682,41 @@
             + '<div class="tc-placeholder" style="display:none; width: 100%; height: 100%; align-items: center; justify-content: center; background: linear-gradient(135deg,#e8f4fd,#d1ecf1); color: #5bc0de; font-size: 3rem;"><i class="bi bi-image"></i></div>'
           : '<div class="tc-placeholder"><i class="bi bi-image"></i></div>';
 
-        // Chỉ cho đăng ký khi tour đang ở trạng thái "Mở đăng ký". Tour "Sắp diễn ra" thì cho
-        // sinh viên đánh dấu "Quan tâm" để được báo khi tour đó mở đăng ký.
-        var btnHtml;
-        if (status === 'upcoming') {
-          var interested = !!tour.isInterested;
-          btnHtml = '<div class="d-flex gap-2 mt-3">'
-            + '<a href="tour-details.html?id=' + tour.id + '" class="btn-detail"><i class="bi bi-info-circle"></i> Chi tiết</a>'
-            + '<button class="btn-register" onclick="toggleInterest(\'' + tour.id + '\', this)" data-interested="' + interested + '">'
-            + '<i class="bi ' + (interested ? 'bi-heart-fill' : 'bi-heart') + '"></i> ' + (interested ? 'Đã quan tâm' : 'Quan tâm')
-            + '</button>'
-            + '</div>';
-        } else {
-          var canRegisterStatus = status === 'open';
-          var btnText = 'Đăng ký ngay';
-          if (status === 'completed') btnText = 'Đã kết thúc';
-          else if (status === 'cancelled') btnText = 'Đã hủy';
-          else if (status === 'closed') btnText = 'Đã đóng';
-          else if (status === 'pendingapproval') btnText = 'Chờ duyệt';
-
-          btnHtml = '<div class="d-flex gap-2 mt-3">'
-            + '<a href="tour-details.html?id=' + tour.id + '" class="btn-detail"><i class="bi bi-info-circle"></i> Chi tiết</a>'
-            + '<button class="btn-register" onclick="registerTour(\'' + tour.id + '\', this)"'
-            + (canRegisterStatus ? '' : ' disabled') + '>'
-            + '<i class="bi bi-send-fill"></i> ' + btnText
-            + '</button>'
-            + '</div>';
+        // Published chỉ nghĩa là "xem được" — đăng ký được hay không còn tùy cửa sổ riêng
+        // (bookingOpenAt..bookingCloseAt), và việc tour đang diễn ra (start..end) luôn chặn đăng ký
+        // dù còn trong cửa sổ hay không.
+        var canRegisterStatus = false;
+        var btnText = 'Đăng ký ngay';
+        if (status === 'expired') {
+          btnText = 'Đã đóng';
+        } else if (status === 'archived') {
+          btnText = 'Đã hủy';
+        } else if (status === 'published') {
+          var phase = getBookingPhase(tour);
+          if (phase === 'open') {
+            canRegisterStatus = true;
+          } else if (phase === 'before-open') {
+            btnText = 'Đăng ký mở từ ' + fmtDateTime(tour.bookingOpenAt);
+          } else if (phase === 'ongoing') {
+            btnText = 'Tour đang diễn ra';
+          } else {
+            btnText = 'Đã đóng đăng ký';
+          }
         }
+
+        var btnHtml = '<div class="d-flex gap-2 mt-3">'
+          + '<a href="tour-details.html?id=' + tour.id + '" class="btn-detail"><i class="bi bi-info-circle"></i> Chi tiết</a>'
+          + '<button class="btn-register" onclick="registerTour(\'' + tour.id + '\', this)"'
+          + (canRegisterStatus ? '' : ' disabled') + '>'
+          + '<i class="bi bi-send-fill"></i> ' + btnText
+          + '</button>'
+          + '</div>';
 
         return '<div class="col-xl-4 col-md-6">'
           + '<div class="tour-card">'
             + '<div class="tc-thumb">'
               + thumbHtml
-              + '<span class="tc-status ' + status + '">' + statusLabel(tour.status) + '</span>'
+              + '<span class="tc-status ' + status + '">' + statusLabel(tour.publishStatus) + '</span>'
             + '</div>'
             + '<div class="tc-body">'
               + '<h4 class="tc-title">' + title + '</h4>'
@@ -1039,7 +752,7 @@
             var company = (tour.company && tour.company.name ? tour.company.name : '').toLowerCase();
             if (title.indexOf(term) === -1 && company.indexOf(term) === -1) return false;
           }
-          if (statusVal && (tour.status || '').toLowerCase() !== statusVal) return false;
+          if (statusVal && (tour.publishStatus || '').toLowerCase() !== statusVal) return false;
           if (companyVal && (!tour.company || tour.company.name !== companyVal)) return false;
           return true;
         });
@@ -1088,11 +801,15 @@
         })
         .then(function(tours) {
           document.getElementById('tours-loading').style.display = 'none';
-          if (!Array.isArray(tours) || tours.length === 0) {
+          // Tour đã hủy/lưu trữ không hiển thị ở trang public — chỉ admin/đối tác quản lý mới cần thấy.
+          var visibleTours = (Array.isArray(tours) ? tours : []).filter(function (t) {
+            return (t.publishStatus || '').toLowerCase() !== 'archived';
+          });
+          if (visibleTours.length === 0) {
             document.getElementById('tours-empty').style.display = 'block';
             return;
           }
-          allTours = tours;
+          allTours = visibleTours;
           document.getElementById('tours-filter-bar').style.display = '';
           populateCompanyFilter();
           applyFilters();
@@ -1108,9 +825,14 @@
       if (window.TurTourRealtime) {
         window.TurTourRealtime.onTourUpdated(function (payload) {
           if (!payload) return;
+          if ((payload.publishStatus || '').toLowerCase() === 'archived') {
+            allTours = allTours.filter(function (t) { return t.id !== payload.tourId; });
+            applyFilters();
+            return;
+          }
           var tour = allTours.find(function (t) { return t.id === payload.tourId; });
           if (tour) {
-            tour.status = payload.status;
+            tour.publishStatus = payload.publishStatus;
             applyFilters();
           }
         });
@@ -1118,80 +840,104 @@
     })();
     </script>
 
-    <!-- Team Section -->
+    <!-- Partners Section -->
     <section id="team" class="team section light-background">
+
+      <style>
+        .partner-card {
+          background: #fff;
+          border-radius: 12px;
+          padding: 24px 20px;
+          text-align: center;
+          box-shadow: 0 4px 16px rgba(0,0,0,.06);
+          height: 100%;
+        }
+        .partner-logo {
+          width: 84px; height: 84px;
+          margin: 0 auto 14px;
+          border-radius: 50%;
+          overflow: hidden;
+          display: flex; align-items: center; justify-content: center;
+          background: linear-gradient(135deg,#e8f4fd,#d1ecf1);
+          color: #5bc0de;
+          font-size: 2rem;
+        }
+        .partner-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .partner-card h4 { font-size: 1rem; font-weight: 700; margin: 0 0 4px; color: #1a1a2e; }
+        .partner-card span { font-size: .82rem; color: #888; }
+        #partners-loading, #partners-empty { text-align: center; padding: 30px 20px; color: #888; }
+      </style>
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
-        <h2>Team</h2>
-        <p>CHECK OUR TEAM</p>
+        <h2>Đối tác</h2>
+        <p>DOANH NGHIỆP ĐỒNG HÀNH CÙNG TURTOUR</p>
       </div><!-- End Section Title -->
 
       <div class="container">
 
-        <div class="row gy-5">
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-            <div class="member">
-              <div class="pic"><img src="assets/img/team/team-1.jpg" class="img-fluid" alt=""></div>
-              <div class="member-info">
-                <h4>Walter White</h4>
-                <span>Chief Executive Officer</span>
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <div class="member">
-              <div class="pic"><img src="assets/img/team/team-2.jpg" class="img-fluid" alt=""></div>
-              <div class="member-info">
-                <h4>Sarah Jhonson</h4>
-                <span>Product Manager</span>
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <div class="member">
-              <div class="pic"><img src="assets/img/team/team-3.jpg" class="img-fluid" alt=""></div>
-              <div class="member-info">
-                <h4>William Anderson</h4>
-                <span>CTO</span>
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
+        <div id="partners-loading">
+          <div class="spinner-border text-primary mb-2" role="status"></div>
+          <p>Đang tải danh sách đối tác…</p>
         </div>
+
+        <div id="partners-empty" style="display:none;">
+          <p>Hiện chưa có doanh nghiệp đối tác nào được công bố.</p>
+        </div>
+
+        <div id="partners-grid" class="row gy-4" style="display:none;" data-aos="fade-up" data-aos-delay="100"></div>
 
       </div>
 
-    </section><!-- /Team Section -->
+      <script>
+      (function () {
+        var API_BASE = window.TURTOUR_API_BASE;
+
+        function renderPartner(c) {
+          var logo = c.logoUrl
+            ? '<img src="' + c.logoUrl + '" alt="' + c.name + '" onerror="this.parentNode.innerHTML=\'<i class=&quot;bi bi-building&quot;></i>\'">'
+            : '<i class="bi bi-building"></i>';
+          return '<div class="col-lg-3 col-md-4 col-6" data-aos="fade-up">'
+            + '<div class="partner-card">'
+              + '<div class="partner-logo">' + logo + '</div>'
+              + '<h4>' + c.name + '</h4>'
+              + (c.industry ? '<span>' + c.industry + '</span>' : '')
+            + '</div>'
+          + '</div>';
+        }
+
+        fetch(API_BASE + '/companies')
+          .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function (companies) {
+            document.getElementById('partners-loading').style.display = 'none';
+            var active = (companies || []).filter(function (c) { return c.isActive !== false; });
+            if (active.length === 0) {
+              document.getElementById('partners-empty').style.display = 'block';
+              return;
+            }
+            var grid = document.getElementById('partners-grid');
+            grid.innerHTML = active.map(renderPartner).join('');
+            grid.style.display = '';
+          })
+          .catch(function () {
+            document.getElementById('partners-loading').style.display = 'none';
+            document.getElementById('partners-empty').style.display = 'block';
+          });
+      })();
+      </script>
+
+    </section><!-- /Partners Section -->
 
     <!-- Contact Section -->
     <section id="contact" class="contact section">
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
-        <h2>Contact</h2>
-        <p>Necessitatibus eius consequatur</p>
+        <h2>Liên hệ</h2>
+        <p>Cần hỗ trợ? Hãy gửi thông tin cho chúng tôi</p>
       </div><!-- End Section Title -->
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -1203,7 +949,7 @@
               <div class="col-lg-12">
                 <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="200">
                   <i class="bi bi-geo-alt"></i>
-                  <h3>Address</h3>
+                  <h3>Địa chỉ</h3>
                   <p>Gia Định, TP.HCM</p>
                 </div>
               </div><!-- End Info Item -->
@@ -1211,16 +957,16 @@
               <div class="col-md-6">
                 <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="300">
                   <i class="bi bi-telephone"></i>
-                  <h3>Call Us</h3>
-                  <p>Upcoming</p>
+                  <h3>Điện thoại</h3>
+                  <p>Đang cập nhật</p>
                 </div>
               </div><!-- End Info Item -->
 
               <div class="col-md-6">
                 <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="400">
                   <i class="bi bi-envelope"></i>
-                  <h3>Email Us</h3>
-                  <p>Upcoming</p>
+                  <h3>Email</h3>
+                  <p>Đang cập nhật</p>
                 </div>
               </div><!-- End Info Item -->
 
@@ -1232,27 +978,27 @@
               <div class="row gy-4">
 
                 <div class="col-md-6">
-                  <input type="text" name="name" class="form-control" placeholder="Your Name" required="">
+                  <input type="text" name="name" class="form-control" placeholder="Họ và tên" required="">
                 </div>
 
                 <div class="col-md-6 ">
-                  <input type="email" class="form-control" name="email" placeholder="Your Email" required="">
+                  <input type="email" class="form-control" name="email" placeholder="Email của bạn" required="">
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
+                  <input type="text" class="form-control" name="subject" placeholder="Tiêu đề" required="">
                 </div>
 
                 <div class="col-md-12">
-                  <textarea class="form-control" name="message" rows="4" placeholder="Message" required=""></textarea>
+                  <textarea class="form-control" name="message" rows="4" placeholder="Nội dung" required=""></textarea>
                 </div>
 
                 <div class="col-md-12 text-center">
-                  <div class="loading">Loading</div>
+                  <div class="loading">Đang gửi</div>
                   <div class="error-message"></div>
-                  <div class="sent-message">Your message has been sent. Thank you!</div>
+                  <div class="sent-message">Tin nhắn của bạn đã được gửi. Cảm ơn bạn!</div>
 
-                  <button type="submit">Send Message</button>
+                  <button type="submit">Gửi liên hệ</button>
                 </div>
 
               </div>
@@ -1275,64 +1021,45 @@
           <a href="index.html" class="logo d-flex align-items-center">
             <span class="sitename">TurTour</span>
           </a>
-          <div class="footer-contact pt-3">
+          <p class="mt-2">Nền tảng kết nối sinh viên với các tour tham quan thực tế tại doanh nghiệp.</p>
+          <div class="footer-contact pt-2">
             <p>Gia Định, TP.HCM</p>
-            <p class="mt-3"><strong>Phone:</strong> <span>Upcoming</span></p>
-            <p><strong>Email:</strong> <span>Upcoming</span></p>
+            <p class="mt-3"><strong>Điện thoại:</strong> <span>Đang cập nhật</span></p>
+            <p><strong>Email:</strong> <span>Đang cập nhật</span></p>
           </div>
           <div class="social-links d-flex mt-4">
-            <a href=""><i class="bi bi-twitter-x"></i></a>
             <a href=""><i class="bi bi-facebook"></i></a>
             <a href=""><i class="bi bi-instagram"></i></a>
-            <a href=""><i class="bi bi-linkedin"></i></a>
           </div>
         </div>
 
-        <div class="col-lg-2 col-md-3 footer-links">
-          <h4>Useful Links</h4>
+        <div class="col-lg-4 col-md-3 footer-links">
+          <h4>Liên kết nhanh</h4>
           <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Home</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">About us</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Services</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Terms of service</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Privacy policy</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#hero">Trang chủ</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#about">Giới thiệu</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#portfolio">Danh sách tour</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#team">Đối tác</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="team.html">Đội ngũ</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#contact">Liên hệ</a></li>
           </ul>
         </div>
 
-        <div class="col-lg-2 col-md-3 footer-links">
-          <h4>Our Services</h4>
+        <div class="col-lg-4 col-md-3 footer-links">
+          <h4>Tài khoản</h4>
           <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Design</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Development</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Product Management</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Marketing</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Graphic Design</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="my-tours.html">Tour của tôi</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="profile.html">Hồ sơ của tôi</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="notifications.html">Thông báo</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="/auth/sign-in" target="_top">Đăng nhập</a></li>
           </ul>
-        </div>
-
-        <div class="col-lg-4 col-md-12 footer-newsletter">
-          <h4>Our Newsletter</h4>
-          <p>Subscribe to our newsletter and receive the latest news about our products and services!</p>
-          <form action="forms/newsletter.php" method="post" class="php-email-form">
-            <div class="newsletter-form"><input type="email" name="email"><input type="submit" value="Subscribe"></div>
-            <div class="loading">Loading</div>
-            <div class="error-message"></div>
-            <div class="sent-message">Your subscription request has been sent. Thank you!</div>
-          </form>
         </div>
 
       </div>
     </div>
 
     <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">TurTour</strong> <span>All Rights Reserved</span></p>
-      <div class="credits">
-        <!-- All the links in the footer should remain intact. -->
-        <!-- You can delete the links only if you've purchased the pro version. -->
-        <!-- Licensing information: https://bootstrapmade.com/license/ -->
-        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed by <a href=“https://themewagon.com>ThemeWagon
-      </div>
+      <p>© <span>Bản quyền</span> <strong class="px-1 sitename">TurTour</strong> <span>Đã đăng ký bản quyền</span></p>
     </div>
 
   </footer>
@@ -1348,7 +1075,6 @@
   <script src="assets/vendor/php-email-form/validate.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
   <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
   <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
@@ -1382,6 +1108,10 @@
 
         var roles = session.roles || [];
         if (roles.includes('Admin') || roles.includes('Organizator') || roles.includes('Company')) {
+          var dashboardLink = dashboardItem.querySelector('a');
+          if (dashboardLink) {
+            dashboardLink.href = roles.includes('Admin') ? '/admin/dashboard' : '/partner/dashboard';
+          }
           dashboardItem.style.display = 'block';
         }
         if (roles.includes('Student')) {

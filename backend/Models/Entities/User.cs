@@ -11,6 +11,11 @@ namespace TurTour.Models.Entities
         public string? AvatarUrl { get; set; }
         public bool IsActive { get; set; } = true;
 
+        // Xác thực email lúc đăng ký — phải xác thực mới đăng nhập được.
+        public bool EmailConfirmed { get; set; } = false;
+        public string? EmailConfirmationToken { get; set; }
+        public DateTime? EmailConfirmationTokenExpiresAt { get; set; }
+
         //Navigation
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
         public ICollection<Registration> Registrations { get; set; } = new List<Registration>();

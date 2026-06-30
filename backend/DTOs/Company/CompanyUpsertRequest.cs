@@ -34,5 +34,14 @@ namespace TurTour.DTOs.Company
         [MaxLength(100, ErrorMessage = "Ngành nghề không được vượt quá 100 ký tự.")]
         public string? Industry { get; set; }
         public bool IsActive { get; set; } = true;
+
+        [MaxLength(10, ErrorMessage = "Mã ngân hàng (BIN) không được vượt quá 10 ký tự.")]
+        public string? BankBin { get; set; }
+
+        [MaxLength(30, ErrorMessage = "Số tài khoản không được vượt quá 30 ký tự.")]
+        public string? BankAccountNo { get; set; }
+
+        [MaxLength(100, ErrorMessage = "Tên chủ tài khoản không được vượt quá 100 ký tự.")]
+        public string? BankAccountName { get; set; }
     }
 }

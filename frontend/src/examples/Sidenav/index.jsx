@@ -46,11 +46,19 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const { miniSidenav, transparentSidenav } = controller;
   const location = useLocation();
   const { pathname } = location;
-  // Bỏ qua tiền tố "admin" trong URL (vd. /admin/tours/:id/edit) để lấy đúng segment
-  // khớp với route.key trong sidebar (vd. "tours") — trước đây luôn lấy "admin" nên
-  // không mục nào hiện active được.
-  const pathSegments = pathname.split("/").filter(Boolean);
-  const collapseName = pathSegments[0] === "admin" ? pathSegments[1] : pathSegments[0];
+  // So khớp pathname với route.route dài nhất (cụ thể nhất) trong số các mục sidebar —
+  // ví dụ "/admin/tours/pending-approval" phải khớp mục "Tour chờ duyệt" chứ không phải
+  // mục "Tour" (chỉ lấy segment thứ 2 trước đây khiến 2 mục con cùng route cha bị nhập nhằng).
+  const activeKey = routes.reduce((best, candidate) => {
+    if (candidate.type !== "collapse" || !candidate.route) {
+      return best;
+    }
+    const isMatch = pathname === candidate.route || pathname.startsWith(`${candidate.route}/`);
+    if (isMatch && (!best || candidate.route.length > best.route.length)) {
+      return candidate;
+    }
+    return best;
+  }, null)?.key;
 
   const closeSidenav = () => setMiniSidenav(dispatch, true);
   const toggleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav);
@@ -90,7 +98,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
             color={color}
             name={name}
             icon={icon}
-            active={key === collapseName}
+            active={key === activeKey}
             noCollapse={noCollapse}
           />
         </Link>
@@ -101,7 +109,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
             key={key}
             name={name}
             icon={icon}
-            active={key === collapseName}
+            active={key === activeKey}
             noCollapse={noCollapse}
           />
         </NavLink>

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 
 import DOMPurify from "dompurify";
 
@@ -7,34 +7,44 @@ import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Chip from "@mui/material/Chip";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
 
 import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
 import SoftButton from "components/SoftButton";
+import SoftInput from "components/SoftInput";
 import PageLoader from "components/PageLoader";
+import AppToast from "components/AppToast";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
 import apiService from "../../services/apiService";
+import useTourBasePath from "../../hooks/useTourBasePath";
 
+// Badge tổng hợp từ ApprovalStatus + PublishStatus — xem giải thích ở layouts/tours/index.jsx.
 const statusColorMap = {
-  upcoming: "info",
-  open: "success",
-  ongoing: "warning",
-  completed: "default",
-  cancelled: "error",
+  pending: "warning",
+  rejected: "error",
+  published: "success",
+  expired: "warning",
+  archived: "default",
+  hidden: "warning",
 };
 
 const statusLabelMap = {
-  upcoming: "Sắp diễn ra",
-  open: "Mở đăng ký",
-  ongoing: "Đang diễn ra",
-  completed: "Đã kết thúc",
-  cancelled: "Đã hủy",
+  pending: "Chờ duyệt",
+  rejected: "Bị từ chối",
+  published: "Mở đăng ký",
+  expired: "Đã đóng",
+  archived: "Đã hủy/Lưu trữ",
+  hidden: "Ẩn",
 };
 
 function Field({ label, children }) {
@@ -50,9 +60,24 @@ function Field({ label, children }) {
 
 function TourDetails() {
   const { id } = useParams();
+  const base = useTourBasePath();
+  const location = useLocation();
   const [tour, setTour] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [toastMessage, setToastMessage] = useState(location.state?.toast || "");
+  const [actionBusy, setActionBusy] = useState(false);
+  const [actionError, setActionError] = useState("");
+  const [rejecting, setRejecting] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+
+  const session = apiService.getAuthSession();
+  const isAdmin = (session?.roles || []).includes("Admin");
+
+  useEffect(() => {
+    // Chỉ hiện 1 lần — xoá state khỏi history để back/forward không hiện lại toast cũ.
+    window.history.replaceState({}, "");
+  }, []);
 
   const sanitizedDescription = useMemo(() => {
     if (!tour) return "";
@@ -75,7 +100,60 @@ function TourDetails() {
     fetchTour();
   }, [id]);
 
-  const statusKey = (tour?.raw?.status || tour?.status || "").toLowerCase();
+  const handleApprove = async () => {
+    setActionBusy(true);
+    setActionError("");
+    try {
+      const updated = await apiService.approveTour(id);
+      setTour(updated);
+    } catch (error) {
+      setActionError(error?.message || "Duyệt tour thất bại.");
+    } finally {
+      setActionBusy(false);
+    }
+  };
+
+  const openReject = () => {
+    setRejecting(true);
+    setRejectReason("");
+  };
+
+  const submitReject = async () => {
+    setActionBusy(true);
+    setActionError("");
+    try {
+      const updated = await apiService.rejectTour(id, rejectReason.trim());
+      setTour(updated);
+      setRejecting(false);
+    } catch (error) {
+      setActionError(error?.message || "Từ chối tour thất bại.");
+    } finally {
+      setActionBusy(false);
+    }
+  };
+
+  const handleArchive = async () => {
+    if (!window.confirm("Huỷ/lưu trữ tour này? Hành động này không thể hoàn tác.")) {
+      return;
+    }
+    setActionBusy(true);
+    setActionError("");
+    try {
+      const updated = await apiService.archiveTour(id);
+      setTour(updated);
+    } catch (error) {
+      setActionError(error?.message || "Huỷ/lưu trữ tour thất bại.");
+    } finally {
+      setActionBusy(false);
+    }
+  };
+
+  const approvalStatus = tour?.raw?.approvalStatus;
+  const statusKey = (
+    approvalStatus === "Pending" || approvalStatus === "Rejected"
+      ? approvalStatus
+      : tour?.raw?.publishStatus || ""
+  ).toLowerCase();
   const schedules = useMemo(() => {
     const raw = tour?.raw?.tourSchedules || [];
     return [...raw]
@@ -96,15 +174,41 @@ function TourDetails() {
                 <SoftTypography variant="button" color="text">Xem thông tin tour do tổ chức/doanh nghiệp tạo.</SoftTypography>
               </div>
               <SoftBox display="flex" gap={1} flexWrap="wrap">
-                <SoftButton component={Link} to="/admin/tours" variant="outlined" color="dark">Danh sách</SoftButton>
-                <SoftButton component={Link} to={`/admin/tours/${id}/registrations`} variant="outlined" color="success">Quản lý đăng ký</SoftButton>
-                <SoftButton component={Link} to={`/admin/tours/${id}/edit`} variant="outlined" color="info">Sửa</SoftButton>
-                <SoftButton component={Link} to={`/admin/tours/${id}/delete`} variant="gradient" color="error">Xóa</SoftButton>
+                {isAdmin && approvalStatus === "Pending" ? (
+                  <>
+                    <SoftButton variant="gradient" color="success" disabled={actionBusy} onClick={handleApprove}>
+                      Duyệt tour
+                    </SoftButton>
+                    <SoftButton variant="outlined" color="error" disabled={actionBusy} onClick={openReject}>
+                      Từ chối
+                    </SoftButton>
+                  </>
+                ) : null}
+                {tour && approvalStatus === "Approved" && tour.raw?.publishStatus !== "Archived" && (isAdmin || base === "/partner") ? (
+                  <SoftButton variant="outlined" color="secondary" disabled={actionBusy} onClick={handleArchive}>
+                    Huỷ/Lưu trữ
+                  </SoftButton>
+                ) : null}
+                <SoftButton component={Link} to={`${base}/tours`} variant="outlined" color="dark">Danh sách</SoftButton>
+                {!isAdmin && approvalStatus === "Approved" ? (
+                  <SoftButton component={Link} to={`${base}/tours/${id}/registrations`} variant="outlined" color="success">Quản lý đăng ký</SoftButton>
+                ) : null}
+                {!isAdmin ? (
+                  <>
+                    <SoftButton component={Link} to={`${base}/tours/${id}/edit`} variant="outlined" color="info">Sửa</SoftButton>
+                    <SoftButton component={Link} to={`${base}/tours/${id}/delete`} variant="gradient" color="error">Xóa</SoftButton>
+                  </>
+                ) : null}
               </SoftBox>
             </SoftBox>
 
             {loading ? <PageLoader label="Đang tải chi tiết tour..." /> : null}
             {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
+            {actionError ? (
+              <Alert severity="error" onClose={() => setActionError("")}>
+                {actionError}
+              </Alert>
+            ) : null}
 
             {tour ? (
               <Grid container spacing={3}>
@@ -185,6 +289,20 @@ function TourDetails() {
                   <Field label="Ngày kết thúc">
                     <SoftTypography variant="body2">
                       {tour.endDate ? new Date(tour.endDate).toLocaleDateString("vi-VN") : "—"}
+                    </SoftTypography>
+                  </Field>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Field label="Mở đăng ký từ">
+                    <SoftTypography variant="body2">
+                      {tour.bookingOpenAt ? new Date(tour.bookingOpenAt).toLocaleString("vi-VN") : "—"}
+                    </SoftTypography>
+                  </Field>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Field label="Đóng đăng ký lúc">
+                    <SoftTypography variant="body2">
+                      {tour.bookingCloseAt ? new Date(tour.bookingCloseAt).toLocaleString("vi-VN") : "—"}
                     </SoftTypography>
                   </Field>
                 </Grid>
@@ -308,6 +426,32 @@ function TourDetails() {
         </Card>
       </SoftBox>
       <Footer />
+
+      <AppToast
+        open={Boolean(toastMessage)}
+        severity="success"
+        message={toastMessage}
+        onClose={() => setToastMessage("")}
+      />
+
+      <Dialog open={rejecting} onClose={() => setRejecting(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Lý do từ chối tour</DialogTitle>
+        <DialogContent>
+          <SoftInput
+            placeholder="Nhập lý do từ chối (không bắt buộc)"
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+            multiline
+            rows={3}
+          />
+        </DialogContent>
+        <DialogActions>
+          <SoftButton variant="outlined" color="dark" onClick={() => setRejecting(false)}>Hủy</SoftButton>
+          <SoftButton variant="gradient" color="error" onClick={submitReject} disabled={actionBusy}>
+            Từ chối tour
+          </SoftButton>
+        </DialogActions>
+      </Dialog>
     </DashboardLayout>
   );
 }
