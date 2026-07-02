@@ -24,6 +24,7 @@ import Footer from "examples/Footer";
 import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
 
 import apiService from "../../../services/apiService";
+import { hideSplash } from "utils/splash";
 
 const statusOptions = [
   { value: "", label: "Tất cả trạng thái" },
@@ -87,6 +88,7 @@ function PartnerReports() {
         setErrorMessage(error?.message || "Không tải được dữ liệu báo cáo.");
       } finally {
         setLoading(false);
+        hideSplash();
       }
     }
 
@@ -253,7 +255,7 @@ function PartnerReports() {
                     sx={{
                       tableLayout: "fixed",
                       minWidth: 1000,
-                      "& th": { fontSize: "0.75rem", fontWeight: 700, color: "#344767", whiteSpace: "nowrap", py: 1.5 },
+                      "& th": { fontSize: "0.75rem", fontWeight: 700, color: "#2b2a27", whiteSpace: "nowrap", py: 1.5 },
                       "& td": { fontSize: "0.875rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", py: 1.25 },
                     }}
                   >

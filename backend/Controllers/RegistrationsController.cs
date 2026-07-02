@@ -81,7 +81,9 @@ namespace TurTour.Controllers
                 return Unauthorized();
             }
 
-            var tour = await _context.Tours.FirstOrDefaultAsync(t => t.Id == request.TourId);
+            var tour = await _context.Tours
+                .Include(t => t.Company)
+                .FirstOrDefaultAsync(t => t.Id == request.TourId);
             if (tour == null)
             {
                 return NotFound(new { message = "Tour not found." });
@@ -140,12 +142,15 @@ namespace TurTour.Controllers
 
             _context.Registrations.Add(registration);
 
+            // Thông báo cho company owner (chủ tài khoản doanh nghiệp) — luôn là người cần biết
+            // có đăng ký mới, kể cả khi tour do Admin/Organizator tạo thay.
             Notification? organizerNotification = null;
-            if (tour.CreatedBy != Guid.Empty)
+            var companyOwnerId = tour.Company?.UserId;
+            if (companyOwnerId.HasValue)
             {
                 organizerNotification = new Notification
                 {
-                    UserId = tour.CreatedBy,
+                    UserId = companyOwnerId.Value,
                     Title = "Có đăng ký mới",
                     Content = $"Có sinh viên vừa đăng ký tham gia tour \"{tour.Tittle}\".",
                     Type = "Registration",
@@ -155,12 +160,44 @@ namespace TurTour.Controllers
                 _context.Notifications.Add(organizerNotification);
             }
 
+            // Nếu tour do Organizator tạo (khác với company owner), cũng thông báo cho họ.
+            Notification? creatorNotification = null;
+            if (tour.CreatedBy != Guid.Empty && tour.CreatedBy != companyOwnerId)
+            {
+                creatorNotification = new Notification
+                {
+                    UserId = tour.CreatedBy,
+                    Title = "Có đăng ký mới",
+                    Content = $"Có sinh viên vừa đăng ký tham gia tour \"{tour.Tittle}\".",
+                    Type = "Registration",
+                    TourId = tour.Id,
+                    IsRead = false
+                };
+                _context.Notifications.Add(creatorNotification);
+            }
+
+            var statusText = status == RegistrationStatus.Waitinglisted
+                ? "Danh sách chờ — tour hiện đã đầy chỗ, bạn sẽ được tự động duyệt nếu có người hủy."
+                : "Chờ duyệt — doanh nghiệp sẽ xác nhận đăng ký của bạn sớm.";
+
+            var studentNotification = new Notification
+            {
+                UserId = userId.Value,
+                Title = "Đăng ký tour thành công",
+                Content = $"Bạn đã đăng ký tham gia tour \"{tour.Tittle}\". Trạng thái: {statusText}",
+                Type = "Registration",
+                TourId = tour.Id,
+                IsRead = false
+            };
+            _context.Notifications.Add(studentNotification);
+
             await _context.SaveChangesAsync();
 
             if (organizerNotification != null)
-            {
                 await _realtime.NotifyUserAsync(organizerNotification);
-            }
+            if (creatorNotification != null)
+                await _realtime.NotifyUserAsync(creatorNotification);
+            await _realtime.NotifyUserAsync(studentNotification);
             await _realtime.NotifyAdminBoardAsync(tour.Id, "new-registration");
 
             return Ok(registration);

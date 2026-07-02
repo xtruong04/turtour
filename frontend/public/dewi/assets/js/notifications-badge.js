@@ -8,16 +8,17 @@
   }
 
   function iconForType(type) {
-    return type === 'Payment' ? 'bi-cash-coin' : 'bi-bell-fill';
+    if (type === 'Payment') return 'bi-cash-coin';
+    if (type === 'Contact') return 'bi-envelope-fill';
+    return 'bi-bell-fill';
   }
 
   // "Tour" = tour mình quan tâm vừa mở đăng ký -> đi tới trang chi tiết tour đó.
   // "Registration"/"Payment" = liên quan đăng ký của chính mình -> đi tới "Tour của tôi".
   function linkForNotification(n) {
     if (!n) return null;
-    if (n.type === 'Tour') {
-      return n.tourId ? 'tour-details.html?id=' + n.tourId : null;
-    }
+    if (n.type === 'Tour') return n.tourId ? 'tour-details.html?id=' + n.tourId : null;
+    if (n.type === 'Contact') return 'index.html#contact';
     return 'my-tours.html';
   }
 
@@ -119,6 +120,10 @@
     // Poll mỗi 60s làm dự phòng — khi real-time hoạt động, badge/danh sách cập nhật ngay
     // lúc có thông báo mới (không cần chờ tới lượt poll).
     setInterval(loadNotifications, 60000);
+
+    // Expose để các script khác (registerTour, submitFeedback...) gọi thủ công sau hành động
+    // mà không cần chờ real-time hay poll — quan trọng khi SignalR chưa kết nối kịp.
+    window.refreshNotificationBadge = loadNotifications;
 
     var bellToggle = bell.querySelector('.notif-bell-toggle');
     if (bellToggle) {

@@ -140,36 +140,56 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   });
 
   return (
-    <SidenavRoot {...rest} variant="permanent" ownerState={{ transparentSidenav, miniSidenav }}>
+    <>
+      {/* Toggle handle — anchored to the sidebar's right edge via fixed position.
+          Completely outside the Drawer so it never overlaps nav items. */}
       <SoftBox
-        display={{ xs: "none", xl: "flex" }}
-        alignItems="center"
-        justifyContent="center"
         onClick={toggleMiniSidenav}
         title={miniSidenav ? "Mở rộng sidebar" : "Thu nhỏ sidebar"}
         sx={{
-          position: "absolute",
+          position: "fixed",
           top: "50%",
-          right: 6,
-          transform: "translateY(-50%)",
-          width: 22,
-          height: 22,
+          left: miniSidenav ? "96px" : "250px",
+          transform: "translateX(-50%) translateY(-50%)",
+          transition: "left 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
+          zIndex: 1300,
+          width: 28,
+          height: 44,
           cursor: "pointer",
-          zIndex: 10,
+          backgroundColor: "#2b2a27",
+          border: "2px solid #2b2a27",
+          boxShadow: "2px 2px 0 #2b2a27",
+          display: { xs: "none", xl: "flex" },
+          alignItems: "center",
+          justifyContent: "center",
+          userSelect: "none",
+          "&:hover": {
+            backgroundColor: "#b5281f",
+            boxShadow: "3px 3px 0 #2b2a27",
+            "& .toggle-icon": { color: "#ffffff" },
+          },
+          "&:active": {
+            transform: "translateX(calc(-50% + 1px)) translateY(calc(-50% + 1px))",
+            boxShadow: "1px 1px 0 #2b2a27",
+            transition: "left 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms, box-shadow 0.1s, transform 0.1s",
+          },
         }}
       >
         <Icon
-          fontSize="small"
+          className="toggle-icon"
           sx={{
+            fontSize: "1.1rem !important",
             color: "#c9c5bc",
             transition: "transform 0.25s ease, color 0.2s ease",
             transform: miniSidenav ? "rotate(180deg)" : "none",
-            "&:hover": { color: "#ffffff" },
+            lineHeight: 1,
           }}
         >
           chevron_left
         </Icon>
       </SoftBox>
+
+      <SidenavRoot {...rest} variant="permanent" ownerState={{ transparentSidenav, miniSidenav }}>
       <SoftBox pt={3} pb={1} px={4} textAlign="center">
         <SoftBox
           display={{ xs: "block", xl: "none" }}
@@ -207,6 +227,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
       <Divider light />
       <List>{renderRoutes}</List>
     </SidenavRoot>
+    </>
   );
 }
 

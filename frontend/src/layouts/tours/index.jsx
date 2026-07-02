@@ -20,7 +20,7 @@ import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
 import SoftButton from "components/SoftButton";
 import SoftInput from "components/SoftInput";
-import PageLoader from "components/PageLoader";
+import SkeletonLoader from "components/SkeletonLoader";
 import NeoDropdown from "components/NeoDropdown";
 import NeoBadge from "components/NeoBadge";
 
@@ -32,6 +32,7 @@ import neoIconButtonSx from "assets/theme/functions/neoIconButtonSx";
 
 import apiService from "../../services/apiService";
 import realtimeService from "../../services/realtime";
+import { hideSplash } from "utils/splash";
 import useTourBasePath from "../../hooks/useTourBasePath";
 
 // Inline SVG icon components — no @mui/icons-material needed
@@ -163,6 +164,7 @@ function Tours() {
         setErrorMessage(error?.message || "Không tải được danh sách tour.");
       } finally {
         setLoading(false);
+        hideSplash();
       }
     }
     fetchTours();
@@ -337,7 +339,7 @@ function Tours() {
               ) : null}
             </SoftBox>
 
-            {loading ? <PageLoader label="Đang tải danh sách tour..." /> : null}
+            {loading ? <SkeletonLoader.Table rows={6} cols={7} /> : null}
             {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
             {statusErrorMessage ? (
               <Alert severity="error" onClose={() => setStatusErrorMessage("")}>
@@ -355,7 +357,7 @@ function Tours() {
                     "& th": {
                       fontSize: "0.75rem",
                       fontWeight: 700,
-                      color: "#344767",
+                      color: "#2b2a27",
                       whiteSpace: "nowrap",
                       py: 1.5,
                     },
@@ -400,7 +402,7 @@ function Tours() {
                               style={{ width: "50px", height: "35px", objectFit: "cover", borderRadius: "4px", display: "block" }}
                             />
                           ) : (
-                            <div style={{ width: "50px", height: "35px", backgroundColor: "#f0f2f5", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px", fontSize: "10px", color: "#8392ab", border: "1px solid #e9ecef" }}>
+                            <div style={{ width: "50px", height: "35px", backgroundColor: "#f6efdd", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px", fontSize: "10px", color: "#a3906c", border: "1px solid #d9caa6" }}>
                               Không ảnh
                             </div>
                           )}
@@ -460,7 +462,7 @@ function Tours() {
                               <SoftBox
                                 component={Link}
                                 to={`${base}/tours/${tour.id}`}
-                                sx={neoIconButtonSx("#344767")}
+                                sx={neoIconButtonSx("#2b2a27")}
                               >
                                 <IconEye />
                               </SoftBox>

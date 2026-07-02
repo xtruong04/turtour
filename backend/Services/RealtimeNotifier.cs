@@ -29,5 +29,10 @@ namespace TurTour.Services
         {
             return _hub.Clients.Group(AppHub.AdminBoardGroup).SendAsync("AdminBoardUpdated", new { tourId, reason });
         }
+
+        public Task NotifyNewContactAsync(Guid contactId, string fullName, string subject)
+        {
+            return _hub.Clients.Group(AppHub.AdminBoardGroup).SendAsync("NewContact", new { contactId, fullName, subject });
+        }
     }
 }

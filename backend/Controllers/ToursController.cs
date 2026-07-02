@@ -217,6 +217,33 @@ namespace TurTour.Controllers
             return Ok(new { interested = false });
         }
 
+        [HttpGet("interested")]
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> GetInterested()
+        {
+            var studentId = CurrentUserHelper.GetUserId(User);
+            if (studentId == null)
+            {
+                return Unauthorized();
+            }
+
+            var tours = await _context.TourInterests
+                .Where(ti => ti.StudentId == studentId)
+                .Include(ti => ti.Tour).ThenInclude(t => t!.Company)
+                .Include(ti => ti.Tour).ThenInclude(t => t!.TourImages.OrderBy(i => i.DisplayOrder))
+                .Select(ti => ti.Tour!)
+                .OrderByDescending(t => t.StartDate)
+                .ToListAsync();
+
+            foreach (var tour in tours)
+            {
+                tour.PublishStatus = ComputeEffectivePublishStatus(tour);
+                tour.IsInterested = true;
+            }
+
+            return Ok(tours);
+        }
+
         private async Task ApplyInterestFlagAsync(IReadOnlyCollection<Tour> tours)
         {
             var studentId = CurrentUserHelper.GetUserId(User);
@@ -226,15 +253,28 @@ namespace TurTour.Controllers
             }
 
             var tourIds = tours.Select(t => t.Id).ToList();
+
             var interestedTourIds = await _context.TourInterests
                 .Where(ti => ti.StudentId == studentId && tourIds.Contains(ti.TourId))
                 .Select(ti => ti.TourId)
                 .ToListAsync();
 
+            var myRegistrations = await _context.Registrations
+                .Where(r => r.StudentId == studentId && tourIds.Contains(r.TourId))
+                .Select(r => new { r.TourId, r.Status })
+                .ToListAsync();
+
             var interestedSet = interestedTourIds.ToHashSet();
+            var regDict = myRegistrations.ToDictionary(r => r.TourId, r => r.Status.ToString());
+
             foreach (var tour in tours)
             {
                 tour.IsInterested = interestedSet.Contains(tour.Id);
+                if (regDict.TryGetValue(tour.Id, out var status))
+                {
+                    tour.IsRegistered = true;
+                    tour.MyRegistrationStatus = status;
+                }
             }
         }
 

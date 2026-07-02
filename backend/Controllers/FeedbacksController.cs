@@ -69,7 +69,8 @@ namespace TurTour.Controllers
                 TourId = request.TourId,
                 StudentId = userId.Value,
                 Rating = request.Rating,
-                Comment = request.Comment
+                Comment = request.Comment,
+                PhotoUrls = request.PhotoUrls
             };
 
             _context.Feedbacks.Add(feedback);

@@ -45,5 +45,6 @@
     onNotification: function (callback) { return on('ReceiveNotification', callback); },
     onTourUpdated: function (callback) { return on('TourUpdated', callback); },
     onAdminBoardUpdated: function (callback) { return on('AdminBoardUpdated', callback); },
+    onNewContact: function (callback) { return on('NewContact', callback); },
   };
 })();

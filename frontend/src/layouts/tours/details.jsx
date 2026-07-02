@@ -26,6 +26,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
 import apiService from "../../services/apiService";
+import { hideSplash } from "utils/splash";
 import useTourBasePath from "../../hooks/useTourBasePath";
 
 // Badge tổng hợp từ ApprovalStatus + PublishStatus — xem giải thích ở layouts/tours/index.jsx.
@@ -95,6 +96,7 @@ function TourDetails() {
         setErrorMessage(error?.message || "Không tải được chi tiết tour.");
       } finally {
         setLoading(false);
+        hideSplash();
       }
     }
     fetchTour();
@@ -238,7 +240,7 @@ function TourDetails() {
                             height: "auto",          // ← hiện đầy đủ, không cắt
                             objectFit: "contain",
                             borderRadius: "12px",
-                            border: "1px solid #e9ecef",
+                            border: "1px solid #d9caa6",
                             background: "#f8f9fa",
                           }}
                         />
@@ -337,7 +339,7 @@ function TourDetails() {
                         mt={0.5}
                         sx={{
                           p: 2,
-                          border: "1px solid #e9ecef",
+                          border: "1px solid #d9caa6",
                           borderRadius: "12px",
                           backgroundColor: "#fff",
                           lineHeight: 1.8,
@@ -365,7 +367,7 @@ function TourDetails() {
                     <SoftTypography variant="h6" fontWeight="bold" mb={2}>Lịch trình tour</SoftTypography>
                     <Box
                       sx={{
-                        borderLeft: "2px solid #e9ecef",
+                        borderLeft: "2px solid #d9caa6",
                         pl: 3,
                         ml: 1,
                       }}

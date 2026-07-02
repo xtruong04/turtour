@@ -69,7 +69,13 @@ function statusFallbackMessage(status) {
 
 async function parseResponse(response) {
   const contentType = response.headers.get('content-type') || '';
-  const payload = contentType.includes('application/json') ? await response.json() : await response.text();
+  const text = await response.text();
+  let payload;
+  try {
+    payload = contentType.includes('application/json') && text ? JSON.parse(text) : text;
+  } catch {
+    payload = text;
+  }
 
   if (!response.ok) {
     const details = typeof payload === 'string' ? [] : extractErrorDetails(payload);
@@ -575,6 +581,15 @@ export const apiService = {
   async uploadImage(file) {
     const data = await uploadFile('/uploads/image', file);
     return data?.url || '';
+  },
+
+  async getContacts() {
+    const data = await request('/contacts', { method: 'GET' });
+    return Array.isArray(data) ? data : [];
+  },
+
+  async markContactRead(id) {
+    return request(`/contacts/${id}/read`, { method: 'PATCH' });
   },
 
   request,

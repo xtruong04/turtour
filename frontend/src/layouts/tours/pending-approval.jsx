@@ -29,6 +29,7 @@ import Footer from "examples/Footer";
 import neoIconButtonSx from "assets/theme/functions/neoIconButtonSx";
 
 import apiService from "../../services/apiService";
+import { hideSplash } from "utils/splash";
 
 // Inline SVG icons — no @mui/icons-material needed
 function IconEye() {
@@ -78,6 +79,7 @@ function TourPendingApproval() {
         setErrorMessage(error?.message || "Không tải được danh sách tour chờ duyệt.");
       } finally {
         setLoading(false);
+        hideSplash();
       }
     }
     loadTours();
@@ -146,7 +148,7 @@ function TourPendingApproval() {
                     "& th": {
                       fontSize: "0.75rem",
                       fontWeight: 700,
-                      color: "#344767",
+                      color: "#2b2a27",
                       whiteSpace: "nowrap",
                       py: 1.5,
                     },
@@ -191,7 +193,7 @@ function TourPendingApproval() {
                               style={{ width: "50px", height: "35px", objectFit: "cover", borderRadius: "4px", display: "block" }}
                             />
                           ) : (
-                            <div style={{ width: "50px", height: "35px", backgroundColor: "#f0f2f5", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px", fontSize: "10px", color: "#8392ab", border: "1px solid #e9ecef" }}>
+                            <div style={{ width: "50px", height: "35px", backgroundColor: "#f6efdd", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px", fontSize: "10px", color: "#a3906c", border: "1px solid #d9caa6" }}>
                               Không ảnh
                             </div>
                           )}
@@ -227,7 +229,7 @@ function TourPendingApproval() {
                               </SoftBox>
                             </Tooltip>
                             <Tooltip title="Xem chi tiết" arrow>
-                              <SoftBox component={Link} to={`/admin/tours/${tour.id}`} sx={neoIconButtonSx("#344767")}>
+                              <SoftBox component={Link} to={`/admin/tours/${tour.id}`} sx={neoIconButtonSx("#2b2a27")}>
                                 <IconEye />
                               </SoftBox>
                             </Tooltip>

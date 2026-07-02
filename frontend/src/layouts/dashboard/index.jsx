@@ -7,7 +7,7 @@ import Grid from "@mui/material/Grid";
 import SoftBox from "components/SoftBox";
 import SoftButton from "components/SoftButton";
 import SoftTypography from "components/SoftTypography";
-import PageLoader from "components/PageLoader";
+import SkeletonLoader from "components/SkeletonLoader";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -16,6 +16,7 @@ import NeoStatCard from "components/NeoStatCard";
 import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
 
 import apiService from "../../services/apiService";
+import { hideSplash } from "utils/splash";
 
 function formatCurrency(value) {
   return Number(value || 0).toLocaleString("vi-VN") + " ₫";
@@ -37,6 +38,7 @@ function Dashboard() {
         setErrorMessage(error?.message || "Không tải được số liệu tổng quan.");
       } finally {
         setLoading(false);
+        hideSplash();
       }
     }
 
@@ -64,7 +66,7 @@ function Dashboard() {
           </SoftButton>
         </SoftBox>
 
-        {loading ? <PageLoader label="Đang tải số liệu tổng quan..." /> : null}
+        {loading ? <SkeletonLoader.Dashboard statCount={4} /> : null}
         {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
 
         {!loading && !errorMessage ? (

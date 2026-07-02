@@ -19,23 +19,26 @@ import colors from "assets/theme/base/colors";
 // Soft UI Dashboard React helper functions
 import pxToRem from "assets/theme/functions/pxToRem";
 
-const { black } = colors;
+const { black, grey } = colors;
 
-// Neo-Brutalism: dòng tiêu đề bảng in hoa đậm + viền đáy đen dày, các dòng dữ liệu
-// có hàng kẻ đen mảnh hơn — tách bạch tiêu đề/dữ liệu rõ ràng thay vì viền mờ xám.
+// Header: viền đáy đen dày để tạo điểm nhấn Neo-Brutalism rõ ràng.
+// Data rows: viền warm-grey mỏng (1px) thay vì 2px black — nhẹ hơn, dễ đọc hơn,
+// khớp với palette giấy kraft tổng thể.
 const tableCell = {
   styleOverrides: {
     root: ({ ownerState }) => {
       const isHead = ownerState?.variant === "head";
 
       return {
-        padding: `${pxToRem(12)} ${pxToRem(16)}`,
-        borderBottom: isHead ? `3px solid ${black.main}` : `2px solid ${black.main}`,
+        padding: `${pxToRem(11)} ${pxToRem(16)}`,
+        borderBottom: isHead ? `2px solid ${black.main}` : `1px solid ${grey[300]}`,
         ...(isHead && {
           fontWeight: 800,
           fontSize: pxToRem(11),
           textTransform: "uppercase",
           letterSpacing: "0.04em",
+          color: black.main,
+          backgroundColor: grey[100],
         }),
       };
     },

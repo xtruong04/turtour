@@ -1,24 +1,35 @@
 import PropTypes from "prop-types";
-
-import CircularProgress from "@mui/material/CircularProgress";
-
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
 
-function PageLoader({ label, minHeight }) {
+const LOTTIE_URL =
+  "https://lottie.host/3ff9baf3-3e77-4906-a454-ccb295313a7f/Ms4tMee3Lz.lottie";
+
+function PageLoader({ label, minHeight, size }) {
   return (
     <SoftBox
       display="flex"
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
-      gap={1.5}
       sx={{ minHeight, width: "100%" }}
     >
-      <CircularProgress color="info" size={42} thickness={4} />
-      <SoftTypography variant="button" color="text" fontWeight="medium">
-        {label}
-      </SoftTypography>
+      <DotLottieReact
+        src={LOTTIE_URL}
+        loop
+        autoplay
+        style={{ width: size, height: size }}
+      />
+      {label ? (
+        <SoftTypography
+          variant="button"
+          fontWeight="medium"
+          sx={{ color: "#7d6b51", mt: -1 }}
+        >
+          {label}
+        </SoftTypography>
+      ) : null}
     </SoftBox>
   );
 }
@@ -26,11 +37,13 @@ function PageLoader({ label, minHeight }) {
 PageLoader.propTypes = {
   label: PropTypes.string,
   minHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 PageLoader.defaultProps = {
-  label: "Đang tải dữ liệu...",
-  minHeight: "240px",
+  label: "Đang tải...",
+  minHeight: "220px",
+  size: 120,
 };
 
 export default PageLoader;

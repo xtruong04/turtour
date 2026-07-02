@@ -47,6 +47,7 @@ import TourEdit from "layouts/tours/edit";
 import TourDelete from "layouts/tours/delete";
 import TourRegistrations from "layouts/tours/registrations";
 import Companies from "layouts/companies";
+import Contacts from "layouts/contacts";
 import Payments from "layouts/payments";
 import Reports from "layouts/reports";
 import Tables from "layouts/tables";
@@ -256,6 +257,16 @@ const routes = [
     route: "/admin/companies",
     icon: <Basket size="12px" />,
     component: <Companies />,
+    noCollapse: true,
+    roles: ["Admin"],
+  },
+  {
+    type: "collapse",
+    name: "Liên hệ",
+    key: "contacts",
+    route: "/admin/contacts",
+    icon: <CustomerSupport size="12px" />,
+    component: <Contacts />,
     noCollapse: true,
     roles: ["Admin"],
   },
