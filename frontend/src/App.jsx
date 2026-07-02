@@ -18,6 +18,7 @@ import UserLandingPage from "./components/UserLandingPage";
 import apiService from "./services/apiService";
 import RoleGate from "./components/RoleGate";
 import Forbidden403 from "./layouts/forbidden";
+import { hideSplash } from "./utils/splash";
 
 const ADMIN_PANEL_ROLES = ["Admin"];
 const PARTNER_PANEL_ROLES = ["Organizator", "Company"];
@@ -46,6 +47,14 @@ function App() {
   );
 
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
+
+  // Các route không cần load dữ liệu → ẩn splash ngay
+  useEffect(() => {
+    if (isAuthRoute || pathname === "/" || pathname === "/403-preview") {
+      hideSplash();
+    }
+    // Các route admin/partner → layout tự gọi hideSplash() sau khi fetch xong
+  }, [isAuthRoute, pathname]);
 
   useEffect(() => {
     document.body.setAttribute("dir", direction);

@@ -42,6 +42,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
 import apiService from "../../services/apiService";
+import { hideSplash } from "utils/splash";
 import useTourBasePath from "../../hooks/useTourBasePath";
 
 function extractPlainText(html) {
@@ -245,6 +246,7 @@ function TourEdit() {
         setErrorMessage(error?.message || "Không tải được thông tin tour.");
       } finally {
         setLoading(false);
+        hideSplash();
       }
     }
 
@@ -438,7 +440,7 @@ function TourEdit() {
                           key={s.id || `new-${idx}`}
                           mb={2}
                           p={2}
-                          sx={{ border: "1px solid #e9ecef", borderRadius: "12px", background: "#fafbfc", position: "relative" }}
+                          sx={{ border: "1px solid #d9caa6", borderRadius: "0px", background: "#f6efdd", position: "relative" }}
                         >
                           <SoftBox display="flex" justifyContent="space-between" alignItems="center" mb={1.5}>
                             <SoftTypography variant="button" fontWeight="bold" color="dark">

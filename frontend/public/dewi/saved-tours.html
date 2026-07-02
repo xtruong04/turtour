@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <script src="assets/js/env-config.js"></script>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Tour đã lưu - TurTour</title>
+  <meta name="description" content="Danh sách tour bạn đã đánh dấu quan tâm">
+
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Raleway:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/css/main.css" rel="stylesheet">
+
+  <style>
+    body.saved-tours-page { background: #f4f6fb; }
+    body.saved-tours-page .header {
+      --background-color: rgba(21, 34, 43, 0.97);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+    }
+    .saved-tours-section { padding: 130px 0 70px; }
+
+    .page-title-row {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px; margin-bottom: 28px;
+    }
+    .page-title-row h2 { font-size: 1.6rem; font-weight: 800; color: #1a1a2e; margin: 0; }
+    .page-title-row a.btn-explore {
+      display: inline-flex; align-items: center; gap: 7px; padding: 10px 18px;
+      border-radius: 10px; background: #e84545; color: #fff; font-weight: 700;
+      font-size: 0.85rem; text-decoration: none; transition: background 0.2s;
+    }
+    .page-title-row a.btn-explore:hover { background: #d33c3c; }
+
+    /* Tour cards reuse index style */
+    .tour-card {
+      background: #fff; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.07); transition: transform 0.18s, box-shadow 0.18s;
+      display: flex; flex-direction: column; height: 100%;
+    }
+    .tour-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,0.13); }
+    .tc-thumb { position: relative; overflow: hidden; height: 200px; background: #f0f2f5; }
+    .tc-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .tc-placeholder {
+      width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg,#e8f4fd,#d1ecf1); color: #5bc0de; font-size: 3rem;
+    }
+    .tc-status {
+      position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 20px;
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
+    }
+    .tc-status.published { background: #d4edda; color: #155724; }
+    .tc-status.expired   { background: #fff3cd; color: #856404; }
+    .tc-status.archived  { background: #f8d7da; color: #721c24; }
+    .tc-status.hidden    { background: #e2e3e5; color: #383d41; }
+    .tc-body { padding: 16px 18px 10px; flex: 1; display: flex; flex-direction: column; }
+    .tc-title { font-size: 1rem; font-weight: 700; color: #1a1a2e; margin-bottom: 6px; line-height: 1.35; }
+    .tc-company { font-size: 0.8rem; color: #666; margin-bottom: 4px; }
+    .tc-meta { font-size: 0.8rem; color: #888; margin-bottom: 3px; display: flex; align-items: flex-start; gap: 5px; }
+    .tc-meta i { margin-top: 1px; flex-shrink: 0; }
+    .tc-footer {
+      padding: 10px 18px 14px; display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid #f1f3f5; font-size: 0.8rem;
+    }
+    .tc-price { font-weight: 700; color: #e84545; }
+    .tc-price.free { color: #2e7d32; }
+    .tc-slots { color: #888; }
+    .btn-detail {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+      padding: 8px 12px; border-radius: 8px; background: #f8f9fa; color: #333;
+      text-decoration: none; font-size: 0.83rem; font-weight: 600; border: 1.5px solid #e9ecef;
+      transition: background 0.15s;
+    }
+    .btn-detail:hover { background: #e9ecef; }
+    .btn-unsave {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+      padding: 8px 12px; border-radius: 8px; background: #fff0f0; color: #e84545;
+      font-size: 0.83rem; font-weight: 600; border: 1.5px solid #ffc9c9;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .btn-unsave:hover { background: #ffe0e0; }
+
+    .state-box { text-align: center; padding: 60px 20px; color: #adb5bd; }
+    .state-box i { font-size: 3rem; display: block; margin-bottom: 14px; }
+    .state-box p { font-size: 1rem; margin: 0 0 16px; }
+
+    /* Skeleton */
+    .sk { background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size: 200% 100%; animation: sk-shimmer 1.4s infinite; border-radius: 6px; }
+    @keyframes sk-shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  </style>
+</head>
+
+<body class="saved-tours-page">
+
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center">
+
+      <a href="index.html" class="logo d-flex align-items-center me-auto">
+        <h1 class="sitename">TurTour</h1>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="index.html">Trang chủ</a></li>
+          <li><a href="index.html#about">Giới thiệu</a></li>
+          <li><a href="index.html#portfolio">Tour</a></li>
+          <li><a href="index.html#contact">Liên hệ</a></li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+      <a id="auth-guest" class="cta-btn" href="/auth/sign-in" target="_top" style="display:none;">Đăng Nhập</a>
+
+      <div id="notif-bell" class="notif-bell dropdown" style="display:none;">
+        <a href="#" class="notif-bell-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-bell"></i>
+          <span id="notif-badge" class="notif-badge" style="display:none;">0</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-end notif-dropdown">
+          <div class="notif-dropdown-header">
+            <span>Thông báo</span>
+            <a href="notifications.html">Xem tất cả</a>
+          </div>
+          <div id="notif-dropdown-list" class="notif-dropdown-list">
+            <div class="notif-dropdown-empty">Đang tải...</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="auth-profile" class="auth-profile dropdown" style="display:none;">
+        <a href="#" class="auth-profile-toggle d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-person-circle"></i>
+          <span id="auth-profile-name" class="auth-profile-name"></span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end auth-profile-menu">
+          <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person"></i>Hồ sơ của tôi</a></li>
+          <li><a class="dropdown-item" href="my-tours.html"><i class="bi bi-calendar-check"></i>Tour của tôi</a></li>
+          <li><a class="dropdown-item active" href="saved-tours.html"><i class="bi bi-heart"></i>Tour đã lưu</a></li>
+          <li><a class="dropdown-item" href="notifications.html"><i class="bi bi-bell"></i>Thông báo</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><button type="button" class="dropdown-item logout-item" id="auth-logout-btn"><i class="bi bi-box-arrow-right"></i>Đăng xuất</button></li>
+        </ul>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="saved-tours-section">
+      <div class="container">
+
+        <div class="page-title-row" data-aos="fade-up">
+          <h2><i class="bi bi-heart-fill me-2" style="color:#e84545;"></i>Tour đã lưu</h2>
+          <a href="index.html#portfolio" class="btn-explore"><i class="bi bi-search"></i>Khám phá thêm tour</a>
+        </div>
+
+        <!-- Loading -->
+        <div id="page-loading" data-aos="fade-up">
+          <div class="row gy-4">
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:200px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:18px;width:85%;margin-bottom:8px;"></div><div class="sk" style="height:13px;width:55%;margin-bottom:6px;"></div><div class="sk" style="height:13px;width:65%;margin-bottom:6px;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:36px;flex:1;border-radius:8px;"></div><div class="sk" style="height:36px;flex:1;border-radius:8px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:14px;width:70px;"></div><div class="sk" style="height:12px;width:60px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:200px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:18px;width:75%;margin-bottom:8px;"></div><div class="sk" style="height:13px;width:50%;margin-bottom:6px;"></div><div class="sk" style="height:13px;width:60%;margin-bottom:6px;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:36px;flex:1;border-radius:8px;"></div><div class="sk" style="height:36px;flex:1;border-radius:8px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:14px;width:80px;"></div><div class="sk" style="height:12px;width:65px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:200px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:18px;width:80%;margin-bottom:8px;"></div><div class="sk" style="height:13px;width:58%;margin-bottom:6px;"></div><div class="sk" style="height:13px;width:68%;margin-bottom:6px;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:36px;flex:1;border-radius:8px;"></div><div class="sk" style="height:36px;flex:1;border-radius:8px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:14px;width:75px;"></div><div class="sk" style="height:12px;width:62px;"></div></div></div></div>
+          </div>
+        </div>
+
+        <!-- Guest state -->
+        <div id="page-guest" class="state-box" style="display:none;">
+          <i class="bi bi-lock"></i>
+          <p>Bạn cần đăng nhập để xem tour đã lưu.</p>
+          <a href="/auth/sign-in" target="_top" class="btn btn-danger px-4">Đăng nhập</a>
+        </div>
+
+        <!-- Error -->
+        <div id="page-error" class="state-box" style="display:none;">
+          <i class="bi bi-exclamation-triangle"></i>
+          <p id="page-error-msg">Không thể tải dữ liệu.</p>
+          <button class="btn btn-outline-danger btn-sm" onclick="loadSavedTours()"><i class="bi bi-arrow-clockwise me-1"></i>Thử lại</button>
+        </div>
+
+        <!-- Empty -->
+        <div id="page-empty" class="state-box" style="display:none;">
+          <i class="bi bi-heart"></i>
+          <p>Bạn chưa lưu tour nào.<br>Bấm <i class="bi bi-heart-fill" style="color:#e84545;"></i> trên trang danh sách tour để thêm vào đây.</p>
+          <a href="index.html#portfolio" class="btn btn-danger px-4">Khám phá tour</a>
+        </div>
+
+        <!-- Grid -->
+        <div id="saved-grid" class="row gy-4" style="display:none;" data-aos="fade-up"></div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer" class="footer dark-background">
+    <div class="container footer-top">
+      <div class="row gy-4">
+        <div class="col-lg-4 col-md-6 footer-about">
+          <a href="index.html" class="logo d-flex align-items-center"><span class="sitename">TurTour</span></a>
+          <p class="mt-2">Nền tảng kết nối sinh viên với các tour tham quan thực tế tại doanh nghiệp.</p>
+        </div>
+        <div class="col-lg-4 col-md-3 footer-links">
+          <h4>Điều hướng</h4>
+          <ul>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#hero">Trang chủ</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#portfolio">Danh sách tour</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#contact">Liên hệ</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4 col-md-3 footer-links">
+          <h4>Tài khoản</h4>
+          <ul>
+            <li><i class="bi bi-chevron-right"></i> <a href="my-tours.html">Tour của tôi</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="saved-tours.html">Tour đã lưu</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="profile.html">Hồ sơ của tôi</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="container copyright text-center mt-4">
+      <p>© <span>2025</span> <strong class="px-1 sitename">TurTour</strong> <span>All Rights Reserved</span></p>
+    </div>
+  </footer>
+
+  <div id="toast-container" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;"></div>
+
+  <!-- Vendor JS -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/header-avatar.js"></script>
+  <script src="assets/js/realtime.js"></script>
+  <script src="assets/js/notifications-badge.js"></script>
+
+  <script>
+    AOS.init({ duration: 600, easing: 'ease-in-out', once: true });
+
+    (function () {
+      var API_BASE = window.TURTOUR_API_BASE;
+
+      var session = null;
+      try { session = JSON.parse(localStorage.getItem('turtour.admin.session')); } catch (e) {}
+
+      var guestBtn = document.getElementById('auth-guest');
+      var profileBox = document.getElementById('auth-profile');
+      var profileName = document.getElementById('auth-profile-name');
+      var logoutBtn = document.getElementById('auth-logout-btn');
+
+      if (session && session.token) {
+        if (guestBtn) guestBtn.style.display = 'none';
+        if (profileBox) profileBox.style.display = 'block';
+        if (profileName) profileName.textContent = session.fullName || session.email || 'Tài khoản';
+      } else {
+        if (guestBtn) guestBtn.style.display = '';
+        if (profileBox) profileBox.style.display = 'none';
+      }
+
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function () {
+          localStorage.removeItem('turtour.admin.session');
+          window.parent.location.href = '/auth/sign-in';
+        });
+      }
+
+      if (window.initHeaderAvatar) window.initHeaderAvatar();
+
+      if (!session || !session.token) {
+        document.getElementById('page-loading').style.display = 'none';
+        document.getElementById('page-guest').style.display = 'block';
+        return;
+      }
+
+      function authHeaders() { return { Authorization: 'Bearer ' + session.token }; }
+
+      function fmtDateTime(dateStr) {
+        if (!dateStr) return '—';
+        var d = new Date(dateStr);
+        return d.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      }
+
+      function thumbnail(tour) {
+        var imgs = tour.tourImages;
+        return imgs && imgs.length > 0 ? imgs[0].imageUrl : null;
+      }
+
+      function priceText(fee) {
+        if (!fee || fee === 0) return { text: 'Miễn phí', free: true };
+        return { text: Number(fee).toLocaleString('vi-VN') + ' ₫', free: false };
+      }
+
+      function slots(tour) {
+        var max = tour.maxParticipants || 0;
+        var cur = tour.currentParticipants || 0;
+        return (max - cur) + '/' + max + ' chỗ';
+      }
+
+      function statusLabel(s) {
+        switch ((s || '').toLowerCase()) {
+          case 'published': return 'Mở đăng ký';
+          case 'expired':   return 'Đã đóng';
+          case 'archived':  return 'Đã hủy';
+          default: return s || '—';
+        }
+      }
+
+      function renderSavedCard(tour) {
+        var imgUrl = thumbnail(tour);
+        var status = (tour.publishStatus || '').toLowerCase();
+        var p = priceText(tour.fee);
+        var company = (tour.company && tour.company.name) ? tour.company.name : '';
+        var loc = tour.location || '';
+        var title = tour.tittle || tour.title || '(Chưa đặt tên)';
+
+        var thumbHtml = imgUrl
+          ? '<img src="' + imgUrl + '" alt="' + title + '" loading="lazy" onerror="this.style.display=\'none\'; this.parentNode.querySelector(\'.tc-placeholder\').style.display=\'flex\';">'
+            + '<div class="tc-placeholder" style="display:none;"></div>'
+          : '<div class="tc-placeholder"><i class="bi bi-image"></i></div>';
+
+        return '<div class="col-xl-4 col-md-6">'
+          + '<div class="tour-card">'
+            + '<div class="tc-thumb">'
+              + thumbHtml
+              + '<span class="tc-status ' + status + '">' + statusLabel(tour.publishStatus) + '</span>'
+            + '</div>'
+            + '<div class="tc-body">'
+              + '<h4 class="tc-title">' + title + '</h4>'
+              + (company ? '<div class="tc-company"><i class="bi bi-building me-1"></i>' + company + '</div>' : '')
+              + (loc ? '<div class="tc-meta"><i class="bi bi-geo-alt"></i><span>' + loc + '</span></div>' : '')
+              + '<div class="tc-meta"><i class="bi bi-calendar3"></i><span>' + fmtDateTime(tour.startDate) + '</span></div>'
+              + '<div class="d-flex gap-2 mt-3">'
+                + '<a href="tour-details.html?id=' + tour.id + '" class="btn-detail"><i class="bi bi-info-circle"></i> Chi tiết</a>'
+                + '<button class="btn-unsave" data-unsave-id="' + tour.id + '" data-tour-title="' + title.replace(/"/g, '&quot;') + '"><i class="bi bi-heart-fill"></i> Bỏ lưu</button>'
+              + '</div>'
+            + '</div>'
+            + '<div class="tc-footer">'
+              + '<span class="tc-price' + (p.free ? ' free' : '') + '">' + p.text + '</span>'
+              + '<span class="tc-slots"><i class="bi bi-people me-1"></i>' + slots(tour) + '</span>'
+            + '</div>'
+          + '</div>'
+        + '</div>';
+      }
+
+      function loadSavedTours() {
+        document.getElementById('page-loading').style.display = '';
+        document.getElementById('page-error').style.display = 'none';
+        document.getElementById('page-empty').style.display = 'none';
+        document.getElementById('saved-grid').style.display = 'none';
+
+        fetch(API_BASE + '/tours/interested', { headers: authHeaders() })
+          .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function (tours) {
+            document.getElementById('page-loading').style.display = 'none';
+            var list = Array.isArray(tours) ? tours.filter(function (t) { return (t.publishStatus || '').toLowerCase() !== 'archived'; }) : [];
+            if (list.length === 0) {
+              document.getElementById('page-empty').style.display = 'block';
+              return;
+            }
+            var grid = document.getElementById('saved-grid');
+            grid.innerHTML = list.map(renderSavedCard).join('');
+            grid.style.display = '';
+
+            // Unsave handlers
+            grid.querySelectorAll('[data-unsave-id]').forEach(function (btn) {
+              btn.addEventListener('click', function () {
+                var tourId = btn.getAttribute('data-unsave-id');
+                var tourTitle = btn.getAttribute('data-tour-title');
+                if (!window.confirm('Bỏ lưu tour "' + tourTitle + '"?')) return;
+                btn.disabled = true;
+                fetch(API_BASE + '/tours/' + tourId + '/interest', {
+                  method: 'DELETE',
+                  headers: authHeaders()
+                })
+                  .then(function (res) {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    showToast('Đã bỏ lưu tour.', 'success');
+                    loadSavedTours();
+                  })
+                  .catch(function () {
+                    btn.disabled = false;
+                    showToast('Thao tác thất bại, thử lại sau.', 'error');
+                  });
+              });
+            });
+          })
+          .catch(function (err) {
+            document.getElementById('page-loading').style.display = 'none';
+            document.getElementById('page-error').style.display = 'block';
+            document.getElementById('page-error-msg').textContent = err.message || 'Không thể tải dữ liệu.';
+          });
+      }
+
+      window.loadSavedTours = loadSavedTours;
+      loadSavedTours();
+    })();
+  </script>
+
+</body>
+</html>

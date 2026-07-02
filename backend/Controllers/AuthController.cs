@@ -322,10 +322,66 @@ namespace TurTour.Controllers
                 fullName = company?.Name ?? organizator?.Name ?? user.FullName,
                 email = company?.Email ?? organizator?.Email ?? user.Email,
                 phoneNumber = company?.Phone ?? organizator?.Phone ?? user.PhoneNumber,
+                avatarUrl = user.AvatarUrl,
                 isActive = user.IsActive,
                 roles,
                 company,
                 organizator
+            });
+        }
+
+        [HttpPut("me")]
+        [Authorize]
+        public async Task<IActionResult> UpdateMe(UpdateProfileRequest request)
+        {
+            var userId = CurrentUserHelper.GetUserId(User);
+            if (userId == null) return Unauthorized();
+
+            var user = await _context.Users
+                .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) return NotFound();
+
+            var roles = user.UserRoles.Select(ur => ur.Role!.Name).ToList();
+
+            // Cập nhật thông tin cho User và cho Company/Organizator nếu là vai trò đó.
+            user.FullName = request.FullName;
+            user.PhoneNumber = request.PhoneNumber;
+            if (request.AvatarUrl != null) user.AvatarUrl = request.AvatarUrl;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            if (roles.Contains("Company"))
+            {
+                var company = await _context.Companies.FirstOrDefaultAsync(c => c.UserId == userId);
+                if (company != null)
+                {
+                    company.Name = request.FullName;
+                    company.Phone = request.PhoneNumber;
+                    company.UpdatedAt = DateTime.UtcNow;
+                }
+            }
+            else if (roles.Contains("Organizator"))
+            {
+                var organizator = await _context.Organizators.FirstOrDefaultAsync(o => o.UserId == userId);
+                if (organizator != null)
+                {
+                    organizator.Name = request.FullName;
+                    organizator.Phone = request.PhoneNumber;
+                    organizator.UpdatedAt = DateTime.UtcNow;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                id = user.Id,
+                fullName = user.FullName,
+                email = user.Email,
+                phoneNumber = user.PhoneNumber,
+                avatarUrl = user.AvatarUrl,
+                isActive = user.IsActive,
+                roles
             });
         }
 

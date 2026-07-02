@@ -7,187 +7,300 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Tour của tôi - TurTour</title>
   <meta name="description" content="Danh sách tour đã đăng ký và trạng thái thanh toán">
-  <meta name="keywords" content="turtour, tour, thanh toán, sinh viên">
 
-  <!-- Favicons -->
   <link href="assets/img/favicon.png" rel="icon">
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Raleway:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Vendor CSS Files -->
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-
-  <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
 
   <style>
-    .my-tours-section {
-      padding: 140px 0 60px 0;
-    }
-    .section-card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-      border: 1px solid #f1f3f5;
-    }
-    .section-card h3 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #1a1a2e;
-      border-bottom: 2px solid #e84545;
-      padding-bottom: 12px;
-      margin-bottom: 20px;
+    body.my-tours-page { background: #f4f6fb; }
+    body.my-tours-page .header {
+      --background-color: rgba(21, 34, 43, 0.97);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.12);
     }
 
-    .reg-card {
-      border: 1px solid #f1f3f5;
-      border-radius: 12px;
-      padding: 18px 20px;
-      margin-bottom: 16px;
-      transition: box-shadow 0.2s;
+    .my-tours-section { padding: 130px 0 70px; }
+
+    /* ── Page header ── */
+    .page-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 28px;
     }
-    .reg-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.06); }
-    .reg-card h4 {
-      font-size: 1.05rem;
+    .page-title-row h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #1a1a2e;
+      margin: 0;
+    }
+    .page-title-row a.btn-explore {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      background: #e84545;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .page-title-row a.btn-explore:hover { background: #d33c3c; }
+
+    /* ── Stats chips ── */
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .stat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: #fff;
+      border: 1.5px solid #e9ecef;
+      color: #495057;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .stat-chip-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+
+    /* ── Registration cards ── */
+    .reg-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.05);
+      overflow: hidden;
+      margin-bottom: 18px;
+      transition: box-shadow 0.22s, transform 0.22s;
+    }
+    .reg-card:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+    .reg-card-inner {
+      display: flex;
+      gap: 0;
+      align-items: stretch;
+    }
+    .reg-thumb {
+      width: 120px;
+      min-height: 120px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #e8f4fd, #d1ecf1);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #5bc0de;
+      font-size: 2.4rem;
+    }
+    .reg-thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .reg-body {
+      flex: 1;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+    .reg-title {
+      font-size: 1rem;
       font-weight: 700;
       color: #1a1a2e;
-      margin-bottom: 6px;
+      margin: 0;
+      line-clamp: 2;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      display: -webkit-box;
+      overflow: hidden;
     }
+    .reg-company {
+      font-size: 0.8rem;
+      color: #e84545;
+      font-weight: 600;
+    }
+    .reg-meta {
+      font-size: 0.8rem;
+      color: #868e96;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .reg-meta span { display: inline-flex; align-items: center; gap: 4px; }
+    .reg-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .reg-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; align-items: center; }
+
+    /* ── Badges ── */
     .badge-pill {
-      padding: 4px 12px;
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
       border-radius: 20px;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 700;
       text-transform: uppercase;
+      letter-spacing: 0.04em;
       color: #fff;
       white-space: nowrap;
     }
-    .badge-pending { background-color: #ff9800; }
-    .badge-approved { background-color: #2196f3; }
-    .badge-rejected { background-color: #f44336; }
-    .badge-waitinglisted { background-color: #8392ab; }
-    .badge-paid { background-color: #4caf50; }
-    .badge-checkedin { background-color: #17ad37; }
-    .badge-completed { background-color: #141727; }
+    .badge-pending     { background: #ff9800; }
+    .badge-approved    { background: #2196f3; }
+    .badge-rejected    { background: #f44336; }
+    .badge-waitinglisted { background: #8392ab; }
+    .badge-paid        { background: #4caf50; }
+    .badge-checkedin   { background: #17ad37; }
+    .badge-completed   { background: #141727; }
+    .badge-paid-yes    { background: #4caf50; }
+    .badge-paid-no     { background: #c9d0d9; color: #fff; }
 
-    .badge-paid-yes { background-color: #4caf50; }
-    .badge-paid-no { background-color: #b0b8c4; }
-
+    /* ── Action buttons ── */
     .btn-pay-now {
-      background-color: #e84545;
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: background-color 0.2s;
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #e84545; color: #fff; border: none;
+      padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.82rem;
+      cursor: pointer; transition: background 0.2s, transform 0.1s;
     }
-    .btn-pay-now:hover { background-color: #d33c3c; color: #fff; }
+    .btn-pay-now:hover { background: #d33c3c; }
+    .btn-pay-now:active { transform: translateY(1px); }
 
+    .btn-feedback {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #ff9800; color: #fff; border: none;
+      padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.82rem;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-feedback:hover { background: #e08600; }
+
+    .feedback-done {
+      display: inline-flex; align-items: center; gap: 5px;
+      color: #4caf50; font-weight: 700; font-size: 0.82rem;
+    }
+
+    /* ── QR panel ── */
     .qr-panel {
       display: none;
-      margin-top: 16px;
-      padding: 18px;
       background: #f8f9fa;
-      border-radius: 10px;
-      border: 1px dashed #e9ecef;
+      border-top: 1px dashed #dee2e6;
+      padding: 20px;
     }
-    .qr-panel.show { display: flex; }
+    .qr-panel.show { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
     .qr-panel img {
-      width: 180px;
-      height: 180px;
-      border-radius: 8px;
-      background: #fff;
-      border: 1px solid #e9ecef;
-      flex-shrink: 0;
+      width: 170px; height: 170px; border-radius: 10px;
+      background: #fff; border: 1px solid #e9ecef; flex-shrink: 0;
     }
     .qr-info-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      font-size: 0.88rem;
+      list-style: none; padding: 0; margin: 0 0 12px; font-size: 0.85rem;
     }
     .qr-info-list li {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 6px 0;
-      border-bottom: 1px solid #e9ecef;
+      display: flex; justify-content: space-between; gap: 12px;
+      padding: 6px 0; border-bottom: 1px solid #e9ecef;
     }
     .qr-info-list li:last-child { border-bottom: none; }
     .qr-info-list li strong { color: #212529; }
-    .qr-note {
-      font-size: 0.78rem;
-      color: #868e96;
-      margin-top: 8px;
-      margin-bottom: 0;
-    }
+    .qr-note { font-size: 0.76rem; color: #868e96; margin: 0 0 10px; }
 
-    .btn-feedback {
-      background-color: #ff9800;
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    .btn-feedback:hover { background-color: #e08600; color: #fff; }
-
+    /* ── Feedback panel ── */
     .feedback-panel {
       display: none;
-      margin-top: 16px;
-      padding: 18px;
       background: #fff8ec;
-      border-radius: 10px;
-      border: 1px dashed #ffd699;
+      border-top: 1px dashed #ffd699;
+      padding: 20px;
     }
     .feedback-panel.show { display: block; }
     .star-rating {
-      display: flex;
-      gap: 4px;
-      font-size: 1.6rem;
-      color: #d2d6da;
-      margin-bottom: 10px;
+      display: flex; gap: 6px;
+      font-size: 1.6rem; color: #d2d6da; margin-bottom: 12px;
     }
     .star-rating i { cursor: pointer; transition: color 0.15s; }
     .star-rating i.active { color: #ff9800; }
-    .feedback-done {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: #4caf50;
-      font-weight: 700;
-      font-size: 0.85rem;
-    }
 
-    body.my-tours-page .header {
-      --background-color: rgba(21, 34, 43, 0.95);
-      box-shadow: 0px 0 18px rgba(0, 0, 0, 0.1);
+    /* ── Guest / state cards ── */
+    .state-card {
+      background: #fff; border-radius: 20px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+      padding: 60px 32px; text-align: center;
+      max-width: 480px; margin: 80px auto 0;
     }
+    .state-icon {
+      width: 72px; height: 72px; border-radius: 20px;
+      background: rgba(232,69,69,0.1); color: #e84545;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; margin: 0 auto 20px;
+    }
+    .state-card h3 { font-size: 1.2rem; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; }
+    .state-card p { color: #868e96; font-size: 0.9rem; margin-bottom: 20px; }
+    .btn-state {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 10px;
+      background: #e84545; color: #fff;
+      font-weight: 700; font-size: 0.9rem;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-state:hover { background: #d33c3c; color: #fff; }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center; padding: 60px 20px;
+    }
+    .empty-state-icon {
+      width: 80px; height: 80px; border-radius: 24px;
+      background: rgba(232,69,69,0.08); color: #e84545;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem; margin: 0 auto 20px;
+    }
+    .empty-state h4 { font-size: 1.1rem; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; }
+    .empty-state p { color: #868e96; font-size: 0.9rem; }
+
+    @media (max-width: 575px) {
+      .reg-thumb { width: 80px; min-height: 80px; font-size: 1.8rem; }
+      .reg-body { padding: 14px 14px; }
+    }
+    .header-avatar-circle {
+      width: 34px; height: 34px; border-radius: 50%;
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #e84545, #ff7b7b);
+      border: 2px solid rgba(255,255,255,0.28);
+      color: #fff; font-size: 0.76rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: -0.01em;
+      flex-shrink: 0; cursor: pointer; user-select: none;
+      transition: border-color 0.2s ease, transform 0.18s ease;
+    }
+    .header-avatar-circle:hover { border-color: rgba(255,255,255,0.55); transform: scale(1.07); }
   </style>
+  <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.14/dist/dotlottie-wc.js" type="module"></script>
 </head>
 
 <body class="my-tours-page">
 
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
-
       <a href="index.html" class="logo d-flex align-items-center me-auto">
         <h1 class="sitename">TurTour</h1>
       </a>
-
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="index.html#hero">Trang chủ</a></li>
@@ -200,9 +313,7 @@
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
-
       <a id="auth-guest" class="cta-btn" href="/auth/sign-in" target="_top">Đăng Nhập</a>
-
       <div id="notif-bell" class="notif-bell dropdown" style="display:none;">
         <a href="#" class="notif-bell-toggle" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="bi bi-bell"></i>
@@ -218,7 +329,6 @@
           </div>
         </div>
       </div>
-
       <div id="auth-profile" class="auth-profile dropdown" style="display:none;">
         <a href="#" class="auth-profile-toggle d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="bi bi-person-circle"></i>
@@ -227,55 +337,71 @@
         <ul class="dropdown-menu dropdown-menu-end auth-profile-menu">
           <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person"></i>Hồ sơ của tôi</a></li>
           <li><a class="dropdown-item active" href="my-tours.html"><i class="bi bi-calendar-check"></i>Tour của tôi</a></li>
+          <li><a class="dropdown-item" href="saved-tours.html"><i class="bi bi-heart"></i>Tour đã lưu</a></li>
           <li><a class="dropdown-item" href="notifications.html"><i class="bi bi-bell"></i>Thông báo</a></li>
           <li id="auth-dashboard-item" style="display:none;"><a class="dropdown-item" href="/admin/dashboard" target="_top"><i class="bi bi-speedometer2"></i>Trang quản trị</a></li>
           <li><hr class="dropdown-divider"></li>
           <li><button type="button" class="dropdown-item logout-item" id="auth-logout-btn"><i class="bi bi-box-arrow-right"></i>Đăng xuất</button></li>
         </ul>
       </div>
-
     </div>
   </header>
 
   <main class="main">
     <section class="my-tours-section">
-      <div class="container" data-aos="fade-up">
+      <div class="container">
 
-        <!-- Not logged in -->
-        <div id="page-guest" style="display:none;" class="text-center py-5">
-          <i class="bi bi-lock text-danger" style="font-size: 3.5rem;"></i>
-          <h3 class="mt-3 font-weight-bold">Bạn cần đăng nhập</h3>
-          <p class="text-muted">Vui lòng đăng nhập bằng tài khoản Sinh viên để xem tour đã đăng ký.</p>
-          <a href="/auth/sign-in" target="_top" class="btn btn-outline-danger mt-2">Đến trang đăng nhập</a>
+        <!-- Guest -->
+        <div id="page-guest" style="display:none;">
+          <div class="state-card" data-aos="fade-up">
+            <div class="state-icon"><i class="bi bi-lock"></i></div>
+            <h3>Bạn chưa đăng nhập</h3>
+            <p>Vui lòng đăng nhập bằng tài khoản Sinh viên để xem tour đã đăng ký.</p>
+            <a href="/auth/sign-in" target="_top" class="btn-state"><i class="bi bi-box-arrow-in-right"></i> Đăng nhập ngay</a>
+          </div>
         </div>
 
-        <!-- Not a student -->
-        <div id="page-unavailable" style="display:none;" class="text-center py-5">
-          <i class="bi bi-info-circle text-danger" style="font-size: 3.5rem;"></i>
-          <p class="text-muted mt-3">Mục này chỉ áp dụng cho tài khoản Sinh viên.</p>
+        <!-- Not student -->
+        <div id="page-unavailable" style="display:none;">
+          <div class="state-card" data-aos="fade-up">
+            <div class="state-icon"><i class="bi bi-info-circle"></i></div>
+            <h3>Chức năng chỉ dành cho sinh viên</h3>
+            <p>Mục "Tour của tôi" chỉ áp dụng cho tài khoản Sinh viên.</p>
+          </div>
         </div>
 
         <!-- Loading -->
-        <div id="page-loading" class="text-center py-5">
-          <div class="spinner-border text-danger mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+        <div id="page-loading" class="text-center py-5" data-aos="fade-up">
+          <dotlottie-wc src="https://lottie.host/3ff9baf3-3e77-4906-a454-ccb295313a7f/Ms4tMee3Lz.lottie" style="width:110px;height:110px;display:block;margin:0 auto;" autoplay loop></dotlottie-wc>
           <p class="text-muted">Đang tải danh sách tour...</p>
         </div>
 
         <!-- Error -->
-        <div id="page-error" style="display:none;" class="text-center py-5">
-          <i class="bi bi-exclamation-octagon text-danger" style="font-size: 3.5rem;"></i>
-          <p id="page-error-msg" class="text-muted mt-3">Không thể tải dữ liệu.</p>
+        <div id="page-error" style="display:none;">
+          <div class="state-card" data-aos="fade-up">
+            <div class="state-icon"><i class="bi bi-exclamation-circle"></i></div>
+            <h3>Không thể tải dữ liệu</h3>
+            <p id="page-error-msg">Vui lòng thử lại sau.</p>
+            <button type="button" onclick="location.reload()" class="btn-state"><i class="bi bi-arrow-clockwise"></i> Thử lại</button>
+          </div>
         </div>
 
         <!-- Content -->
         <div id="page-content" style="display:none;">
-          <div class="section-card">
-            <h3><i class="bi bi-airplane-fill text-danger"></i> Tour của tôi</h3>
-            <div id="reg-empty" style="display:none;">
-              <p class="text-muted">Bạn chưa đăng ký tour nào. <a href="index.html#portfolio">Khám phá tour ngay</a>.</p>
-            </div>
-            <div id="reg-list"></div>
+          <div class="page-title-row" data-aos="fade-up">
+            <h2><i class="bi bi-airplane-fill me-2" style="color:#e84545;"></i>Tour của tôi</h2>
+            <a href="index.html#portfolio" class="btn-explore"><i class="bi bi-search"></i> Khám phá thêm tour</a>
           </div>
+          <div id="stats-row" class="stats-row" data-aos="fade-up" data-aos-delay="60"></div>
+          <div id="reg-empty" style="display:none;" data-aos="fade-up">
+            <div class="empty-state">
+              <div class="empty-state-icon"><i class="bi bi-calendar-x"></i></div>
+              <h4>Bạn chưa đăng ký tour nào</h4>
+              <p>Khám phá các tour đang mở đăng ký và đăng ký tham gia ngay!</p>
+              <a href="index.html#portfolio" class="btn-state mt-2"><i class="bi bi-search"></i> Xem danh sách tour</a>
+            </div>
+          </div>
+          <div id="reg-list" data-aos="fade-up" data-aos-delay="100"></div>
         </div>
 
       </div>
@@ -283,7 +409,6 @@
   </main>
 
   <footer id="footer" class="footer dark-background">
-
     <div class="container footer-top">
       <div class="row gy-4">
         <div class="col-lg-4 col-md-6 footer-about">
@@ -301,7 +426,6 @@
             <a href=""><i class="bi bi-instagram"></i></a>
           </div>
         </div>
-
         <div class="col-lg-4 col-md-3 footer-links">
           <h4>Liên kết nhanh</h4>
           <ul>
@@ -309,10 +433,9 @@
             <li><i class="bi bi-chevron-right"></i> <a href="index.html#about">Giới thiệu</a></li>
             <li><i class="bi bi-chevron-right"></i> <a href="index.html#portfolio">Danh sách tour</a></li>
             <li><i class="bi bi-chevron-right"></i> <a href="index.html#team">Đối tác</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="index.html#contact">Liên hệ</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="team.html">Đội ngũ</a></li>
           </ul>
         </div>
-
         <div class="col-lg-4 col-md-3 footer-links">
           <h4>Tài khoản</h4>
           <ul>
@@ -322,46 +445,38 @@
             <li><i class="bi bi-chevron-right"></i> <a href="/auth/sign-in" target="_top">Đăng nhập</a></li>
           </ul>
         </div>
-
       </div>
     </div>
-
     <div class="container copyright text-center mt-4">
       <p>© <span>Bản quyền</span> <strong class="px-1 sitename">TurTour</strong> <span>Đã đăng ký bản quyền</span></p>
     </div>
-
   </footer>
 
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-  <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
-
-  <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
   <script src="assets/js/toast.js"></script>
   <script src="assets/js/auth-guard.js"></script>
-    <script src="assets/vendor/signalr/signalr.min.js"></script>
+  <script src="assets/vendor/signalr/signalr.min.js"></script>
   <script src="assets/js/realtime.js"></script>
-<script src="assets/js/notifications-badge.js"></script>
+  <script src="assets/js/notifications-badge.js"></script>
+  <script src="assets/js/header-avatar.js"></script>
 
   <script>
     (function () {
       var API_BASE = window.TURTOUR_API_BASE;
 
       // Tài khoản ngân hàng test (sandbox) của SePay — dùng để demo, không phải tiền thật.
-      // bin: mã ngân hàng theo chuẩn VietQR (napas), xem danh sách tại https://api.vietqr.io/v2/banks
       var BANK_CONFIG = {
-        bin: '970423',                 // TPBank
+        bin: '970423',
         accountNo: '0000000001',
-        accountName: 'NGUYEN DUC XUAN TRUONG' // tên chủ tài khoản (không dấu, in hoa theo chuẩn VietQR)
+        accountName: 'NGUYEN DUC XUAN TRUONG'
       };
 
       var session = null;
-      try {
-        session = JSON.parse(localStorage.getItem('turtour.admin.session'));
-      } catch (e) {}
+      try { session = JSON.parse(localStorage.getItem('turtour.admin.session')); } catch (e) {}
 
       var guestBtn = document.getElementById('auth-guest');
       var profileBox = document.getElementById('auth-profile');
@@ -373,13 +488,10 @@
         guestBtn.style.display = 'none';
         profileBox.style.display = 'block';
         profileName.textContent = session.fullName || session.email || 'Tài khoản';
-
         var headerRoles = session.roles || [];
         if (headerRoles.includes('Admin') || headerRoles.includes('Organizator') || headerRoles.includes('Company')) {
           var dashboardLink = dashboardItem.querySelector('a');
-          if (dashboardLink) {
-            dashboardLink.href = headerRoles.includes('Admin') ? '/admin/dashboard' : '/partner/dashboard';
-          }
+          if (dashboardLink) dashboardLink.href = headerRoles.includes('Admin') ? '/admin/dashboard' : '/partner/dashboard';
           dashboardItem.style.display = 'block';
         }
       }
@@ -410,13 +522,13 @@
 
       function statusBadge(status) {
         var map = {
-          Pending: ['badge-pending', 'Chờ duyệt'],
-          Approved: ['badge-approved', 'Đã duyệt'],
-          Rejected: ['badge-rejected', 'Đã từ chối'],
+          Pending:       ['badge-pending',       'Chờ duyệt'],
+          Approved:      ['badge-approved',      'Đã duyệt'],
+          Rejected:      ['badge-rejected',      'Đã từ chối'],
           Waitinglisted: ['badge-waitinglisted', 'Danh sách chờ'],
-          Paid: ['badge-paid', 'Đã thanh toán'],
-          CheckedIn: ['badge-checkedin', 'Đã check-in'],
-          Completed: ['badge-completed', 'Hoàn thành']
+          Paid:          ['badge-paid',          'Đã thanh toán'],
+          CheckedIn:     ['badge-checkedin',     'Đã check-in'],
+          Completed:     ['badge-completed',     'Hoàn thành']
         };
         var entry = map[status] || ['badge-waitinglisted', status || '—'];
         return '<span class="badge-pill ' + entry[0] + '">' + entry[1] + '</span>';
@@ -433,16 +545,10 @@
           + (paid ? 'Đã thanh toán' : 'Chưa thanh toán') + '</span>';
       }
 
-      // Doanh nghiệp đã gắn tài khoản thanh toán riêng (trang "Tài khoản thanh toán" của đối tác)
-      // thì dùng đúng tài khoản đó — chưa gắn thì tạm dùng tài khoản test để demo.
       function resolveBankAccount(tour) {
         var company = tour && tour.company;
         if (company && company.bankBin && company.bankAccountNo && company.bankAccountName) {
-          return {
-            bin: company.bankBin,
-            accountNo: company.bankAccountNo,
-            accountName: company.bankAccountName
-          };
+          return { bin: company.bankBin, accountNo: company.bankAccountNo, accountName: company.bankAccountName };
         }
         return BANK_CONFIG;
       }
@@ -454,188 +560,236 @@
           + '&accountName=' + encodeURIComponent(bankAccount.accountName);
       }
 
-      function authHeaders() {
-        return { Authorization: 'Bearer ' + session.token };
+      function authHeaders() { return { Authorization: 'Bearer ' + session.token }; }
+
+      function thumbnail(tour) {
+        var imgs = (tour && tour.tourImages) || [];
+        var thumb = imgs.find(function (i) { return i.isthumbnail || i.isThumbnail; });
+        return (thumb || imgs[0] || {}).imageUrl || '';
+      }
+
+      function renderStats(registrations) {
+        var counts = { Pending: 0, Approved: 0, Waitinglisted: 0, Paid: 0, CheckedIn: 0, Completed: 0, Rejected: 0 };
+        registrations.forEach(function (r) { if (counts[r.status] !== undefined) counts[r.status]++; });
+        var labels = {
+          Pending: ['Chờ duyệt', '#ff9800'],
+          Approved: ['Đã duyệt', '#2196f3'],
+          Waitinglisted: ['Danh sách chờ', '#8392ab'],
+          Paid: ['Đã thanh toán', '#4caf50'],
+          CheckedIn: ['Đã check-in', '#17ad37'],
+          Completed: ['Hoàn thành', '#141727'],
+          Rejected: ['Đã từ chối', '#f44336']
+        };
+        var row = document.getElementById('stats-row');
+        row.innerHTML = '';
+        Object.keys(labels).forEach(function (k) {
+          if (counts[k] === 0) return;
+          var chip = document.createElement('span');
+          chip.className = 'stat-chip';
+          chip.innerHTML = '<span class="stat-chip-dot" style="background:' + labels[k][1] + ';"></span>'
+            + labels[k][0] + ': <strong>' + counts[k] + '</strong>';
+          row.appendChild(chip);
+        });
+        var total = document.createElement('span');
+        total.className = 'stat-chip';
+        total.innerHTML = '<i class="bi bi-collection" style="color:#e84545;"></i> Tổng: <strong>' + registrations.length + '</strong>';
+        row.appendChild(total);
       }
 
       function loadRegistrations() {
         return fetch(API_BASE + '/registrations/my', { headers: authHeaders() })
-        .then(function (res) {
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          return res.json();
-        })
-        .then(function (registrations) {
-          document.getElementById('page-loading').style.display = 'none';
-          document.getElementById('page-content').style.display = 'block';
+          .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function (registrations) {
+            document.getElementById('page-loading').style.display = 'none';
+            document.getElementById('page-content').style.display = 'block';
 
-          var emptyEl = document.getElementById('reg-empty');
-          var listEl = document.getElementById('reg-list');
+            var emptyEl = document.getElementById('reg-empty');
+            var listEl = document.getElementById('reg-list');
 
-          if (!registrations || registrations.length === 0) {
-            emptyEl.style.display = 'block';
-            listEl.innerHTML = '';
-            return;
-          }
-          emptyEl.style.display = 'none';
-
-          listEl.innerHTML = registrations.map(function (reg, index) {
-            var tour = reg.tour || {};
-            var title = tour.tittle || tour.title || '(Chưa đặt tên)';
-            var code = tour.code || '';
-            var fee = Number(tour.fee || 0);
-            var feeText = fee > 0 ? fee.toLocaleString('vi-VN') + ' ₫' : 'Miễn phí';
-            var canPay = !isRegPaid(reg) && reg.status === 'Approved' && fee > 0;
-            var canCancel = ['CheckedIn', 'Completed', 'Rejected'].indexOf(reg.status) === -1;
-            // Chỉ cho đánh giá khi: đã đăng ký tour này, thanh toán đã ở trạng thái Paid, và lượt
-            // đăng ký này đã được đánh dấu Hoàn thành (RegistrationStatus.Completed) — khớp với
-            // điều kiện backend ở FeedbacksController, không còn dựa vào Tour.Status nữa.
-            var paymentIsPaid = Boolean(reg.payment && reg.payment.paymentStatus === 'Paid');
-            var canReview = paymentIsPaid && reg.status === 'Completed' && !reg.hasFeedback;
-            var transferContent = 'TT ' + (code || reg.tourId.slice(0, 8)) + ' ' + reg.id.slice(0, 8);
-            // Trạng thái Paid/CheckedIn/Completed đã tự nói rõ "đã thanh toán" rồi,
-            // nên chỉ hiện thêm badge thanh toán khi nó còn mang thông tin mới (chưa rõ ràng từ trạng thái).
-            var showPaymentBadge = ['Pending', 'Approved', 'Waitinglisted'].indexOf(reg.status) !== -1;
-
-            var html = '<div class="reg-card">'
-              + '<div class="d-flex justify-content-between align-items-start flex-wrap gap-2">'
-              + '<h4>' + title + '</h4>'
-              + '<div class="d-flex gap-1 flex-wrap">' + statusBadge(reg.status) + (showPaymentBadge ? paymentBadge(reg) : '') + '</div>'
-              + '</div>'
-              + '<p class="text-muted mb-1" style="font-size:0.88rem;">Ngày đăng ký: ' + fmtDate(reg.registrationDate) + ' • Phí: ' + feeText + '</p>'
-              + (reg.rejectionReason ? '<p class="text-danger mb-2" style="font-size:0.85rem;">Lý do từ chối: ' + reg.rejectionReason + '</p>' : '');
-
-            html += '<div class="d-flex gap-2 flex-wrap mt-2">'
-              + '<a href="tour-details.html?id=' + reg.tourId + '" class="btn btn-sm btn-outline-dark">Xem chi tiết tour</a>';
-
-            if (canPay) {
-              html += '<button type="button" class="btn-pay-now" data-toggle-qr="qr-' + index + '">'
-                + '<i class="bi bi-qr-code-scan"></i> Quét mã chuyển khoản</button>';
+            if (!registrations || registrations.length === 0) {
+              emptyEl.style.display = 'block';
+              listEl.innerHTML = '';
+              document.getElementById('stats-row').innerHTML = '';
+              return;
             }
+            emptyEl.style.display = 'none';
+            renderStats(registrations);
 
-            if (canCancel) {
-              html += '<button type="button" class="btn btn-sm btn-outline-danger" data-cancel-reg="' + reg.id + '">'
-                + '<i class="bi bi-x-circle"></i> Hủy đăng ký</button>';
-            }
+            listEl.innerHTML = registrations.map(function (reg, index) {
+              var tour = reg.tour || {};
+              var title = tour.tittle || tour.title || '(Chưa đặt tên)';
+              var code = tour.code || '';
+              var fee = Number(tour.fee || 0);
+              var feeText = fee > 0 ? fee.toLocaleString('vi-VN') + ' ₫' : 'Miễn phí';
+              var company = (tour.company && tour.company.name) ? tour.company.name : '';
+              var canPay = !isRegPaid(reg) && reg.status === 'Approved' && fee > 0;
+              var canCancel = reg.status === 'Pending' || reg.status === 'Waitinglisted';
+              var paymentIsPaid = Boolean(reg.payment && reg.payment.paymentStatus === 'Paid');
+              var canReview = paymentIsPaid && reg.status === 'Completed' && !reg.hasFeedback;
+              var transferContent = 'TT ' + (code || reg.tourId.slice(0, 8)) + ' ' + reg.id.slice(0, 8);
+              var showPaymentBadge = ['Pending', 'Approved', 'Waitinglisted'].indexOf(reg.status) !== -1;
+              var thumbUrl = thumbnail(tour);
 
-            if (canReview) {
-              html += '<button type="button" class="btn-feedback" data-toggle-feedback="fb-' + index + '">'
-                + '<i class="bi bi-star-fill"></i> Đánh giá tour</button>';
-            } else if (reg.hasFeedback) {
-              html += '<span class="feedback-done"><i class="bi bi-check-circle-fill"></i> Đã đánh giá</span>';
-            }
+              var thumbHtml = thumbUrl
+                ? '<img src="' + thumbUrl + '" alt="' + title + '" onerror="this.parentNode.innerHTML=\'<i class=&quot;bi bi-image&quot;></i>\'">'
+                : '<i class="bi bi-building"></i>';
 
-            html += '</div>';
+              var html = '<div class="reg-card">'
+                + '<div class="reg-card-inner">'
+                  + '<div class="reg-thumb">' + thumbHtml + '</div>'
+                  + '<div class="reg-body">'
+                    + '<h5 class="reg-title">' + title + '</h5>'
+                    + (company ? '<div class="reg-company"><i class="bi bi-building me-1"></i>' + company + '</div>' : '')
+                    + '<div class="reg-meta">'
+                      + '<span><i class="bi bi-calendar3"></i>' + fmtDate(reg.registrationDate) + '</span>'
+                      + '<span><i class="bi bi-cash-coin"></i>' + feeText + '</span>'
+                    + '</div>'
+                    + '<div class="reg-badges">'
+                      + statusBadge(reg.status)
+                      + (showPaymentBadge ? paymentBadge(reg) : '')
+                    + '</div>'
+                    + (reg.rejectionReason ? '<p style="font-size:0.8rem;color:#f44336;margin:4px 0 0;">Từ chối: ' + reg.rejectionReason + '</p>' : '')
+                    + '<div class="reg-actions">'
+                      + '<a href="tour-details.html?id=' + reg.tourId + '" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;">Chi tiết</a>';
 
-            if (canPay) {
-              var bankAccount = resolveBankAccount(tour);
-              var qrUrl = buildVietQrUrl(fee, transferContent, bankAccount);
-              html += '<div class="qr-panel gap-3 align-items-center" id="qr-' + index + '">'
-                + '<img src="' + qrUrl + '" alt="QR chuyển khoản">'
-                + '<div class="flex-grow-1">'
-                + '<ul class="qr-info-list">'
-                + '<li><span>Số tiền</span><strong>' + feeText + '</strong></li>'
-                + '<li><span>Nội dung CK</span><strong>' + transferContent + '</strong></li>'
-                + '<li><span>Chủ tài khoản</span><strong>' + bankAccount.accountName + '</strong></li>'
-                + '</ul>'
-                + '<p class="qr-note">Mở app ngân hàng/MoMo, quét mã QR hoặc chuyển khoản đúng nội dung trên.</p>'
-                + '<div class="d-flex gap-2 flex-wrap">'
-                + '<button type="button" class="btn btn-sm btn-outline-primary" data-sepay-demo="' + reg.id + '" data-amount="' + fee + '" data-content="' + transferContent + '">'
-                + '<i class="bi bi-lightning-charge-fill"></i> Giả lập đã nhận tiền (Demo SePay)</button>'
-                + '</div>'
-                + '<p class="text-muted mt-1" style="font-size:0.75rem;">Nút demo mô phỏng webhook ngân hàng thật (SePay) báo tiền về — dùng khi chưa liên kết tài khoản ngân hàng thật, hệ thống sẽ tự xác nhận thanh toán như giao dịch thật.</p>'
-                + '</div>'
-                + '</div>';
-            }
-
-            if (canReview) {
-              html += '<div class="feedback-panel" id="fb-' + index + '">'
-                + '<p class="mb-2" style="font-size:0.88rem;">Bạn cảm thấy tour này thế nào?</p>'
-                + '<div class="star-rating" data-stars="' + reg.id + '">'
-                + [1, 2, 3, 4, 5].map(function (n) {
-                    return '<i class="bi bi-star-fill" data-star-value="' + n + '"></i>';
-                  }).join('')
-                + '</div>'
-                + '<textarea class="form-control mb-2" data-feedback-comment="' + reg.id + '" rows="2" placeholder="Nhận xét của bạn (không bắt buộc)"></textarea>'
-                + '<button type="button" class="btn btn-sm btn-warning" data-submit-feedback="' + reg.id + '" data-tour-id="' + reg.tourId + '">Gửi đánh giá</button>'
-                + '</div>';
-            }
-
-            html += '</div>';
-            return html;
-          }).join('');
-
-          listEl.querySelectorAll('[data-toggle-qr]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-              var panel = document.getElementById(btn.getAttribute('data-toggle-qr'));
-              if (panel) {
-                panel.classList.toggle('show');
+              if (canPay) {
+                html += '<button type="button" class="btn-pay-now" data-toggle-qr="qr-' + index + '">'
+                  + '<i class="bi bi-qr-code-scan"></i> Thanh toán</button>';
               }
+              if (canCancel) {
+                html += '<button type="button" class="btn btn-sm btn-outline-danger" style="border-radius:8px;" data-cancel-reg="' + reg.id + '">'
+                  + '<i class="bi bi-x-circle"></i> Hủy</button>';
+              }
+              if (canReview) {
+                html += '<button type="button" class="btn-feedback" data-toggle-feedback="fb-' + index + '">'
+                  + '<i class="bi bi-star-fill"></i> Đánh giá</button>';
+              } else if (reg.hasFeedback) {
+                html += '<span class="feedback-done"><i class="bi bi-check-circle-fill"></i> Đã đánh giá</span>';
+              }
+
+              html += '</div>'    // reg-actions
+                + '</div>'        // reg-body
+                + '</div>';       // reg-card-inner
+
+              // QR Panel
+              if (canPay) {
+                var bankAccount = resolveBankAccount(tour);
+                var qrUrl = buildVietQrUrl(fee, transferContent, bankAccount);
+                html += '<div class="qr-panel" id="qr-' + index + '">'
+                  + '<img src="' + qrUrl + '" alt="QR chuyển khoản">'
+                  + '<div>'
+                    + '<ul class="qr-info-list">'
+                      + '<li><span>Số tiền</span><strong>' + feeText + '</strong></li>'
+                      + '<li><span>Nội dung CK</span><strong>' + transferContent + '</strong></li>'
+                      + '<li><span>Chủ tài khoản</span><strong>' + bankAccount.accountName + '</strong></li>'
+                    + '</ul>'
+                    + '<p class="qr-note">Mở app ngân hàng, quét mã hoặc chuyển khoản theo thông tin trên.</p>'
+                    + '<div class="d-flex gap-2 flex-wrap">'
+                      + '<button type="button" class="btn btn-sm btn-outline-primary" data-sepay-demo="' + reg.id + '" data-amount="' + fee + '" data-content="' + transferContent + '">'
+                        + '<i class="bi bi-lightning-charge-fill"></i> Giả lập đã nhận tiền (Demo SePay)'
+                      + '</button>'
+                    + '</div>'
+                    + '<p class="text-muted mt-2" style="font-size:0.72rem;">Nút demo mô phỏng webhook ngân hàng thật (SePay) - dùng khi chưa liên kết tài khoản ngân hàng thật.</p>'
+                  + '</div>'
+                + '</div>';
+              }
+
+              // Feedback Panel
+              if (canReview) {
+                html += '<div class="feedback-panel" id="fb-' + index + '">'
+                  + '<p style="font-size:0.88rem; margin-bottom:10px;">Bạn cảm thấy tour này thế nào?</p>'
+                  + '<div class="star-rating" data-stars="' + reg.id + '">'
+                  + [1,2,3,4,5].map(function (n) {
+                      return '<i class="bi bi-star-fill" data-star-value="' + n + '"></i>';
+                    }).join('')
+                  + '</div>'
+                  + '<textarea class="form-control mb-2" data-feedback-comment="' + reg.id + '" rows="2" placeholder="Nhận xét của bạn (không bắt buộc)" style="border-radius:10px;"></textarea>'
+                  + '<div class="mb-2">'
+                  + '<label style="font-size:0.82rem; color:#666; margin-bottom:4px; display:block;"><i class="bi bi-image me-1"></i>Ảnh đính kèm (không bắt buộc, tối đa 4 ảnh)</label>'
+                  + '<input type="file" class="form-control form-control-sm" data-feedback-photos="' + reg.id + '" accept="image/*" multiple style="border-radius:8px;">'
+                  + '<div data-feedback-photo-preview="' + reg.id + '" class="d-flex flex-wrap gap-2 mt-2"></div>'
+                  + '</div>'
+                  + '<button type="button" class="btn btn-sm btn-warning" style="border-radius:8px;" data-submit-feedback="' + reg.id + '" data-tour-id="' + reg.tourId + '">Gửi đánh giá</button>'
+                  + '</div>';
+              }
+
+              html += '</div>'; // reg-card
+              return html;
+            }).join('');
+
+            // Toggle QR
+            listEl.querySelectorAll('[data-toggle-qr]').forEach(function (btn) {
+              btn.addEventListener('click', function () {
+                var panel = document.getElementById(btn.getAttribute('data-toggle-qr'));
+                if (panel) panel.classList.toggle('show');
+              });
             });
-          });
 
-          listEl.querySelectorAll('[data-sepay-demo]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-              var amount = Number(btn.getAttribute('data-amount'));
-              var content = btn.getAttribute('data-content');
-              var originalHtml = btn.innerHTML;
-
-              btn.disabled = true;
-              btn.textContent = 'Đang xử lý...';
-
-              fetch(API_BASE + '/payments/sepay-webhook', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  gateway: 'Demo Bank',
-                  transferType: 'in',
-                  transferAmount: amount,
-                  content: content,
-                  referenceCode: 'DEMO' + Date.now()
+            // SePay demo
+            listEl.querySelectorAll('[data-sepay-demo]').forEach(function (btn) {
+              btn.addEventListener('click', function () {
+                var amount = Number(btn.getAttribute('data-amount'));
+                var content = btn.getAttribute('data-content');
+                var originalHtml = btn.innerHTML;
+                btn.disabled = true;
+                btn.textContent = 'Đang xử lý...';
+                fetch(API_BASE + '/payments/sepay-webhook', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ gateway: 'Demo Bank', transferType: 'in', transferAmount: amount, content: content, referenceCode: 'DEMO' + Date.now() })
                 })
-              })
-                .then(function (res) {
-                  if (!res.ok) throw new Error('HTTP ' + res.status);
-                  return res.json();
-                })
-                .then(function (data) {
-                  if (data.registrationId) {
-                    showToast('Đã giả lập nhận tiền thành công, thanh toán được xác nhận tự động!', 'success');
-                    loadRegistrations();
-                  } else {
+                  .then(function (res) {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                  })
+                  .then(function (data) {
+                    if (data.registrationId) {
+                      showToast('Giả lập thanh toán thành công!', 'success');
+                      loadRegistrations();
+                    } else {
+                      btn.disabled = false;
+                      btn.innerHTML = originalHtml;
+                      showToast(data.message || 'Không khớp giao dịch.', 'error');
+                    }
+                  })
+                  .catch(function () {
                     btn.disabled = false;
                     btn.innerHTML = originalHtml;
-                    showToast(data.message || 'Không khớp được giao dịch.', 'error');
-                  }
-                })
-                .catch(function () {
-                  btn.disabled = false;
-                  btn.innerHTML = originalHtml;
-                  showToast('Giả lập thất bại, vui lòng thử lại.', 'error');
-                });
+                    showToast('Giả lập thất bại, vui lòng thử lại.', 'error');
+                  });
+              });
             });
-          });
 
-          listEl.querySelectorAll('[data-cancel-reg]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-              var regId = btn.getAttribute('data-cancel-reg');
+            // Cancel registration — dùng Bootstrap modal để tránh nhầm lẫn với window.confirm
+            var cancelModal = new bootstrap.Modal(document.getElementById('cancelModal'));
+            var cancelConfirmBtn = document.getElementById('cancelModalConfirmBtn');
+            var pendingCancelRegId = null;
 
-              if (!window.confirm('Bạn có chắc chắn muốn hủy đăng ký tour này?')) {
-                return;
-              }
+            listEl.querySelectorAll('[data-cancel-reg]').forEach(function (btn) {
+              btn.addEventListener('click', function () {
+                pendingCancelRegId = btn.getAttribute('data-cancel-reg');
+                cancelModal.show();
+              });
+            });
 
-              btn.disabled = true;
-              btn.textContent = 'Đang hủy...';
+            cancelConfirmBtn.onclick = function () {
+              if (!pendingCancelRegId) return;
+              var regId = pendingCancelRegId;
+              pendingCancelRegId = null;
+              cancelModal.hide();
+
+              cancelConfirmBtn.disabled = true;
+              cancelConfirmBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Đang hủy...';
 
               fetch(API_BASE + '/registrations/' + regId, {
                 method: 'DELETE',
                 headers: authHeaders()
               })
                 .then(function (res) {
-                  if (!res.ok) {
-                    return res.json().then(function (data) {
-                      throw new Error(data.message || ('HTTP ' + res.status));
-                    });
-                  }
+                  if (!res.ok) return res.json().then(function (d) { throw new Error(d.message || 'HTTP ' + res.status); });
                   return res.json();
                 })
                 .then(function () {
@@ -643,93 +797,140 @@
                   loadRegistrations();
                 })
                 .catch(function (err) {
-                  btn.disabled = false;
-                  btn.innerHTML = '<i class="bi bi-x-circle"></i> Hủy đăng ký';
-                  showToast(err.message || 'Hủy đăng ký thất bại.', 'error');
+                  showToast(err.message || 'Hủy thất bại.', 'error');
+                })
+                .finally(function () {
+                  cancelConfirmBtn.disabled = false;
+                  cancelConfirmBtn.innerHTML = '<i class="bi bi-x-circle me-1"></i>Có, hủy đăng ký';
                 });
+            };
+
+            // Toggle feedback
+            listEl.querySelectorAll('[data-toggle-feedback]').forEach(function (btn) {
+              btn.addEventListener('click', function () {
+                var panel = document.getElementById(btn.getAttribute('data-toggle-feedback'));
+                if (panel) panel.classList.toggle('show');
+              });
             });
-          });
 
-          listEl.querySelectorAll('[data-toggle-feedback]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-              var panel = document.getElementById(btn.getAttribute('data-toggle-feedback'));
-              if (panel) {
-                panel.classList.toggle('show');
-              }
-            });
-          });
-
-          listEl.querySelectorAll('[data-stars]').forEach(function (starsEl) {
-            var selected = 0;
-            var stars = starsEl.querySelectorAll('[data-star-value]');
-
-            stars.forEach(function (star) {
-              star.addEventListener('click', function () {
-                selected = Number(star.getAttribute('data-star-value'));
-                starsEl.setAttribute('data-selected', selected);
-                stars.forEach(function (s) {
-                  s.classList.toggle('active', Number(s.getAttribute('data-star-value')) <= selected);
+            // Star rating
+            listEl.querySelectorAll('[data-stars]').forEach(function (starsEl) {
+              var selected = 0;
+              var stars = starsEl.querySelectorAll('[data-star-value]');
+              stars.forEach(function (star) {
+                star.addEventListener('click', function () {
+                  selected = Number(star.getAttribute('data-star-value'));
+                  starsEl.setAttribute('data-selected', selected);
+                  stars.forEach(function (s) {
+                    s.classList.toggle('active', Number(s.getAttribute('data-star-value')) <= selected);
+                  });
                 });
               });
             });
-          });
 
-          listEl.querySelectorAll('[data-submit-feedback]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-              var regId = btn.getAttribute('data-submit-feedback');
-              var tourId = btn.getAttribute('data-tour-id');
-              var starsEl = listEl.querySelector('[data-stars="' + regId + '"]');
-              var commentEl = listEl.querySelector('[data-feedback-comment="' + regId + '"]');
-              var rating = Number(starsEl ? starsEl.getAttribute('data-selected') || 0 : 0);
-
-              if (!rating) {
-                showToast('Vui lòng chọn số sao đánh giá.', 'error');
-                return;
-              }
-
-              btn.disabled = true;
-              btn.textContent = 'Đang gửi...';
-
-              fetch(API_BASE + '/feedbacks', {
-                method: 'POST',
-                headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
-                body: JSON.stringify({
-                  tourId: tourId,
-                  rating: rating,
-                  comment: commentEl ? commentEl.value.trim() : ''
-                })
-              })
-                .then(function (res) {
-                  if (!res.ok) {
-                    return res.json().then(function (data) {
-                      throw new Error(data.message || ('HTTP ' + res.status));
-                    });
-                  }
-                  return res.json();
-                })
-                .then(function () {
-                  showToast('Cảm ơn bạn đã đánh giá tour!', 'success');
-                  loadRegistrations();
-                })
-                .catch(function (err) {
-                  btn.disabled = false;
-                  btn.textContent = 'Gửi đánh giá';
-                  showToast(err.message || 'Gửi đánh giá thất bại.', 'error');
+            // Photo preview
+            listEl.querySelectorAll('[data-feedback-photos]').forEach(function (input) {
+              var regId = input.getAttribute('data-feedback-photos');
+              input.addEventListener('change', function () {
+                var preview = listEl.querySelector('[data-feedback-photo-preview="' + regId + '"]');
+                if (!preview) return;
+                preview.innerHTML = '';
+                var files = Array.from(input.files).slice(0, 4);
+                files.forEach(function (file) {
+                  var reader = new FileReader();
+                  reader.onload = function (e) {
+                    var img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.cssText = 'width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid #dee2e6;';
+                    preview.appendChild(img);
+                  };
+                  reader.readAsDataURL(file);
                 });
+              });
             });
+
+            // Submit feedback
+            listEl.querySelectorAll('[data-submit-feedback]').forEach(function (btn) {
+              btn.addEventListener('click', function () {
+                var regId = btn.getAttribute('data-submit-feedback');
+                var tourId = btn.getAttribute('data-tour-id');
+                var starsEl = listEl.querySelector('[data-stars="' + regId + '"]');
+                var commentEl = listEl.querySelector('[data-feedback-comment="' + regId + '"]');
+                var photosInput = listEl.querySelector('[data-feedback-photos="' + regId + '"]');
+                var rating = Number(starsEl ? starsEl.getAttribute('data-selected') || 0 : 0);
+                if (!rating) { showToast('Vui lòng chọn số sao đánh giá.', 'error'); return; }
+                btn.disabled = true;
+                btn.textContent = 'Đang gửi...';
+
+                var files = photosInput ? Array.from(photosInput.files).slice(0, 4) : [];
+                var uploadPromises = files.map(function (file) {
+                  var fd = new FormData();
+                  fd.append('file', file);
+                  return fetch(API_BASE + '/uploads/image', {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: fd
+                  }).then(function (r) { return r.ok ? r.json() : null; })
+                    .then(function (d) { return d && d.url ? d.url : null; });
+                });
+
+                Promise.all(uploadPromises).then(function (urls) {
+                  var photoUrls = urls.filter(Boolean);
+                  return fetch(API_BASE + '/feedbacks', {
+                    method: 'POST',
+                    headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
+                    body: JSON.stringify({ tourId: tourId, rating: rating, comment: commentEl ? commentEl.value.trim() : '', photoUrls: photoUrls })
+                  });
+                })
+                  .then(function (res) {
+                    if (!res.ok) return res.json().then(function (d) { throw new Error(d.message || 'HTTP ' + res.status); });
+                    return res.json();
+                  })
+                  .then(function () {
+                    showToast('Cảm ơn bạn đã đánh giá!', 'success');
+                    loadRegistrations();
+                  })
+                  .catch(function (err) {
+                    btn.disabled = false;
+                    btn.textContent = 'Gửi đánh giá';
+                    showToast(err.message || 'Gửi thất bại.', 'error');
+                  });
+              });
+            });
+          })
+          .catch(function (err) {
+            document.getElementById('page-loading').style.display = 'none';
+            document.getElementById('page-error').style.display = 'block';
+            document.getElementById('page-error-msg').textContent = err.message || 'Không thể tải dữ liệu.';
           });
-        })
-        .catch(function (err) {
-          document.getElementById('page-loading').style.display = 'none';
-          document.getElementById('page-error').style.display = 'block';
-          document.getElementById('page-error-msg').textContent = err.message || 'Không thể tải dữ liệu.';
-        });
       }
 
       loadRegistrations();
     })();
   </script>
 
-</body>
+<!-- Modal xác nhận hủy đăng ký -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:16px;overflow:hidden;">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="cancelModalLabel">
+          <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Xác nhận hủy đăng ký
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+      </div>
+      <div class="modal-body pt-2">
+        <p class="mb-0">Bạn có chắc muốn hủy đăng ký tour này không? Thao tác này không thể hoàn tác.</p>
+      </div>
+      <div class="modal-footer border-0 pt-0 gap-2">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Không, giữ lại</button>
+        <button type="button" class="btn btn-danger" id="cancelModalConfirmBtn">
+          <i class="bi bi-x-circle me-1"></i>Có, hủy đăng ký
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
+</body>
 </html>

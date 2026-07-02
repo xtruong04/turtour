@@ -19,7 +19,7 @@ import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
 import SoftButton from "components/SoftButton";
 import SoftInput from "components/SoftInput";
-import PageLoader from "components/PageLoader";
+import SkeletonLoader from "components/SkeletonLoader";
 import NeoBadge from "components/NeoBadge";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -29,6 +29,7 @@ import Footer from "examples/Footer";
 import neoIconButtonSx from "assets/theme/functions/neoIconButtonSx";
 
 import apiService from "../../services/apiService";
+import { hideSplash } from "utils/splash";
 
 function IconEdit() {
   return (
@@ -84,6 +85,7 @@ function Companies() {
         setErrorMessage(error?.message || "Không tải được danh sách doanh nghiệp.");
       } finally {
         setLoading(false);
+        hideSplash();
       }
     }
 
@@ -160,7 +162,7 @@ function Companies() {
               <SoftTypography variant="button" color="text">Quản lý thông tin doanh nghiệp đã đăng ký trên hệ thống.</SoftTypography>
             </SoftBox>
 
-            {loading ? <PageLoader label="Đang tải danh sách doanh nghiệp..." /> : null}
+            {loading ? <SkeletonLoader.Table rows={5} cols={6} /> : null}
             {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
 
             {!loading && !errorMessage ? (
@@ -173,7 +175,7 @@ function Companies() {
                     "& th": {
                       fontSize: "0.75rem",
                       fontWeight: 700,
-                      color: "#344767",
+                      color: "#2b2a27",
                       whiteSpace: "nowrap",
                       py: 1.5,
                     },

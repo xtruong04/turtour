@@ -36,5 +36,12 @@ namespace TurTour.Models.Entities
         // đó đã bấm "Quan tâm" tour này hay chưa.
         [NotMapped]
         public bool IsInterested { get; set; }
+
+        // Trạng thái đăng ký của sinh viên hiện tại với tour này (null = chưa đăng ký).
+        [NotMapped]
+        public bool IsRegistered { get; set; }
+
+        [NotMapped]
+        public string? MyRegistrationStatus { get; set; }
     }
 }

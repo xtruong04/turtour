@@ -42,6 +42,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
 import apiService from "../../services/apiService";
+import { hideSplash } from "utils/splash";
 import useTourBasePath from "../../hooks/useTourBasePath";
 
 const initialForm = {
@@ -170,6 +171,8 @@ function TourCreate() {
         setCompanies(Array.isArray(companyList) ? companyList.filter((company) => company?.id && company?.name) : []);
       } catch {
         // Không chặn form nếu tải danh sách doanh nghiệp thất bại — chỉ là dropdown rỗng.
+      } finally {
+        hideSplash();
       }
     }
 
@@ -372,7 +375,7 @@ function TourCreate() {
                         key={idx}
                         mb={2}
                         p={2}
-                        sx={{ border: "1px solid #e9ecef", borderRadius: "12px", background: "#fafbfc", position: "relative" }}
+                        sx={{ border: "1px solid #d9caa6", borderRadius: "0px", background: "#f6efdd", position: "relative" }}
                       >
                         <SoftBox display="flex" justifyContent="space-between" alignItems="center" mb={1.5}>
                           <SoftTypography variant="button" fontWeight="bold" color="dark">

@@ -36,6 +36,7 @@ export default defineConfig({
       context: fileURLToPath(new URL('./src/context', import.meta.url)),
       layouts: fileURLToPath(new URL('./src/layouts', import.meta.url)),
       routes: fileURLToPath(new URL('./src/routes.jsx', import.meta.url)),
+      utils: fileURLToPath(new URL('./src/utils', import.meta.url)),
     },
   },
 })

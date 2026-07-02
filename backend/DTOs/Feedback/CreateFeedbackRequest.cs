@@ -12,5 +12,7 @@ namespace TurTour.DTOs.Feedback
 
         [MaxLength(1000, ErrorMessage = "Nội dung đánh giá không được vượt quá 1000 ký tự.")]
         public string? Comment { get; set; }
+
+        public List<string> PhotoUrls { get; set; } = new();
     }
 }

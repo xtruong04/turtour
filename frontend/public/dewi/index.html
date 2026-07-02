@@ -35,6 +35,21 @@
   * Author: BootstrapMade.com
   * License: https://bootstrapmade.com/license/
   ======================================================== -->
+
+  <style>
+    .header-avatar-circle {
+      width: 34px; height: 34px; border-radius: 50%;
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #e84545, #ff7b7b);
+      border: 2px solid rgba(255,255,255,0.28);
+      color: #fff; font-size: 0.76rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: -0.01em;
+      flex-shrink: 0; cursor: pointer; user-select: none;
+      transition: border-color 0.2s ease, transform 0.18s ease;
+    }
+    .header-avatar-circle:hover { border-color: rgba(255,255,255,0.55); transform: scale(1.07); }
+    .auth-profile-toggle:focus .header-avatar-circle { border-color: rgba(255,255,255,0.6); }
+  </style>
 </head>
 
 <body class="index-page">
@@ -87,6 +102,7 @@
         <ul class="dropdown-menu dropdown-menu-end auth-profile-menu">
           <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person"></i>Hồ sơ của tôi</a></li>
           <li id="auth-mytours-item" style="display:none;"><a class="dropdown-item" href="my-tours.html"><i class="bi bi-calendar-check"></i>Tour của tôi</a></li>
+          <li id="auth-savedtours-item" style="display:none;"><a class="dropdown-item" href="saved-tours.html"><i class="bi bi-heart"></i>Tour đã lưu</a></li>
           <li><a class="dropdown-item" href="notifications.html"><i class="bi bi-bell"></i>Thông báo</a></li>
           <li id="auth-dashboard-item" style="display:none;"><a class="dropdown-item" href="/admin/dashboard" target="_top"><i class="bi bi-speedometer2"></i>Trang quản trị</a></li>
           <li><hr class="dropdown-divider"></li>
@@ -437,6 +453,8 @@
           cursor: not-allowed;
           transform: none !important;
         }
+        @keyframes tt-shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
+        .sk{display:block;background:linear-gradient(90deg,#ebebeb 25%,#f5f5f5 50%,#ebebeb 75%);background-size:600px 100%;animation:tt-shimmer 1.4s infinite linear;border-radius:4px;}
       </style>
 
       <!-- Section Title -->
@@ -448,9 +466,9 @@
       <div class="container">
 
         <!-- Search / filter bar -->
-        <div class="row gy-2 align-items-end mb-4" id="tours-filter-bar" style="display:none;" data-aos="fade-up">
+        <div class="row gy-2 align-items-end mb-2" id="tours-filter-bar" style="display:none;" data-aos="fade-up">
           <div class="col-md-4">
-            <input type="text" id="tour-filter-search" class="form-control" placeholder="Tìm theo tên tour, doanh nghiệp...">
+            <input type="text" id="tour-filter-search" class="form-control" placeholder="Tìm theo tên tour, địa điểm, doanh nghiệp...">
           </div>
           <div class="col-md-3 col-6">
             <select id="tour-filter-status" class="form-select">
@@ -467,18 +485,47 @@
           <div class="col-md-2">
             <button type="button" id="tour-filter-clear" class="btn btn-outline-secondary w-100">Xóa lọc</button>
           </div>
+          <!-- Advanced filters: row 2 -->
+          <div class="col-md-3 col-sm-6">
+            <select id="tour-filter-location" class="form-select">
+              <option value="">Tất cả địa điểm</option>
+            </select>
+          </div>
+          <div class="col-md-2 col-6">
+            <input type="number" id="tour-filter-fee-min" class="form-control" placeholder="Phí từ (đ)" min="0">
+          </div>
+          <div class="col-md-2 col-6">
+            <input type="number" id="tour-filter-fee-max" class="form-control" placeholder="Phí đến (đ)" min="0">
+          </div>
+          <div class="col-md-2 col-sm-6">
+            <div id="tour-filter-free-wrap" class="form-check mt-1">
+              <input class="form-check-input" type="checkbox" id="tour-filter-free">
+              <label class="form-check-label" for="tour-filter-free" style="font-size:0.88rem;">Miễn phí</label>
+            </div>
+          </div>
         </div>
 
-        <!-- Loading state -->
-        <div id="tours-loading" data-aos="fade-up">
-          <div class="spinner-border text-primary mb-3" role="status"></div>
-          <p>Đang tải danh sách tour…</p>
+        <!-- Loading state: skeleton cards -->
+        <div id="tours-loading" data-aos="fade-up" style="text-align:unset;padding:0;color:inherit;">
+          <div class="row gy-4 tours-grid">
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:88%;"></div><div class="sk" style="height:13px;width:50%;"></div><div class="sk" style="height:13px;width:66%;"></div><div class="sk" style="height:13px;width:57%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:80px;"></div><div class="sk" style="height:13px;width:70px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:75%;"></div><div class="sk" style="height:13px;width:58%;"></div><div class="sk" style="height:13px;width:72%;"></div><div class="sk" style="height:13px;width:48%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:90px;"></div><div class="sk" style="height:13px;width:75px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:82%;"></div><div class="sk" style="height:13px;width:45%;"></div><div class="sk" style="height:13px;width:60%;"></div><div class="sk" style="height:13px;width:54%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:85px;"></div><div class="sk" style="height:13px;width:68px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:91%;"></div><div class="sk" style="height:13px;width:54%;"></div><div class="sk" style="height:13px;width:68%;"></div><div class="sk" style="height:13px;width:62%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:78px;"></div><div class="sk" style="height:13px;width:72px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:78%;"></div><div class="sk" style="height:13px;width:47%;"></div><div class="sk" style="height:13px;width:63%;"></div><div class="sk" style="height:13px;width:55%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:88px;"></div><div class="sk" style="height:13px;width:65px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:85%;"></div><div class="sk" style="height:13px;width:53%;"></div><div class="sk" style="height:13px;width:70%;"></div><div class="sk" style="height:13px;width:59%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:82px;"></div><div class="sk" style="height:13px;width:74px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:72%;"></div><div class="sk" style="height:13px;width:60%;"></div><div class="sk" style="height:13px;width:55%;"></div><div class="sk" style="height:13px;width:50%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:76px;"></div><div class="sk" style="height:13px;width:66px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:80%;"></div><div class="sk" style="height:13px;width:56%;"></div><div class="sk" style="height:13px;width:64%;"></div><div class="sk" style="height:13px;width:52%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:84px;"></div><div class="sk" style="height:13px;width:69px;"></div></div></div></div>
+          </div>
         </div>
 
         <!-- Error state -->
         <div id="tours-error" style="display:none;" data-aos="fade-up">
-          <i class="bi bi-exclamation-triangle" style="font-size:2.5rem;"></i>
+          <i class="bi bi-exclamation-triangle" style="font-size:2.5rem;color:#e84545;"></i>
           <p id="tours-error-msg" class="mt-2">Không thể tải danh sách tour.</p>
+          <button type="button" class="btn btn-outline-danger btn-sm mt-1" onclick="window.loadTours && window.loadTours()">
+            <i class="bi bi-arrow-clockwise me-1"></i>Thử lại
+          </button>
         </div>
 
         <!-- Empty state -->
@@ -490,6 +537,13 @@
         <!-- Tour cards grid -->
         <div id="tours-grid" class="row gy-4 tours-grid" style="display:none;" data-aos="fade-up" data-aos-delay="100">
         </div><!-- End Tours Grid -->
+
+        <!-- Load more -->
+        <div id="tours-load-more-wrapper" style="display:none; text-align:center; margin-top:36px;">
+          <button type="button" id="tours-load-more-btn" class="btn btn-outline-danger px-5 py-2" onclick="window.loadMoreTours && window.loadMoreTours()">
+            <i class="bi bi-chevron-down me-1"></i>Xem thêm
+          </button>
+        </div>
 
       </div>
 
@@ -669,6 +723,18 @@
         });
       };
 
+      window.shareTour = function (id, title, url) {
+        if (navigator.share) {
+          navigator.share({ title: title, url: url }).catch(function () {});
+        } else {
+          navigator.clipboard.writeText(url).then(function () {
+            showToast('Đã sao chép liên kết tour!', 'success');
+          }).catch(function () {
+            window.prompt('Sao chép liên kết:', url);
+          });
+        }
+      };
+
       function renderCard(tour) {
         var imgUrl = thumbnail(tour);
         var status = (tour.publishStatus || '').toLowerCase();
@@ -704,11 +770,38 @@
           }
         }
 
+        // Nếu student đã đăng ký tour này, thay nút bằng badge trạng thái đăng ký.
+        var regStatusLabel = {
+          Pending:       { text: 'Chờ duyệt',        icon: 'bi-hourglass-split',   cls: 'btn-warning text-dark' },
+          Waitinglisted: { text: 'Danh sách chờ',     icon: 'bi-people',            cls: 'btn-secondary' },
+          Approved:      { text: 'Đã được duyệt',     icon: 'bi-check-circle-fill', cls: 'btn-outline-success' },
+          Paid:          { text: 'Đã thanh toán',      icon: 'bi-patch-check-fill',  cls: 'btn-success' },
+          CheckedIn:     { text: 'Đã check-in',        icon: 'bi-qr-code-scan',      cls: 'btn-success' },
+          Completed:     { text: 'Đã hoàn thành',      icon: 'bi-trophy-fill',       cls: 'btn-outline-dark' },
+          Rejected:      { text: 'Đã hủy/từ chối',    icon: 'bi-x-circle',          cls: 'btn-outline-danger' },
+        };
+        var myReg = tour.isRegistered ? (regStatusLabel[tour.myRegistrationStatus] || null) : null;
+
+        var isInterested = !!tour.isInterested;
+        var shareUrl = window.location.origin + window.location.pathname.replace('index.html', '') + 'tour-details.html?id=' + tour.id;
+
+        var registerBtnHtml = myReg
+          ? '<a href="my-tours.html" class="btn-register ' + myReg.cls + '" style="text-decoration:none;font-size:0.82rem;">'
+              + '<i class="bi ' + myReg.icon + '"></i> ' + myReg.text + '</a>'
+          : '<button class="btn-register" onclick="registerTour(\'' + tour.id + '\', this)"'
+              + (canRegisterStatus ? '' : ' disabled') + '>'
+              + '<i class="bi bi-send-fill"></i> ' + btnText + '</button>';
+
         var btnHtml = '<div class="d-flex gap-2 mt-3">'
           + '<a href="tour-details.html?id=' + tour.id + '" class="btn-detail"><i class="bi bi-info-circle"></i> Chi tiết</a>'
-          + '<button class="btn-register" onclick="registerTour(\'' + tour.id + '\', this)"'
-          + (canRegisterStatus ? '' : ' disabled') + '>'
-          + '<i class="bi bi-send-fill"></i> ' + btnText
+          + registerBtnHtml
+          + '</div>'
+          + '<div class="d-flex gap-2 mt-2">'
+          + '<button class="btn btn-sm ' + (isInterested ? 'btn-danger' : 'btn-outline-danger') + ' tc-interest-btn" style="font-size:0.78rem;border-radius:6px;flex:1;" data-interested="' + isInterested + '" onclick="toggleInterest(\'' + tour.id + '\', this)">'
+          + '<i class="bi ' + (isInterested ? 'bi-heart-fill' : 'bi-heart') + '"></i> ' + (isInterested ? 'Đã lưu' : 'Lưu tour')
+          + '</button>'
+          + '<button class="btn btn-sm btn-outline-secondary" style="font-size:0.78rem;border-radius:6px;" onclick="shareTour(\'' + tour.id + '\', \'' + title.replace(/'/g, "\\'") + '\', \'' + shareUrl + '\')">'
+          + '<i class="bi bi-share"></i>'
           + '</button>'
           + '</div>';
 
@@ -734,46 +827,82 @@
       }
 
       var allTours = [];
+      var currentFiltered = [];
+      var TOURS_PER_PAGE = 6;
+      var visibleCount = TOURS_PER_PAGE;
 
-      function applyFilters() {
-        var searchEl = document.getElementById('tour-filter-search');
-        var statusEl = document.getElementById('tour-filter-status');
-        var companyEl = document.getElementById('tour-filter-company');
+      function renderVisible() {
         var grid = document.getElementById('tours-grid');
         var emptyEl = document.getElementById('tours-empty');
+        var wrapper = document.getElementById('tours-load-more-wrapper');
+        var btn = document.getElementById('tours-load-more-btn');
 
-        var term = (searchEl.value || '').trim().toLowerCase();
-        var statusVal = statusEl.value;
-        var companyVal = companyEl.value;
+        if (currentFiltered.length === 0) {
+          grid.innerHTML = '';
+          grid.style.display = 'none';
+          emptyEl.style.display = 'block';
+          wrapper.style.display = 'none';
+          return;
+        }
 
-        var filtered = allTours.filter(function (tour) {
+        emptyEl.style.display = 'none';
+        grid.innerHTML = currentFiltered.slice(0, visibleCount).map(renderCard).join('');
+        grid.style.display = '';
+
+        var remaining = currentFiltered.length - visibleCount;
+        if (remaining > 0) {
+          btn.innerHTML = '<i class="bi bi-chevron-down me-1"></i>Xem thêm (' + remaining + ' tour)';
+          wrapper.style.display = 'block';
+        } else {
+          wrapper.style.display = 'none';
+        }
+      }
+
+      window.loadMoreTours = function () {
+        visibleCount += TOURS_PER_PAGE;
+        renderVisible();
+      };
+
+      function applyFilters() {
+        var term = (document.getElementById('tour-filter-search').value || '').trim().toLowerCase();
+        var statusVal = document.getElementById('tour-filter-status').value;
+        var companyVal = document.getElementById('tour-filter-company').value;
+        var locationVal = document.getElementById('tour-filter-location').value;
+        var feeMin = Number(document.getElementById('tour-filter-fee-min').value) || 0;
+        var feeMax = Number(document.getElementById('tour-filter-fee-max').value) || 0;
+        var freeOnly = document.getElementById('tour-filter-free').checked;
+
+        currentFiltered = allTours.filter(function (tour) {
           if (term) {
             var title = (tour.tittle || tour.title || '').toLowerCase();
             var company = (tour.company && tour.company.name ? tour.company.name : '').toLowerCase();
-            if (title.indexOf(term) === -1 && company.indexOf(term) === -1) return false;
+            var loc = (tour.location || '').toLowerCase();
+            if (title.indexOf(term) === -1 && company.indexOf(term) === -1 && loc.indexOf(term) === -1) return false;
           }
           if (statusVal && (tour.publishStatus || '').toLowerCase() !== statusVal) return false;
           if (companyVal && (!tour.company || tour.company.name !== companyVal)) return false;
+          if (locationVal && (tour.location || '') !== locationVal) return false;
+          var fee = tour.fee || 0;
+          if (freeOnly && fee !== 0) return false;
+          if (feeMin > 0 && fee < feeMin) return false;
+          if (feeMax > 0 && fee > feeMax) return false;
           return true;
         });
 
-        if (filtered.length === 0) {
-          grid.style.display = 'none';
-          grid.innerHTML = '';
-          emptyEl.style.display = 'block';
-        } else {
-          emptyEl.style.display = 'none';
-          grid.innerHTML = filtered.map(renderCard).join('');
-          grid.style.display = '';
-        }
+        visibleCount = TOURS_PER_PAGE;
+        renderVisible();
       }
 
       function populateCompanyFilter() {
         var companyEl = document.getElementById('tour-filter-company');
+        var locationEl = document.getElementById('tour-filter-location');
         var names = [];
+        var locs = [];
         allTours.forEach(function (tour) {
           var name = tour.company && tour.company.name;
           if (name && names.indexOf(name) === -1) names.push(name);
+          var loc = tour.location;
+          if (loc && locs.indexOf(loc) === -1) locs.push(loc);
         });
         names.sort();
         names.forEach(function (name) {
@@ -782,43 +911,93 @@
           opt.textContent = name;
           companyEl.appendChild(opt);
         });
+        locs.sort();
+        locs.forEach(function (loc) {
+          var opt = document.createElement('option');
+          opt.value = loc;
+          opt.textContent = loc;
+          locationEl.appendChild(opt);
+        });
       }
 
       document.getElementById('tour-filter-search').addEventListener('input', applyFilters);
       document.getElementById('tour-filter-status').addEventListener('change', applyFilters);
       document.getElementById('tour-filter-company').addEventListener('change', applyFilters);
+      document.getElementById('tour-filter-location').addEventListener('change', applyFilters);
+      document.getElementById('tour-filter-fee-min').addEventListener('input', applyFilters);
+      document.getElementById('tour-filter-fee-max').addEventListener('input', applyFilters);
+      document.getElementById('tour-filter-free').addEventListener('change', function () {
+        if (this.checked) {
+          document.getElementById('tour-filter-fee-min').value = '';
+          document.getElementById('tour-filter-fee-max').value = '';
+        }
+        applyFilters();
+      });
       document.getElementById('tour-filter-clear').addEventListener('click', function () {
         document.getElementById('tour-filter-search').value = '';
         document.getElementById('tour-filter-status').value = '';
         document.getElementById('tour-filter-company').value = '';
+        document.getElementById('tour-filter-location').value = '';
+        document.getElementById('tour-filter-fee-min').value = '';
+        document.getElementById('tour-filter-fee-max').value = '';
+        document.getElementById('tour-filter-free').checked = false;
         applyFilters();
       });
 
-      fetch(API, { headers: authHeaders() })
-        .then(function(res) {
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          return res.json();
-        })
-        .then(function(tours) {
-          document.getElementById('tours-loading').style.display = 'none';
-          // Tour đã hủy/lưu trữ không hiển thị ở trang public — chỉ admin/đối tác quản lý mới cần thấy.
-          var visibleTours = (Array.isArray(tours) ? tours : []).filter(function (t) {
-            return (t.publishStatus || '').toLowerCase() !== 'archived';
+      function friendlyError(err) {
+        var msg = (err && err.message) || '';
+        if (!msg || msg === 'Failed to fetch' || err.name === 'TypeError') return 'Không thể kết nối đến máy chủ — kiểm tra kết nối mạng hoặc thử lại sau.';
+        if (msg.indexOf('HTTP 401') !== -1) return 'Phiên đăng nhập đã hết hạn — vui lòng đăng nhập lại.';
+        if (msg.indexOf('HTTP 403') !== -1) return 'Không có quyền truy cập nội dung này.';
+        if (msg.indexOf('HTTP 404') !== -1) return 'Không tìm thấy dữ liệu (404).';
+        if (msg.indexOf('HTTP 5') !== -1) return 'Lỗi phía máy chủ — vui lòng thử lại sau.';
+        return msg;
+      }
+
+      function loadTours() {
+        document.getElementById('tours-loading').style.display = '';
+        document.getElementById('tours-error').style.display = 'none';
+        document.getElementById('tours-empty').style.display = 'none';
+        document.getElementById('tours-grid').style.display = 'none';
+        document.getElementById('tours-filter-bar').style.display = 'none';
+        document.getElementById('tours-load-more-wrapper').style.display = 'none';
+        allTours = [];
+        currentFiltered = [];
+        visibleCount = TOURS_PER_PAGE;
+        var companyEl = document.getElementById('tour-filter-company');
+        while (companyEl.options.length > 1) companyEl.remove(1);
+        var locationEl = document.getElementById('tour-filter-location');
+        while (locationEl.options.length > 1) locationEl.remove(1);
+
+        fetch(API, { headers: authHeaders() })
+          .then(function(res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function(tours) {
+            document.getElementById('tours-loading').style.display = 'none';
+            // Tour đã hủy/lưu trữ không hiển thị ở trang public — chỉ admin/đối tác quản lý mới cần thấy.
+            var visibleTours = (Array.isArray(tours) ? tours : []).filter(function (t) {
+              return (t.publishStatus || '').toLowerCase() !== 'archived';
+            });
+            if (visibleTours.length === 0) {
+              document.getElementById('tours-empty').style.display = 'block';
+              return;
+            }
+            allTours = visibleTours;
+            document.getElementById('tours-filter-bar').style.display = '';
+            populateCompanyFilter();
+            applyFilters();
+          })
+          .catch(function(err) {
+            document.getElementById('tours-loading').style.display = 'none';
+            document.getElementById('tours-error').style.display = 'block';
+            document.getElementById('tours-error-msg').textContent = friendlyError(err);
           });
-          if (visibleTours.length === 0) {
-            document.getElementById('tours-empty').style.display = 'block';
-            return;
-          }
-          allTours = visibleTours;
-          document.getElementById('tours-filter-bar').style.display = '';
-          populateCompanyFilter();
-          applyFilters();
-        })
-        .catch(function(err) {
-          document.getElementById('tours-loading').style.display = 'none';
-          document.getElementById('tours-error').style.display = 'block';
-          document.getElementById('tours-error-msg').textContent = 'Không thể tải danh sách tour: ' + err.message;
-        });
+      }
+
+      window.loadTours = loadTours;
+      loadTours();
 
       // Tour bị đổi trạng thái (mở/đóng đăng ký...) từ admin — cập nhật ngay trên trang,
       // không cần F5.
@@ -844,6 +1023,8 @@
     <section id="team" class="team section light-background">
 
       <style>
+        .partners-swiper .swiper-wrapper { align-items: stretch; }
+        .partners-swiper .swiper-slide { height: auto; }
         .partner-card {
           background: #fff;
           border-radius: 12px;
@@ -851,9 +1032,14 @@
           text-align: center;
           box-shadow: 0 4px 16px rgba(0,0,0,.06);
           height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          box-sizing: border-box;
         }
         .partner-logo {
           width: 84px; height: 84px;
+          flex-shrink: 0;
           margin: 0 auto 14px;
           border-radius: 50%;
           overflow: hidden;
@@ -863,9 +1049,22 @@
           font-size: 2rem;
         }
         .partner-logo img { width: 100%; height: 100%; object-fit: cover; }
-        .partner-card h4 { font-size: 1rem; font-weight: 700; margin: 0 0 4px; color: #1a1a2e; }
-        .partner-card span { font-size: .82rem; color: #888; }
-        #partners-loading, #partners-empty { text-align: center; padding: 30px 20px; color: #888; }
+        .partner-card h4 {
+          font-size: 1rem; font-weight: 700; margin: 0 0 4px; color: #1a1a2e;
+          width: 100%;
+          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .partner-card span {
+          font-size: .82rem; color: #888;
+          width: 100%;
+          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+          display: block;
+        }
+        #partners-empty { text-align: center; padding: 30px 20px; color: #888; }
+        .partners-swiper { padding-bottom: 40px !important; }
+        .partners-swiper .swiper-pagination { bottom: 0; }
+        @keyframes tt-shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
+        .sk{display:block;background:linear-gradient(90deg,#ebebeb 25%,#f5f5f5 50%,#ebebeb 75%);background-size:600px 100%;animation:tt-shimmer 1.4s infinite linear;border-radius:4px;}
       </style>
 
       <!-- Section Title -->
@@ -877,15 +1076,34 @@
       <div class="container">
 
         <div id="partners-loading">
-          <div class="spinner-border text-primary mb-2" role="status"></div>
-          <p>Đang tải danh sách đối tác…</p>
+          <div class="row gy-4">
+            <div class="col-lg-3 col-md-4 col-6"><div class="partner-card"><div class="sk" style="width:84px;height:84px;border-radius:50%;margin:0 auto 14px;"></div><div class="sk" style="height:16px;width:68%;margin:0 auto 6px;"></div><div class="sk" style="height:12px;width:44%;margin:0 auto;"></div></div></div>
+            <div class="col-lg-3 col-md-4 col-6"><div class="partner-card"><div class="sk" style="width:84px;height:84px;border-radius:50%;margin:0 auto 14px;"></div><div class="sk" style="height:16px;width:72%;margin:0 auto 6px;"></div><div class="sk" style="height:12px;width:50%;margin:0 auto;"></div></div></div>
+            <div class="col-lg-3 col-md-4 col-6"><div class="partner-card"><div class="sk" style="width:84px;height:84px;border-radius:50%;margin:0 auto 14px;"></div><div class="sk" style="height:16px;width:60%;margin:0 auto 6px;"></div><div class="sk" style="height:12px;width:40%;margin:0 auto;"></div></div></div>
+            <div class="col-lg-3 col-md-4 col-6"><div class="partner-card"><div class="sk" style="width:84px;height:84px;border-radius:50%;margin:0 auto 14px;"></div><div class="sk" style="height:16px;width:76%;margin:0 auto 6px;"></div><div class="sk" style="height:12px;width:48%;margin:0 auto;"></div></div></div>
+            <div class="col-lg-3 col-md-4 col-6"><div class="partner-card"><div class="sk" style="width:84px;height:84px;border-radius:50%;margin:0 auto 14px;"></div><div class="sk" style="height:16px;width:65%;margin:0 auto 6px;"></div><div class="sk" style="height:12px;width:42%;margin:0 auto;"></div></div></div>
+            <div class="col-lg-3 col-md-4 col-6"><div class="partner-card"><div class="sk" style="width:84px;height:84px;border-radius:50%;margin:0 auto 14px;"></div><div class="sk" style="height:16px;width:70%;margin:0 auto 6px;"></div><div class="sk" style="height:12px;width:46%;margin:0 auto;"></div></div></div>
+            <div class="col-lg-3 col-md-4 col-6"><div class="partner-card"><div class="sk" style="width:84px;height:84px;border-radius:50%;margin:0 auto 14px;"></div><div class="sk" style="height:16px;width:64%;margin:0 auto 6px;"></div><div class="sk" style="height:12px;width:38%;margin:0 auto;"></div></div></div>
+            <div class="col-lg-3 col-md-4 col-6"><div class="partner-card"><div class="sk" style="width:84px;height:84px;border-radius:50%;margin:0 auto 14px;"></div><div class="sk" style="height:16px;width:74%;margin:0 auto 6px;"></div><div class="sk" style="height:12px;width:52%;margin:0 auto;"></div></div></div>
+          </div>
+        </div>
+
+        <div id="partners-error" style="display:none;text-align:center;padding:30px 20px;color:#888;">
+          <i class="bi bi-exclamation-triangle" style="font-size:2rem;color:#e84545;"></i>
+          <p id="partners-error-msg" class="mt-2">Không thể tải danh sách đối tác.</p>
+          <button type="button" class="btn btn-outline-danger btn-sm" onclick="window.loadPartners && window.loadPartners()">
+            <i class="bi bi-arrow-clockwise me-1"></i>Thử lại
+          </button>
         </div>
 
         <div id="partners-empty" style="display:none;">
           <p>Hiện chưa có doanh nghiệp đối tác nào được công bố.</p>
         </div>
 
-        <div id="partners-grid" class="row gy-4" style="display:none;" data-aos="fade-up" data-aos-delay="100"></div>
+        <div class="swiper partners-swiper" id="partners-swiper" style="display:none;" data-aos="fade-up" data-aos-delay="100">
+          <div id="partners-grid" class="swiper-wrapper"></div>
+          <div class="swiper-pagination partners-pagination"></div>
+        </div>
 
       </div>
 
@@ -893,12 +1111,14 @@
       (function () {
         var API_BASE = window.TURTOUR_API_BASE;
 
-        function renderPartner(c) {
+        var _partners = [];
+
+        function renderPartner(c, idx) {
           var logo = c.logoUrl
             ? '<img src="' + c.logoUrl + '" alt="' + c.name + '" onerror="this.parentNode.innerHTML=\'<i class=&quot;bi bi-building&quot;></i>\'">'
             : '<i class="bi bi-building"></i>';
-          return '<div class="col-lg-3 col-md-4 col-6" data-aos="fade-up">'
-            + '<div class="partner-card">'
+          return '<div class="swiper-slide">'
+            + '<div class="partner-card" onclick="window.showPartnerModal(' + idx + ')" style="cursor:pointer;" title="Xem thông tin">'
               + '<div class="partner-logo">' + logo + '</div>'
               + '<h4>' + c.name + '</h4>'
               + (c.industry ? '<span>' + c.industry + '</span>' : '')
@@ -906,26 +1126,98 @@
           + '</div>';
         }
 
-        fetch(API_BASE + '/companies')
-          .then(function (res) {
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            return res.json();
-          })
-          .then(function (companies) {
-            document.getElementById('partners-loading').style.display = 'none';
-            var active = (companies || []).filter(function (c) { return c.isActive !== false; });
-            if (active.length === 0) {
-              document.getElementById('partners-empty').style.display = 'block';
-              return;
-            }
-            var grid = document.getElementById('partners-grid');
-            grid.innerHTML = active.map(renderPartner).join('');
-            grid.style.display = '';
-          })
-          .catch(function () {
-            document.getElementById('partners-loading').style.display = 'none';
-            document.getElementById('partners-empty').style.display = 'block';
-          });
+        window.showPartnerModal = function (idx) {
+          var c = _partners[idx];
+          if (!c) return;
+
+          var logo = c.logoUrl
+            ? '<img src="' + c.logoUrl + '" alt="' + c.name + '" onerror="this.parentNode.innerHTML=\'<i class=&quot;bi bi-building&quot;></i>\'">'
+            : '<i class="bi bi-building"></i>';
+          document.getElementById('pm-logo').innerHTML = logo;
+          document.getElementById('pm-name').textContent = c.name || '';
+
+          var industryEl = document.getElementById('pm-industry');
+          industryEl.textContent = c.industry || '';
+          industryEl.style.display = c.industry ? '' : 'none';
+
+          document.getElementById('pm-desc').textContent = c.description || 'Chưa có mô tả.';
+          document.getElementById('pm-desc').style.display = c.description ? '' : 'none';
+
+          var show = function (itemId, valEl, val, href) {
+            var item = document.getElementById(itemId);
+            item.style.display = val ? '' : 'none';
+            var el = document.getElementById(valEl);
+            el.textContent = val || '';
+            if (href) el.href = href;
+          };
+          show('pm-address-item', 'pm-address', c.address);
+          show('pm-email-item',   'pm-email',   c.email,   'mailto:' + (c.email || ''));
+          show('pm-phone-item',   'pm-phone',   c.phone,   'tel:'    + (c.phone || ''));
+          show('pm-website-item', 'pm-website', c.website, c.website || '#');
+
+          var modal = new bootstrap.Modal(document.getElementById('partnerModal'));
+          modal.show();
+        };
+
+        var _partnersSwiper = null;
+
+        function friendlyError(err) {
+          var msg = (err && err.message) || '';
+          if (!msg || msg === 'Failed to fetch' || err.name === 'TypeError') return 'Không thể kết nối đến máy chủ — kiểm tra kết nối mạng hoặc thử lại sau.';
+          if (msg.indexOf('HTTP 401') !== -1) return 'Phiên đăng nhập đã hết hạn — vui lòng đăng nhập lại.';
+          if (msg.indexOf('HTTP 403') !== -1) return 'Không có quyền truy cập nội dung này.';
+          if (msg.indexOf('HTTP 404') !== -1) return 'Không tìm thấy dữ liệu (404).';
+          if (msg.indexOf('HTTP 5') !== -1) return 'Lỗi phía máy chủ — vui lòng thử lại sau.';
+          return msg;
+        }
+
+        function loadPartners() {
+          if (_partnersSwiper) { _partnersSwiper.destroy(true, true); _partnersSwiper = null; }
+          document.getElementById('partners-loading').style.display = '';
+          document.getElementById('partners-error').style.display = 'none';
+          document.getElementById('partners-empty').style.display = 'none';
+          document.getElementById('partners-swiper').style.display = 'none';
+
+          fetch(API_BASE + '/companies')
+            .then(function (res) {
+              if (!res.ok) throw new Error('HTTP ' + res.status);
+              return res.json();
+            })
+            .then(function (companies) {
+              document.getElementById('partners-loading').style.display = 'none';
+              var active = (companies || []).filter(function (c) { return c.isActive !== false; });
+              if (active.length === 0) {
+                document.getElementById('partners-empty').style.display = 'block';
+                return;
+              }
+              _partners = active;
+              document.getElementById('partners-grid').innerHTML = active.map(function (c, i) { return renderPartner(c, i); }).join('');
+              var swiperEl = document.getElementById('partners-swiper');
+              swiperEl.style.display = '';
+              if (typeof Swiper !== 'undefined') {
+                _partnersSwiper = new Swiper('#partners-swiper', {
+                  loop: active.length > 4,
+                  autoplay: { delay: 2800, disableOnInteraction: false, pauseOnMouseEnter: true },
+                  slidesPerView: 2,
+                  spaceBetween: 20,
+                  breakpoints: {
+                    576: { slidesPerView: 3, spaceBetween: 20 },
+                    992: { slidesPerView: 4, spaceBetween: 24 },
+                    1400: { slidesPerView: 5, spaceBetween: 24 }
+                  },
+                  pagination: { el: '.partners-pagination', clickable: true }
+                });
+              }
+            })
+            .catch(function (err) {
+              document.getElementById('partners-loading').style.display = 'none';
+              document.getElementById('partners-error').style.display = 'block';
+              document.getElementById('partners-error-msg').textContent = friendlyError(err);
+            });
+        }
+
+        window.loadPartners = loadPartners;
+        loadPartners();
       })();
       </script>
 
@@ -974,31 +1266,27 @@
           </div>
 
           <div class="col-lg-6">
-            <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="500">
+            <form id="contact-form" data-aos="fade-up" data-aos-delay="500">
               <div class="row gy-4">
 
                 <div class="col-md-6">
-                  <input type="text" name="name" class="form-control" placeholder="Họ và tên" required="">
+                  <input type="text" id="cf-name" class="form-control" placeholder="Họ và tên" required>
                 </div>
 
-                <div class="col-md-6 ">
-                  <input type="email" class="form-control" name="email" placeholder="Email của bạn" required="">
-                </div>
-
-                <div class="col-md-12">
-                  <input type="text" class="form-control" name="subject" placeholder="Tiêu đề" required="">
+                <div class="col-md-6">
+                  <input type="email" id="cf-email" class="form-control" placeholder="Email của bạn" required>
                 </div>
 
                 <div class="col-md-12">
-                  <textarea class="form-control" name="message" rows="4" placeholder="Nội dung" required=""></textarea>
+                  <input type="text" id="cf-subject" class="form-control" placeholder="Tiêu đề" required>
+                </div>
+
+                <div class="col-md-12">
+                  <textarea id="cf-message" class="form-control" rows="4" placeholder="Nội dung" required></textarea>
                 </div>
 
                 <div class="col-md-12 text-center">
-                  <div class="loading">Đang gửi</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Tin nhắn của bạn đã được gửi. Cảm ơn bạn!</div>
-
-                  <button type="submit">Gửi liên hệ</button>
+                  <button id="cf-submit" type="submit">Gửi liên hệ</button>
                 </div>
 
               </div>
@@ -1012,6 +1300,47 @@
     </section><!-- /Contact Section -->
 
   </main>
+
+  <!-- Partner Detail Modal -->
+  <div class="modal fade" id="partnerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content" style="border-radius:16px;overflow:hidden;border:none;box-shadow:0 20px 60px rgba(0,0,0,.18);">
+        <!-- Header -->
+        <div class="modal-header" style="border-bottom:1px solid #f1f3f5;padding:20px 24px 16px;gap:16px;align-items:flex-start;">
+          <div class="d-flex align-items-center gap-3 flex-1" style="min-width:0;">
+            <div id="pm-logo" class="partner-logo" style="flex-shrink:0;width:64px;height:64px;font-size:1.6rem;margin:0;"></div>
+            <div style="min-width:0;">
+              <h5 class="mb-1" id="pm-name" style="font-size:1.1rem;font-weight:700;color:#1a1a2e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></h5>
+              <span id="pm-industry" style="display:inline-block;background:#e8f4fd;color:#1a7abf;font-size:.72rem;font-weight:700;padding:2px 10px;border-radius:20px;"></span>
+            </div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" style="flex-shrink:0;margin:0;"></button>
+        </div>
+        <!-- Body -->
+        <div class="modal-body" style="padding:20px 24px 24px;">
+          <p id="pm-desc" style="font-size:.9rem;color:#555;line-height:1.65;margin-bottom:18px;"></p>
+          <ul class="list-unstyled mb-0" style="font-size:.875rem;">
+            <li id="pm-address-item" class="d-flex align-items-start gap-2 mb-2">
+              <i class="bi bi-geo-alt-fill text-danger mt-1" style="flex-shrink:0;"></i>
+              <span id="pm-address" style="color:#444;"></span>
+            </li>
+            <li id="pm-email-item" class="d-flex align-items-center gap-2 mb-2">
+              <i class="bi bi-envelope-fill text-danger" style="flex-shrink:0;"></i>
+              <a id="pm-email" href="#" style="color:#e84545;text-decoration:none;word-break:break-all;"></a>
+            </li>
+            <li id="pm-phone-item" class="d-flex align-items-center gap-2 mb-2">
+              <i class="bi bi-telephone-fill text-danger" style="flex-shrink:0;"></i>
+              <a id="pm-phone" href="#" style="color:#e84545;text-decoration:none;"></a>
+            </li>
+            <li id="pm-website-item" class="d-flex align-items-center gap-2">
+              <i class="bi bi-globe text-danger" style="flex-shrink:0;"></i>
+              <a id="pm-website" href="#" target="_blank" rel="noopener noreferrer" style="color:#e84545;text-decoration:none;word-break:break-all;"></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <footer id="footer" class="footer dark-background">
 
@@ -1067,12 +1396,9 @@
   <!-- Scroll Top -->
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-  <!-- Preloader -->
-  <div id="preloader"></div>
-
   <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
+
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
@@ -1086,6 +1412,62 @@
     <script src="assets/vendor/signalr/signalr.min.js"></script>
   <script src="assets/js/realtime.js"></script>
 <script src="assets/js/notifications-badge.js"></script>
+<script src="assets/js/header-avatar.js"></script>
+
+  <script>
+    (function () {
+      var form = document.getElementById('contact-form');
+      if (!form) return;
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var submitBtn = document.getElementById('cf-submit');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Đang gửi…';
+
+        var payload = {
+          fullName: document.getElementById('cf-name').value.trim(),
+          email: document.getElementById('cf-email').value.trim(),
+          subject: document.getElementById('cf-subject').value.trim(),
+          message: document.getElementById('cf-message').value.trim(),
+        };
+
+        var cfHeaders = { 'Content-Type': 'application/json' };
+        try {
+          var cfSession = JSON.parse(localStorage.getItem('turtour.admin.session'));
+          if (cfSession && cfSession.token) cfHeaders['Authorization'] = 'Bearer ' + cfSession.token;
+        } catch { /* ignore */ }
+
+        fetch((window.TURTOUR_API_BASE || '') + '/contacts', {
+          method: 'POST',
+          headers: cfHeaders,
+          body: JSON.stringify(payload),
+        })
+          .then(function (res) {
+            return res.text().then(function (text) {
+              var d = null;
+              try { d = text ? JSON.parse(text) : null; } catch { /* ignore */ }
+              if (!res.ok) {
+                var detail = (d && (d.message || d.title)) || text || '';
+                throw new Error('HTTP ' + res.status + (detail ? ' — ' + detail : ''));
+              }
+              return d;
+            });
+          })
+          .then(function () {
+            showToast('Tin nhắn của bạn đã được gửi. Cảm ơn bạn!', 'success');
+            form.reset();
+          })
+          .catch(function (err) {
+            showToast(err && err.message ? err.message : 'Gửi thất bại — vui lòng thử lại.', 'error');
+          })
+          .finally(function () {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Gửi liên hệ';
+          });
+      });
+    })();
+  </script>
 
   <script>
     (function () {
@@ -1094,6 +1476,7 @@
       var profileName = document.getElementById('auth-profile-name');
       var dashboardItem = document.getElementById('auth-dashboard-item');
       var myToursItem = document.getElementById('auth-mytours-item');
+      var savedToursItem = document.getElementById('auth-savedtours-item');
       var logoutBtn = document.getElementById('auth-logout-btn');
 
       var session = null;
@@ -1116,6 +1499,7 @@
         }
         if (roles.includes('Student')) {
           myToursItem.style.display = 'block';
+          if (savedToursItem) savedToursItem.style.display = 'block';
         }
       } else {
         guestBtn.style.display = '';

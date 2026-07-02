@@ -29,6 +29,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
 import apiService from "../../services/apiService";
+import { hideSplash } from "utils/splash";
 import realtimeService from "../../services/realtime";
 import useTourBasePath from "../../hooks/useTourBasePath";
 
@@ -99,6 +100,7 @@ function TourRegistrations() {
         setErrorMessage(error?.message || "Không tải được dữ liệu đăng ký.");
       } finally {
         setLoading(false);
+        hideSplash();
       }
     }
 
@@ -280,7 +282,7 @@ function TourRegistrations() {
 
             {!loading && !errorMessage ? (
               <>
-                <SoftBox mb={3} p={2} sx={{ border: "1px solid #e9ecef", borderRadius: "12px" }}>
+                <SoftBox mb={3} p={2} sx={{ border: "1px solid #d9caa6", borderRadius: "12px" }}>
                   <SoftTypography variant="button" fontWeight="bold">Quét mã check-in</SoftTypography>
                   <SoftBox display="flex" gap={1} mt={1} flexWrap="wrap">
                     <SoftBox flexGrow={1} minWidth="220px">
@@ -308,7 +310,7 @@ function TourRegistrations() {
                       "& th": {
                         fontSize: "0.75rem",
                         fontWeight: 700,
-                        color: "#344767",
+                        color: "#2b2a27",
                         whiteSpace: "nowrap",
                         py: 1.5,
                       },
@@ -426,7 +428,7 @@ function TourRegistrations() {
                     <Grid container spacing={2} mt={1}>
                       {feedbackData.feedbacks.map((fb) => (
                         <Grid item xs={12} md={6} key={fb.id}>
-                          <SoftBox p={2} sx={{ border: "1px solid #e9ecef", borderRadius: "12px" }}>
+                          <SoftBox p={2} sx={{ border: "1px solid #d9caa6", borderRadius: "12px" }}>
                             <SoftBox display="flex" justifyContent="space-between">
                               <SoftTypography variant="button" fontWeight="bold">{fb.studentName}</SoftTypography>
                               <SoftTypography variant="button" fontWeight="bold" color="warning">{"★".repeat(fb.rating)}{"☆".repeat(5 - fb.rating)}</SoftTypography>
@@ -515,7 +517,7 @@ function TourRegistrations() {
                   component="img"
                   src={paymentForm.proofImageUrl}
                   alt="Ảnh chứng minh thanh toán"
-                  sx={{ maxWidth: "100%", maxHeight: 220, borderRadius: "0.75rem", border: "1px solid #d2d6da", display: "block" }}
+                  sx={{ maxWidth: "100%", maxHeight: 220, borderRadius: "0.75rem", border: "1px solid #d9caa6", display: "block" }}
                 />
               </SoftBox>
             ) : null}
@@ -535,7 +537,7 @@ function TourRegistrations() {
           <SoftTypography variant="button" color="text">
             Gửi mã này cho sinh viên hoặc dùng để check-in tại sự kiện:
           </SoftTypography>
-          <SoftBox mt={1.5} p={2} sx={{ border: "1px dashed #d2d6da", borderRadius: "8px", wordBreak: "break-all", fontFamily: "monospace" }}>
+          <SoftBox mt={1.5} p={2} sx={{ border: "1px dashed #d9caa6", borderRadius: "8px", wordBreak: "break-all", fontFamily: "monospace" }}>
             {qrResult?.qrCode}
           </SoftBox>
         </DialogContent>

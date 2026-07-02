@@ -19,8 +19,8 @@ import pxToRem from "assets/theme/functions/pxToRem";
 const tableHead = {
   styleOverrides: {
     root: {
-      display: "block",
-      padding: `${pxToRem(16)} ${pxToRem(16)} 0  ${pxToRem(16)}`,
+      // display:block removed — it pulled <thead> out of table flow causing
+      // header columns to misalign with data columns.
       borderRadius: 0,
     },
   },

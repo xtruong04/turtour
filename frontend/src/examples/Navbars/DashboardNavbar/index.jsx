@@ -13,7 +13,7 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 // react-router components
 import { useLocation, useNavigate } from "react-router-dom";
@@ -41,7 +41,7 @@ import Breadcrumbs from "examples/Breadcrumbs";
 import NotificationItem from "examples/Items/NotificationItem";
 import apiService, { normalizeNotification } from "../../../services/apiService";
 import realtimeService from "../../../services/realtime";
-
+import { Fragment } from "react";
 // Custom styles for DashboardNavbar
 import {
   navbar,
@@ -71,6 +71,7 @@ function formatNotificationDate(dateStr) {
 
 function notificationIcon(type) {
   if (type === "Payment") return "payments";
+  if (type === "Contact") return "mail";
   return "notifications";
 }
 
@@ -82,8 +83,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
   const route = useLocation().pathname.split("/").slice(1);
-  const routeKey = route.join("/");
-  const session = useMemo(() => apiService.getAuthSession(), [routeKey]);
+  const session = apiService.getAuthSession();
   const displayName = session?.fullName?.trim() || session?.email || "Sign in";
   const roleLabel = (session?.roles || [])[0] || "";
   const isAuthenticated = Boolean(session?.token);
@@ -91,7 +91,14 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
   const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav);
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
-  const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
+  const handleOpenMenu = (event) => {
+    setOpenMenu(event.currentTarget);
+    if (isAuthenticated) {
+      apiService.getMyNotifications()
+        .then((data) => setNotifications(Array.isArray(data) ? data : []))
+        .catch(() => {});
+    }
+  };
   const handleCloseMenu = () => setOpenMenu(false);
   const handleOpenAccountMenu = (event) => setOpenAccountMenu(event.currentTarget);
   const handleCloseAccountMenu = () => setOpenAccountMenu(false);
@@ -109,9 +116,13 @@ function DashboardNavbar({ absolute, light, isMini }) {
       }
     }
 
+    const type = notification.raw?.type;
+    if (type === "Contact") {
+      navigate("/admin/contacts");
+      return;
+    }
     const tourId = notification.raw?.tourId;
     if (!tourId) return;
-    const type = notification.raw?.type;
     const roles = apiService.getAuthSession()?.roles || [];
     const base = roles.includes("Admin") ? "/admin" : "/partner";
     navigate(type === "Tour" ? `${base}/tours/${tourId}` : `${base}/tours/${tourId}/registrations`);
@@ -139,21 +150,17 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
     let isMounted = true;
 
-    async function fetchNotifications() {
+    async function load() {
       try {
         const data = await apiService.getMyNotifications();
-        if (isMounted) {
-          setNotifications(Array.isArray(data) ? data : []);
-        }
+        if (isMounted) setNotifications(Array.isArray(data) ? data : []);
       } catch {
-        // ignore — notification bell just stays empty on failure
+        // ignore
       }
     }
 
-    fetchNotifications();
-    // Poll mỗi 60s làm dự phòng — khi real-time hoạt động, danh sách cập nhật ngay lúc có
-    // thông báo mới; phòng trường hợp socket rớt/chưa kết nối lại thì vẫn có thông báo sau tối đa 60s.
-    const intervalId = setInterval(fetchNotifications, 60000);
+    load();
+    const intervalId = setInterval(load, 30000);
 
     return () => {
       isMounted = false;
@@ -218,6 +225,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   );
 
   return (
+    <Fragment>
     <AppBar
       position="static"
       color="inherit"
@@ -314,6 +322,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
         )}
       </Toolbar>
     </AppBar>
+    </Fragment>
   );
 }
 
