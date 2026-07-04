@@ -2,219 +2,127 @@
 <html lang="vi">
 
 <head>
-  <script src="assets/js/env-config.js"></script>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Thông báo - TurTour</title>
-  <meta name="description" content="Thông báo của bạn trên TurTour">
+  <meta name="description" content="Thông báo của bạn">
 
+  <!-- Favicons -->
   <link href="assets/img/favicon.png" rel="icon">
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Raleway:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+  <!-- Vendor CSS Files -->
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
 
   <style>
-    body.notif-page { background: #f4f6fb; }
-    body.notif-page .header {
-      --background-color: rgba(21, 34, 43, 0.97);
-      box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+    .notif-section {
+      padding: 140px 0 60px 0;
     }
-
-    .notif-section { padding: 130px 0 70px; }
-
-    /* ── Page header ── */
-    .notif-page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-    .notif-page-header-left { display: flex; align-items: center; gap: 14px; }
-    .notif-page-header h2 {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: #1a1a2e;
-      margin: 0;
-    }
-    .unread-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 26px;
-      height: 26px;
-      padding: 0 8px;
-      border-radius: 13px;
-      background: #e84545;
-      color: #fff;
-      font-size: 0.78rem;
-      font-weight: 700;
-    }
-    .btn-mark-all {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 9px 16px;
-      border-radius: 10px;
-      border: 1.5px solid #e84545;
-      color: #e84545;
-      background: transparent;
-      font-weight: 700;
-      font-size: 0.82rem;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-    }
-    .btn-mark-all:hover { background: #e84545; color: #fff; }
-
-    /* ── Notification cards container ── */
-    .notif-list-wrap {
+    .section-card {
       background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-      border: 1px solid rgba(0,0,0,0.05);
-      overflow: hidden;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border: 1px solid #f1f3f5;
     }
-
-    /* ── Notification item ── */
+    .section-card h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #1a1a2e;
+      border-bottom: 2px solid #e84545;
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+    }
     .notif-item {
       display: flex;
-      align-items: flex-start;
       gap: 14px;
-      padding: 18px 22px;
-      border-bottom: 1px solid #f1f3f5;
+      padding: 16px;
+      border: 1px solid #f1f3f5;
+      border-radius: 12px;
+      margin-bottom: 10px;
       cursor: pointer;
-      transition: background 0.18s;
-      position: relative;
+      transition: background-color 0.15s;
     }
-    .notif-item:last-child { border-bottom: none; }
-    .notif-item:hover { background: #fafafa; }
-    .notif-item.unread {
-      background: #fff8f8;
-      border-left: 3px solid #e84545;
-    }
-    .notif-item.unread:hover { background: #fff0f0; }
-
-    /* Type icon */
-    .notif-type-icon {
-      width: 42px; height: 42px; border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem; flex-shrink: 0;
-    }
-    .notif-type-icon.payment { background: rgba(76,175,80,0.12); color: #4caf50; }
-    .notif-type-icon.tour    { background: rgba(33,150,243,0.12); color: #2196f3; }
-    .notif-type-icon.default { background: rgba(232,69,69,0.1);  color: #e84545; }
-
-    .notif-item-body { flex: 1; min-width: 0; }
-    .notif-item-title {
-      font-size: 0.92rem;
-      font-weight: 700;
-      color: #1a1a2e;
-      margin: 0 0 4px;
-      line-clamp: 2;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      display: -webkit-box;
-      overflow: hidden;
-    }
-    .notif-item.unread .notif-item-title { color: #e84545; }
-    .notif-item-content {
-      font-size: 0.84rem;
-      color: #495057;
-      margin: 0 0 6px;
-      line-clamp: 2;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      display: -webkit-box;
-      overflow: hidden;
-    }
-    .notif-item-time { font-size: 0.74rem; color: #adb5bd; }
-
-    .notif-unread-dot {
-      width: 8px; height: 8px; border-radius: 50%;
+    .notif-item:last-child { margin-bottom: 0; }
+    .notif-item:hover { background-color: #f8f9fa; }
+    .notif-item.unread { background-color: #fff5f5; border-color: #ffd6d6; }
+    .notif-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: #e84545;
-      flex-shrink: 0; margin-top: 6px;
+      color: #fff;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .notif-icon.read { background: #b0b8c4; }
+    .notif-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #1a1a2e;
+      margin-bottom: 2px;
+    }
+    .notif-content {
+      font-size: 0.88rem;
+      color: #495057;
+      margin-bottom: 4px;
+    }
+    .notif-date {
+      font-size: 0.75rem;
+      color: #adb5bd;
+    }
+    .notif-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e84545;
+      flex-shrink: 0;
+      margin-top: 6px;
     }
 
-    /* ── State cards ── */
-    .state-card {
-      background: #fff; border-radius: 20px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-      padding: 60px 32px; text-align: center;
-      max-width: 480px; margin: 80px auto 0;
+    body.notif-page .header {
+      --background-color: rgba(21, 34, 43, 0.95);
+      box-shadow: 0px 0 18px rgba(0, 0, 0, 0.1);
     }
-    .state-icon {
-      width: 72px; height: 72px; border-radius: 20px;
-      background: rgba(232,69,69,0.1); color: #e84545;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2rem; margin: 0 auto 20px;
-    }
-    .state-card h3 { font-size: 1.2rem; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; }
-    .state-card p { color: #868e96; font-size: 0.9rem; margin-bottom: 20px; }
-    .btn-state {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 12px 24px; border-radius: 10px;
-      background: #e84545; color: #fff;
-      font-weight: 700; font-size: 0.9rem;
-      text-decoration: none; border: none; cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn-state:hover { background: #d33c3c; color: #fff; }
-
-    /* ── Empty state ── */
-    .notif-empty {
-      padding: 60px 32px; text-align: center;
-    }
-    .notif-empty-icon {
-      width: 80px; height: 80px; border-radius: 24px;
-      background: rgba(232,69,69,0.08); color: #e84545;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2.2rem; margin: 0 auto 20px;
-    }
-    .notif-empty h4 { font-size: 1.1rem; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; }
-    .notif-empty p { color: #868e96; font-size: 0.9rem; }
-    .header-avatar-circle {
-      width: 34px; height: 34px; border-radius: 50%;
-      overflow: hidden; display: flex; align-items: center; justify-content: center;
-      background: linear-gradient(135deg, #e84545, #ff7b7b);
-      border: 2px solid rgba(255,255,255,0.28);
-      color: #fff; font-size: 0.76rem; font-weight: 800;
-      text-transform: uppercase; letter-spacing: -0.01em;
-      flex-shrink: 0; cursor: pointer; user-select: none;
-      transition: border-color 0.2s ease, transform 0.18s ease;
-    }
-    .header-avatar-circle:hover { border-color: rgba(255,255,255,0.55); transform: scale(1.07); }
   </style>
-  <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.14/dist/dotlottie-wc.js" type="module"></script>
 </head>
 
 <body class="notif-page">
 
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
+
       <a href="index.html" class="logo d-flex align-items-center me-auto">
         <h1 class="sitename">TurTour</h1>
       </a>
+
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="index.html#hero">Trang chủ</a></li>
           <li><a href="index.html#about">Giới thiệu</a></li>
-          <li><a href="index.html#services">Cách hoạt động</a></li>
+          <li><a href="index.html#services">Dịch vụ</a></li>
           <li><a href="index.html#portfolio">Tour</a></li>
           <li><a href="index.html#team">Đối tác</a></li>
-          <li><a href="index.html#staff">Đội ngũ</a></li>
           <li><a href="index.html#contact">Liên hệ</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
+
       <a id="auth-guest" class="cta-btn" href="/auth/sign-in" target="_top">Đăng Nhập</a>
+
       <div id="notif-bell" class="notif-bell dropdown" style="display:none;">
         <a href="#" class="notif-bell-toggle" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="bi bi-bell"></i>
@@ -230,74 +138,50 @@
           </div>
         </div>
       </div>
+
       <div id="auth-profile" class="auth-profile dropdown" style="display:none;">
         <a href="#" class="auth-profile-toggle d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="bi bi-person-circle"></i>
           <span id="auth-profile-name" class="auth-profile-name"></span>
         </a>
-        <ul class="dropdown-menu dropdown-menu-end auth-profile-menu">
-          <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person"></i>Hồ sơ của tôi</a></li>
-          <li id="auth-mytours-item" style="display:none;"><a class="dropdown-item" href="my-tours.html"><i class="bi bi-calendar-check"></i>Tour của tôi</a></li>
-          <li id="auth-myreviews-item" style="display:none;"><a class="dropdown-item" href="my-reviews.html"><i class="bi bi-star"></i>Đánh giá của tôi</a></li>
-          <li id="auth-savedtours-item" style="display:none;"><a class="dropdown-item" href="saved-tours.html"><i class="bi bi-heart"></i>Tour đã lưu</a></li>
-          <li><a class="dropdown-item active" href="notifications.html"><i class="bi bi-bell"></i>Thông báo</a></li>
-          <li id="auth-dashboard-item" style="display:none;"><a class="dropdown-item" href="/admin/dashboard" target="_top"><i class="bi bi-speedometer2"></i>Trang quản trị</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><button type="button" class="dropdown-item logout-item" id="auth-logout-btn"><i class="bi bi-box-arrow-right"></i>Đăng xuất</button></li>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="profile.html">Hồ sơ của tôi</a></li>
+          <li id="auth-mytours-item" style="display:none;"><a class="dropdown-item" href="my-tours.html">Tour của tôi</a></li>
+          <li><a class="dropdown-item active" href="notifications.html">Thông báo</a></li>
+          <li id="auth-dashboard-item" style="display:none;"><a class="dropdown-item" href="/admin/dashboard" target="_top">Trang quản trị</a></li>
+          <li><button type="button" class="dropdown-item" id="auth-logout-btn">Đăng xuất</button></li>
         </ul>
       </div>
+
     </div>
   </header>
 
   <main class="main">
     <section class="notif-section">
-      <div class="container" style="max-width: 760px;">
+      <div class="container" data-aos="fade-up">
 
-        <!-- Guest -->
-        <div id="page-guest" style="display:none;">
-          <div class="state-card" data-aos="fade-up">
-            <div class="state-icon"><i class="bi bi-lock"></i></div>
-            <h3>Bạn chưa đăng nhập</h3>
-            <p>Vui lòng đăng nhập để xem thông báo của bạn.</p>
-            <a href="/auth/sign-in" target="_top" class="btn-state"><i class="bi bi-box-arrow-in-right"></i> Đăng nhập ngay</a>
-          </div>
+        <div id="page-guest" style="display:none;" class="text-center py-5">
+          <i class="bi bi-lock text-danger" style="font-size: 3.5rem;"></i>
+          <h3 class="mt-3 font-weight-bold">Bạn cần đăng nhập</h3>
+          <p class="text-muted">Vui lòng đăng nhập để xem thông báo của bạn.</p>
+          <a href="/auth/sign-in" target="_top" class="btn btn-outline-danger mt-2">Đến trang đăng nhập</a>
         </div>
 
-        <!-- Loading -->
-        <div id="page-loading" class="text-center py-5" data-aos="fade-up">
-          <dotlottie-wc src="https://lottie.host/3ff9baf3-3e77-4906-a454-ccb295313a7f/Ms4tMee3Lz.lottie" style="width:110px;height:110px;display:block;margin:0 auto;" autoplay loop></dotlottie-wc>
+        <div id="page-loading" class="text-center py-5">
+          <div class="spinner-border text-danger mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
           <p class="text-muted">Đang tải thông báo...</p>
         </div>
 
-        <!-- Error -->
-        <div id="page-error" style="display:none;">
-          <div class="state-card" data-aos="fade-up">
-            <div class="state-icon"><i class="bi bi-exclamation-circle"></i></div>
-            <h3>Không thể tải thông báo</h3>
-            <p id="page-error-msg">Vui lòng thử lại sau.</p>
-            <button type="button" onclick="location.reload()" class="btn-state"><i class="bi bi-arrow-clockwise"></i> Thử lại</button>
-          </div>
+        <div id="page-error" style="display:none;" class="text-center py-5">
+          <i class="bi bi-exclamation-octagon text-danger" style="font-size: 3.5rem;"></i>
+          <p id="page-error-msg" class="text-muted mt-3">Không thể tải thông báo.</p>
         </div>
 
-        <!-- Content -->
         <div id="page-content" style="display:none;">
-          <div class="notif-page-header" data-aos="fade-up">
-            <div class="notif-page-header-left">
-              <h2><i class="bi bi-bell-fill me-2" style="color:#e84545;font-size:1.3rem;"></i>Thông báo</h2>
-              <span id="unread-count-badge" class="unread-badge" style="display:none;">0</span>
-            </div>
-            <button type="button" id="btn-mark-all" class="btn-mark-all" style="display:none;">
-              <i class="bi bi-check2-all"></i> Đánh dấu tất cả đã đọc
-            </button>
-          </div>
-
-          <div class="notif-list-wrap" data-aos="fade-up" data-aos-delay="80">
+          <div class="section-card">
+            <h3><i class="bi bi-bell-fill text-danger"></i> Thông báo</h3>
             <div id="notif-empty" style="display:none;">
-              <div class="notif-empty">
-                <div class="notif-empty-icon"><i class="bi bi-bell-slash"></i></div>
-                <h4>Chưa có thông báo nào</h4>
-                <p>Khi có hoạt động mới về tour của bạn, thông báo sẽ xuất hiện tại đây.</p>
-              </div>
+              <p class="text-muted">Bạn chưa có thông báo nào.</p>
             </div>
             <div id="notif-list"></div>
           </div>
@@ -308,90 +192,112 @@
   </main>
 
   <footer id="footer" class="footer dark-background">
+
     <div class="container footer-top">
       <div class="row gy-4">
         <div class="col-lg-4 col-md-6 footer-about">
           <a href="index.html" class="logo d-flex align-items-center">
             <span class="sitename">TurTour</span>
           </a>
-          <p class="mt-2">Nền tảng kết nối sinh viên với các tour tham quan thực tế tại doanh nghiệp.</p>
-          <div class="footer-contact pt-2">
+          <div class="footer-contact pt-3">
             <p>Gia Định, TP.HCM</p>
-            <p class="mt-3"><strong>Điện thoại:</strong> <span>Đang cập nhật</span></p>
-            <p><strong>Email:</strong> <span>Đang cập nhật</span></p>
+            <p class="mt-3"><strong>Phone:</strong> <span>Upcoming</span></p>
+            <p><strong>Email:</strong> <span>Upcoming</span></p>
           </div>
           <div class="social-links d-flex mt-4">
+            <a href=""><i class="bi bi-twitter-x"></i></a>
             <a href=""><i class="bi bi-facebook"></i></a>
             <a href=""><i class="bi bi-instagram"></i></a>
+            <a href=""><i class="bi bi-linkedin"></i></a>
           </div>
         </div>
-        <div class="col-lg-4 col-md-3 footer-links">
-          <h4>Liên kết nhanh</h4>
+
+        <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Useful Links</h4>
           <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="index.html#hero">Trang chủ</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="index.html#about">Giới thiệu</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="index.html#portfolio">Danh sách tour</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="index.html#team">Đối tác</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="index.html#staff">Đội ngũ</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Home</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">About us</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Services</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Terms of service</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Privacy policy</a></li>
           </ul>
         </div>
-        <div class="col-lg-4 col-md-3 footer-links">
-          <h4>Tài khoản</h4>
+
+        <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Our Services</h4>
           <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="my-tours.html">Tour của tôi</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="profile.html">Hồ sơ của tôi</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="notifications.html">Thông báo</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="/auth/sign-in" target="_top">Đăng nhập</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Design</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Development</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Product Management</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Marketing</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Graphic Design</a></li>
           </ul>
         </div>
+
+        <div class="col-lg-4 col-md-12 footer-newsletter">
+          <h4>Our Newsletter</h4>
+          <p>Subscribe to our newsletter and receive the latest news about our products and services!</p>
+          <form action="forms/newsletter.php" method="post" class="php-email-form">
+            <div class="newsletter-form"><input type="email" name="email"><input type="submit" value="Subscribe"></div>
+            <div class="loading">Loading</div>
+            <div class="error-message"></div>
+            <div class="sent-message">Your subscription request has been sent. Thank you!</div>
+          </form>
+        </div>
+
       </div>
     </div>
+
     <div class="container copyright text-center mt-4">
-      <p>© <span>Bản quyền</span> <strong class="px-1 sitename">TurTour</strong> <span>Đã đăng ký bản quyền</span></p>
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">TurTour</strong> <span>All Rights Reserved</span></p>
+      <div class="credits">
+        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed by <a href=“https://themewagon.com>ThemeWagon
+      </div>
     </div>
+
   </footer>
 
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
+  <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
+
+  <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
   <script src="assets/js/toast.js"></script>
   <script src="assets/js/auth-guard.js"></script>
-  <script src="assets/vendor/signalr/signalr.min.js"></script>
+    <script src="assets/vendor/signalr/signalr.min.js"></script>
   <script src="assets/js/realtime.js"></script>
-  <script src="assets/js/notifications-badge.js"></script>
-  <script src="assets/js/header-avatar.js"></script>
+<script src="assets/js/notifications-badge.js"></script>
 
   <script>
     (function () {
-      var API_BASE = window.TURTOUR_API_BASE;
+      var API_BASE = 'https://turtour-production.up.railway.app/api';
+
       var session = null;
-      try { session = JSON.parse(localStorage.getItem('turtour.admin.session')); } catch (e) {}
+      try {
+        session = JSON.parse(localStorage.getItem('turtour.admin.session'));
+      } catch (e) {}
 
       var guestBtn = document.getElementById('auth-guest');
       var profileBox = document.getElementById('auth-profile');
       var profileName = document.getElementById('auth-profile-name');
       var dashboardItem = document.getElementById('auth-dashboard-item');
       var myToursItem = document.getElementById('auth-mytours-item');
-      var myReviewsItem = document.getElementById('auth-myreviews-item');
-      var savedToursItem = document.getElementById('auth-savedtours-item');
       var logoutBtn = document.getElementById('auth-logout-btn');
 
       if (session && session.token) {
         guestBtn.style.display = 'none';
         profileBox.style.display = 'block';
         profileName.textContent = session.fullName || session.email || 'Tài khoản';
+
         var headerRoles = session.roles || [];
         if (headerRoles.includes('Admin') || headerRoles.includes('Organizator') || headerRoles.includes('Company')) {
-          var dashboardLink = dashboardItem.querySelector('a');
-          if (dashboardLink) dashboardLink.href = headerRoles.includes('Admin') ? '/admin/dashboard' : '/partner/dashboard';
           dashboardItem.style.display = 'block';
         }
         if (headerRoles.includes('Student')) {
           myToursItem.style.display = 'block';
-          if (myReviewsItem) myReviewsItem.style.display = 'block';
-          if (savedToursItem) savedToursItem.style.display = 'block';
         }
       }
 
@@ -406,126 +312,69 @@
         return;
       }
 
-      function authHeaders() { return { Authorization: 'Bearer ' + session.token }; }
-
-      function timeAgo(dateStr) {
-        if (!dateStr) return '';
-        var diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
-        if (diff < 60) return 'Vừa xong';
-        if (diff < 3600) return Math.floor(diff / 60) + ' phút trước';
-        if (diff < 86400) return Math.floor(diff / 3600) + ' giờ trước';
-        if (diff < 2592000) return Math.floor(diff / 86400) + ' ngày trước';
-        return new Date(dateStr).toLocaleDateString('vi-VN');
+      function authHeaders() {
+        return { Authorization: 'Bearer ' + session.token };
       }
 
-      function typeIcon(type) {
-        if (!type) return { cls: 'default', icon: 'bi-bell-fill' };
-        var t = type.toLowerCase();
-        if (t === 'payment') return { cls: 'payment', icon: 'bi-cash-coin' };
-        if (t === 'tour')    return { cls: 'tour',    icon: 'bi-map-fill' };
-        if (t === 'contact') return { cls: 'default', icon: 'bi-envelope-fill' };
-        return { cls: 'default', icon: 'bi-bell-fill' };
+      function fmtDate(dateStr) {
+        if (!dateStr) return '—';
+        var d = new Date(dateStr);
+        return d.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
       }
 
-      function linkForNotification(n) {
-        if (!n) return null;
-        if (n.type === 'Tour') return n.tourId ? 'tour-details.html?id=' + n.tourId : null;
-        if (n.type === 'Contact') return 'index.html#contact';
-        return 'my-tours.html';
+      function iconForType(type) {
+        return type === 'Payment' ? 'bi-cash-coin' : 'bi-bell-fill';
       }
 
-      var allNotifications = [];
-
-      function updateUnreadUI() {
-        var unread = allNotifications.filter(function (n) { return !n.isRead; }).length;
-        var badge = document.getElementById('unread-count-badge');
-        var markAllBtn = document.getElementById('btn-mark-all');
-        if (unread > 0) {
-          badge.textContent = unread;
-          badge.style.display = 'inline-flex';
-          markAllBtn.style.display = 'inline-flex';
-        } else {
-          badge.style.display = 'none';
-          markAllBtn.style.display = 'none';
-        }
-      }
-
-      function renderNotifications() {
+      function renderNotifications(notifications) {
         var listEl = document.getElementById('notif-list');
-        var emptyEl = document.getElementById('notif-empty');
 
-        if (!allNotifications.length) {
-          emptyEl.style.display = 'block';
+        if (!notifications || notifications.length === 0) {
+          document.getElementById('notif-empty').style.display = 'block';
           listEl.innerHTML = '';
           return;
         }
-        emptyEl.style.display = 'none';
+        document.getElementById('notif-empty').style.display = 'none';
 
-        listEl.innerHTML = allNotifications.map(function (n) {
-          var ic = typeIcon(n.type);
+        listEl.innerHTML = notifications.map(function (n) {
           return '<div class="notif-item' + (n.isRead ? '' : ' unread') + '" data-notif-id="' + n.id + '">'
-            + '<div class="notif-type-icon ' + ic.cls + '"><i class="bi ' + ic.icon + '"></i></div>'
-            + '<div class="notif-item-body">'
-              + '<p class="notif-item-title">' + n.title + '</p>'
-              + '<p class="notif-item-content">' + n.content + '</p>'
-              + '<span class="notif-item-time"><i class="bi bi-clock me-1"></i>' + timeAgo(n.createdAt) + '</span>'
+            + '<div class="notif-icon' + (n.isRead ? ' read' : '') + '"><i class="bi ' + iconForType(n.type) + '"></i></div>'
+            + '<div class="flex-grow-1">'
+            + '<div class="notif-title">' + n.title + '</div>'
+            + '<div class="notif-content">' + n.content + '</div>'
+            + '<div class="notif-date">' + fmtDate(n.createdAt) + '</div>'
             + '</div>'
-            + (n.isRead ? '' : '<div class="notif-unread-dot"></div>')
+            + (n.isRead ? '' : '<div class="notif-dot"></div>')
             + '</div>';
         }).join('');
 
         listEl.querySelectorAll('[data-notif-id]').forEach(function (el) {
           el.addEventListener('click', function () {
-            var id = el.getAttribute('data-notif-id');
-            var notif = allNotifications.find(function (n) { return n.id === id; });
-            var link = linkForNotification(notif);
             if (el.classList.contains('unread')) {
-              markAsRead(id, el, link, notif);
-            } else if (link) {
-              window.location.href = link;
+              markAsRead(el.getAttribute('data-notif-id'), el);
             }
           });
         });
-
-        updateUnreadUI();
       }
 
-      function markAsRead(id, el, link, notif) {
-        fetch(API_BASE + '/notifications/' + id + '/read', { method: 'PUT', headers: authHeaders() })
+      function markAsRead(id, el) {
+        fetch(API_BASE + '/notifications/' + id + '/read', {
+          method: 'PUT',
+          headers: authHeaders()
+        })
           .then(function (res) {
             if (!res.ok) throw new Error('HTTP ' + res.status);
             el.classList.remove('unread');
-            var dot = el.querySelector('.notif-unread-dot');
+            var icon = el.querySelector('.notif-icon');
+            if (icon) icon.classList.add('read');
+            var dot = el.querySelector('.notif-dot');
             if (dot) dot.remove();
-            var title = el.querySelector('.notif-item-title');
-            if (title) title.style.color = '';
-            if (notif) notif.isRead = true;
-            updateUnreadUI();
           })
           .catch(function () {
             showToast('Không thể đánh dấu đã đọc.', 'error');
-          })
-          .finally(function () {
-            if (link) window.location.href = link;
           });
       }
 
-      // Mark all as read
-      document.getElementById('btn-mark-all').addEventListener('click', function () {
-        var unread = allNotifications.filter(function (n) { return !n.isRead; });
-        if (!unread.length) return;
-
-        Promise.all(unread.map(function (n) {
-          return fetch(API_BASE + '/notifications/' + n.id + '/read', { method: 'PUT', headers: authHeaders() })
-            .then(function () { n.isRead = true; })
-            .catch(function () {});
-        })).then(function () {
-          renderNotifications();
-          showToast('Đã đánh dấu tất cả là đã đọc.', 'success');
-        });
-      });
-
-      // Load notifications
       fetch(API_BASE + '/notifications/my', { headers: authHeaders() })
         .then(function (res) {
           if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -534,8 +383,7 @@
         .then(function (notifications) {
           document.getElementById('page-loading').style.display = 'none';
           document.getElementById('page-content').style.display = 'block';
-          allNotifications = notifications || [];
-          renderNotifications();
+          renderNotifications(notifications);
         })
         .catch(function (err) {
           document.getElementById('page-loading').style.display = 'none';
@@ -546,4 +394,5 @@
   </script>
 
 </body>
+
 </html>

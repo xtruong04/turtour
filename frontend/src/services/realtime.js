@@ -54,9 +54,6 @@ const realtimeService = {
   onAdminBoardUpdated(callback) {
     return on("AdminBoardUpdated", callback);
   },
-  onNewContact(callback) {
-    return on("NewContact", callback);
-  },
 };
 
 export default realtimeService;

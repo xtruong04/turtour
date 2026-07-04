@@ -49,7 +49,6 @@ import divider from "assets/theme/components/divider";
 import tableContainer from "assets/theme/components/table/tableContainer";
 import tableHead from "assets/theme/components/table/tableHead";
 import tableCell from "assets/theme/components/table/tableCell";
-import tableRow from "assets/theme/components/table/tableRow";
 import linearProgress from "assets/theme/components/linearProgress";
 import breadcrumbs from "assets/theme/components/breadcrumbs";
 import slider from "assets/theme/components/slider";
@@ -115,7 +114,6 @@ export default createTheme({
     MuiTableContainer: { ...tableContainer },
     MuiTableHead: { ...tableHead },
     MuiTableCell: { ...tableCell },
-    MuiTableRow: { ...tableRow },
     MuiLinearProgress: { ...linearProgress },
     MuiBreadcrumbs: { ...breadcrumbs },
     MuiSlider: { ...slider },

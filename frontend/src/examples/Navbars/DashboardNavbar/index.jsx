@@ -13,7 +13,7 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 // react-router components
 import { useLocation, useNavigate } from "react-router-dom";
@@ -41,7 +41,7 @@ import Breadcrumbs from "examples/Breadcrumbs";
 import NotificationItem from "examples/Items/NotificationItem";
 import apiService, { normalizeNotification } from "../../../services/apiService";
 import realtimeService from "../../../services/realtime";
-import { Fragment } from "react";
+
 // Custom styles for DashboardNavbar
 import {
   navbar,
@@ -71,7 +71,6 @@ function formatNotificationDate(dateStr) {
 
 function notificationIcon(type) {
   if (type === "Payment") return "payments";
-  if (type === "Contact") return "mail";
   return "notifications";
 }
 
@@ -83,7 +82,8 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
   const route = useLocation().pathname.split("/").slice(1);
-  const session = apiService.getAuthSession();
+  const routeKey = route.join("/");
+  const session = useMemo(() => apiService.getAuthSession(), [routeKey]);
   const displayName = session?.fullName?.trim() || session?.email || "Sign in";
   const roleLabel = (session?.roles || [])[0] || "";
   const isAuthenticated = Boolean(session?.token);
@@ -91,41 +91,22 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
   const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav);
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
-  const handleOpenMenu = (event) => {
-    setOpenMenu(event.currentTarget);
-    if (isAuthenticated) {
-      apiService.getMyNotifications()
-        .then((data) => setNotifications(Array.isArray(data) ? data : []))
-        .catch(() => {});
-    }
-  };
+  const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
   const handleCloseMenu = () => setOpenMenu(false);
   const handleOpenAccountMenu = (event) => setOpenAccountMenu(event.currentTarget);
   const handleCloseAccountMenu = () => setOpenAccountMenu(false);
 
   const handleNotificationClick = async (notification) => {
     handleCloseMenu();
-    if (!notification.isRead) {
-      try {
-        await apiService.markNotificationRead(notification.id);
-        setNotifications((current) =>
-          current.map((n) => (n.id === notification.id ? { ...n, isRead: true } : n))
-        );
-      } catch {
-        // ignore — non-critical, will just retry to mark as read next time
-      }
+    if (notification.isRead) return;
+    try {
+      await apiService.markNotificationRead(notification.id);
+      setNotifications((current) =>
+        current.map((n) => (n.id === notification.id ? { ...n, isRead: true } : n))
+      );
+    } catch {
+      // ignore — non-critical, will just retry to mark as read next time
     }
-
-    const type = notification.raw?.type;
-    if (type === "Contact") {
-      navigate("/admin/contacts");
-      return;
-    }
-    const tourId = notification.raw?.tourId;
-    if (!tourId) return;
-    const roles = apiService.getAuthSession()?.roles || [];
-    const base = roles.includes("Admin") ? "/admin" : "/partner";
-    navigate(type === "Tour" ? `${base}/tours/${tourId}` : `${base}/tours/${tourId}/registrations`);
   };
 
   const handleLogout = async () => {
@@ -150,21 +131,21 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
     let isMounted = true;
 
-    async function load() {
+    async function fetchNotifications() {
       try {
         const data = await apiService.getMyNotifications();
-        if (isMounted) setNotifications(Array.isArray(data) ? data : []);
+        if (isMounted) {
+          setNotifications(Array.isArray(data) ? data : []);
+        }
       } catch {
-        // ignore
+        // ignore — notification bell just stays empty on failure
       }
     }
 
-    load();
-    const intervalId = setInterval(load, 30000);
+    fetchNotifications();
 
     return () => {
       isMounted = false;
-      clearInterval(intervalId);
     };
   }, [isAuthenticated]);
 
@@ -225,7 +206,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
   );
 
   return (
-    <Fragment>
     <AppBar
       position="static"
       color="inherit"
@@ -322,7 +302,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
         )}
       </Toolbar>
     </AppBar>
-    </Fragment>
   );
 }
 

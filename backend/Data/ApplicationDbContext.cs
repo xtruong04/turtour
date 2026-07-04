@@ -22,7 +22,6 @@ namespace TurTour.Data
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Organizator> Organizators { get; set; }
         public DbSet<TourInterest> TourInterests { get; set; }
-        public DbSet<Contact> Contacts { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

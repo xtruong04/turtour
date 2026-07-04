@@ -6,7 +6,7 @@ namespace TurTour.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin,Organizator,Company,Student")]
+    [Authorize(Roles = "Admin,Organizator")]
     public class UploadsController : ControllerBase
     {
         private static readonly string[] AllowedContentTypes =

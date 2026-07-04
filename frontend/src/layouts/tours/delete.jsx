@@ -14,12 +14,10 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
 import apiService from "../../services/apiService";
-import useTourBasePath from "../../hooks/useTourBasePath";
 
 function TourDelete() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const base = useTourBasePath();
 
   const [tour, setTour] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -50,7 +48,7 @@ function TourDelete() {
 
     try {
       await apiService.deleteTour(id);
-      navigate(`${base}/tours`, { replace: true });
+      navigate("/admin/tours", { replace: true });
     } catch (error) {
       setErrorMessage(error?.message || "Xóa tour thất bại.");
     } finally {
@@ -82,7 +80,7 @@ function TourDelete() {
             ) : null}
 
             <SoftBox mt={3} display="flex" justifyContent="flex-end" gap={1}>
-              <SoftButton component={Link} to={tour ? `${base}/tours/${tour.id}` : `${base}/tours`} variant="outlined" color="dark">
+              <SoftButton component={Link} to={tour ? `/admin/tours/${tour.id}` : "/admin/tours"} variant="outlined" color="dark">
                 Hủy
               </SoftButton>
               <SoftButton variant="gradient" color="error" onClick={handleDelete} disabled={submitting || loading || !tour}>

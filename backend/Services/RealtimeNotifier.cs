@@ -20,19 +20,14 @@ namespace TurTour.Services
             return _hub.Clients.Group(AppHub.UserGroup(notification.UserId)).SendAsync("ReceiveNotification", notification);
         }
 
-        public Task NotifyTourUpdatedAsync(Guid tourId, string approvalStatus, string publishStatus)
+        public Task NotifyTourUpdatedAsync(Guid tourId, string status)
         {
-            return _hub.Clients.Group(AppHub.ToursGroup).SendAsync("TourUpdated", new { tourId, approvalStatus, publishStatus });
+            return _hub.Clients.Group(AppHub.ToursGroup).SendAsync("TourUpdated", new { tourId, status });
         }
 
         public Task NotifyAdminBoardAsync(Guid tourId, string reason)
         {
             return _hub.Clients.Group(AppHub.AdminBoardGroup).SendAsync("AdminBoardUpdated", new { tourId, reason });
-        }
-
-        public Task NotifyNewContactAsync(Guid contactId, string fullName, string subject)
-        {
-            return _hub.Clients.Group(AppHub.AdminBoardGroup).SendAsync("NewContact", new { contactId, fullName, subject });
         }
     }
 }
