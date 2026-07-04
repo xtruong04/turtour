@@ -405,6 +405,7 @@ h6 {
   color: #495057;
   margin-bottom: 2px;
   display: -webkit-box;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -439,6 +440,70 @@ h6 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.auth-profile-menu {
+  width: 240px;
+  padding: 8px;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+}
+
+.auth-profile-menu .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1a1a2e;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.auth-profile-menu .dropdown-item i {
+  font-size: 1.05rem;
+  width: 20px;
+  color: #adb5bd;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.auth-profile-menu .dropdown-item:hover,
+.auth-profile-menu .dropdown-item:focus {
+  background-color: #fff5f5;
+  color: #e84545;
+}
+
+.auth-profile-menu .dropdown-item.active {
+  background-color: #fff5f5;
+  color: #e84545;
+}
+
+.auth-profile-menu .dropdown-item.active i {
+  color: #e84545;
+}
+
+.auth-profile-menu .dropdown-item:hover i,
+.auth-profile-menu .dropdown-item:focus i {
+  color: #e84545;
+}
+
+.auth-profile-menu .dropdown-item.logout-item:hover,
+.auth-profile-menu .dropdown-item.logout-item:focus {
+  background-color: #fdecea;
+  color: #dc3545;
+}
+
+.auth-profile-menu .dropdown-item.logout-item:hover i,
+.auth-profile-menu .dropdown-item.logout-item:focus i {
+  color: #dc3545;
+}
+
+.auth-profile-menu .dropdown-divider {
+  margin: 6px 4px;
+  border-color: #f1f3f5;
 }
 
 @media (max-width: 1200px) {
@@ -2025,6 +2090,4 @@ section,
 /*--------------------------------------------------------------
 # Starter Section Section
 --------------------------------------------------------------*/
-.starter-section {
-  /* Add your styles here */
-}
+/* .starter-section {} */

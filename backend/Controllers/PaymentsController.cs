@@ -32,20 +32,43 @@ namespace TurTour.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,Organizator")]
+        [Authorize(Roles = "Admin,Organizator,Company")]
         public async Task<IActionResult> GetAll()
         {
-            var items = await _context.Payments
+            IQueryable<Payment> query = _context.Payments
                 .Include(p => p.Registration)
-                .ThenInclude(r => r!.Tour)
-                .OrderByDescending(p => p.PaidAt)
-                .ToListAsync();
+                .ThenInclude(r => r!.Tour);
 
+            if (User.IsInRole("Company"))
+            {
+                var companyId = await GetOwnCompanyIdAsync();
+                if (companyId == null)
+                {
+                    return Ok(Array.Empty<Payment>());
+                }
+                query = query.Where(p => p.Registration != null && p.Registration.Tour != null && p.Registration.Tour.CompanyId == companyId);
+            }
+
+            var items = await query.OrderByDescending(p => p.PaidAt).ToListAsync();
             return Ok(items);
         }
 
+        // Công ty chỉ thuộc 1 doanh nghiệp duy nhất gắn với tài khoản — dùng để giới hạn
+        // GetAll/Confirm chỉ thấy/đụng được thanh toán của tour thuộc doanh nghiệp đó.
+        private async Task<Guid?> GetOwnCompanyIdAsync()
+        {
+            var userId = CurrentUserHelper.GetUserId(User);
+            if (userId == null)
+            {
+                return null;
+            }
+
+            var company = await _context.Companies.FirstOrDefaultAsync(c => c.UserId == userId);
+            return company?.Id;
+        }
+
         [HttpPost("confirm")]
-        [Authorize(Roles = "Admin,Organizator")]
+        [Authorize(Roles = "Admin,Organizator,Company")]
         public async Task<IActionResult> Confirm(ConfirmPaymentRequest request)
         {
             var confirmerId = CurrentUserHelper.GetUserId(User);
@@ -61,6 +84,15 @@ namespace TurTour.Controllers
             if (registration == null)
             {
                 return NotFound(new { message = "Registration not found." });
+            }
+
+            if (User.IsInRole("Company"))
+            {
+                var companyId = await GetOwnCompanyIdAsync();
+                if (companyId == null || registration.Tour?.CompanyId != companyId)
+                {
+                    return Forbid();
+                }
             }
 
             var payment = await ConfirmPaymentAsync(registration, request.PaymentMethod, request.TransactionCode, request.ProofImageUrl, confirmerId);
@@ -162,6 +194,7 @@ namespace TurTour.Controllers
                 Title = "Thanh toán đã được xác nhận",
                 Content = $"Thanh toán cho tour \"{registration.Tour?.Tittle}\" của bạn đã được xác nhận thành công.",
                 Type = "Payment",
+                TourId = registration.TourId,
                 IsRead = false
             };
             _context.Notifications.Add(notification);

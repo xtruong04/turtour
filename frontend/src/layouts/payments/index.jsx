@@ -20,6 +20,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
 import apiService from "../../services/apiService";
+import { hideSplash } from "utils/splash";
 
 function formatCurrency(value) {
   return Number(value || 0).toLocaleString("vi-VN") + " ₫";
@@ -68,6 +69,7 @@ function Payments() {
         setErrorMessage(error?.message || "Không tải được dữ liệu thanh toán.");
       } finally {
         setLoading(false);
+        hideSplash();
       }
     }
 
@@ -121,7 +123,7 @@ function Payments() {
                     "& th": {
                       fontSize: "0.75rem",
                       fontWeight: 700,
-                      color: "#344767",
+                      color: "#2b2a27",
                       whiteSpace: "nowrap",
                       py: 1.5,
                     },

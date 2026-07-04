@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
+  <script src="assets/js/env-config.js"></script>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>TurTour - User Portal</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
+  <title>TurTour - Nền tảng đăng ký tour tham quan doanh nghiệp</title>
+  <meta name="description" content="TurTour kết nối sinh viên với các doanh nghiệp tổ chức tour tham quan thực tế.">
+  <meta name="keywords" content="turtour, tour, doanh nghiệp, sinh viên, tham quan">
 
   <!-- Favicons -->
   <link href="assets/img/favicon.png" rel="icon">
@@ -34,6 +35,21 @@
   * Author: BootstrapMade.com
   * License: https://bootstrapmade.com/license/
   ======================================================== -->
+
+  <style>
+    .header-avatar-circle {
+      width: 34px; height: 34px; border-radius: 50%;
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #e84545, #ff7b7b);
+      border: 2px solid rgba(255,255,255,0.28);
+      color: #fff; font-size: 0.76rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: -0.01em;
+      flex-shrink: 0; cursor: pointer; user-select: none;
+      transition: border-color 0.2s ease, transform 0.18s ease;
+    }
+    .header-avatar-circle:hover { border-color: rgba(255,255,255,0.55); transform: scale(1.07); }
+    .auth-profile-toggle:focus .header-avatar-circle { border-color: rgba(255,255,255,0.6); }
+  </style>
 </head>
 
 <body class="index-page">
@@ -50,12 +66,13 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="#hero" class="active">Trang chủ</a></li>
-          <li><a href="#about">Giới thiệu</a></li>
-          <li><a href="#services">Dịch vụ</a></li>
           <li><a href="#portfolio">Tour</a></li>
+          <li><a href="#about">Giới thiệu</a></li>
+          <li><a href="#services">Cách hoạt động</a></li>
           <li><a href="#team">Đối tác</a></li>
-          <!-- <li><a href="/auth/sign-in" target="_top">Đăng nhập</a></li> -->
-          <li><a href="#contact">Contact</a></li>
+          <li><a href="#staff">Đội ngũ</a></li>
+          <li><a href="#reviews">Đánh giá</a></li>
+          <li><a href="#contact">Liên hệ</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
@@ -83,12 +100,15 @@
           <i class="bi bi-person-circle"></i>
           <span id="auth-profile-name" class="auth-profile-name"></span>
         </a>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="profile.html">Hồ sơ của tôi</a></li>
-          <li id="auth-mytours-item" style="display:none;"><a class="dropdown-item" href="my-tours.html">Tour của tôi</a></li>
-          <li><a class="dropdown-item" href="notifications.html">Thông báo</a></li>
-          <li id="auth-dashboard-item" style="display:none;"><a class="dropdown-item" href="/admin/dashboard" target="_top">Trang quản trị</a></li>
-          <li><button type="button" class="dropdown-item" id="auth-logout-btn">Đăng xuất</button></li>
+        <ul class="dropdown-menu dropdown-menu-end auth-profile-menu">
+          <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person"></i>Hồ sơ của tôi</a></li>
+          <li id="auth-mytours-item" style="display:none;"><a class="dropdown-item" href="my-tours.html"><i class="bi bi-calendar-check"></i>Tour của tôi</a></li>
+          <li id="auth-myreviews-item" style="display:none;"><a class="dropdown-item" href="my-reviews.html"><i class="bi bi-star"></i>Đánh giá của tôi</a></li>
+          <li id="auth-savedtours-item" style="display:none;"><a class="dropdown-item" href="saved-tours.html"><i class="bi bi-heart"></i>Tour đã lưu</a></li>
+          <li><a class="dropdown-item" href="notifications.html"><i class="bi bi-bell"></i>Thông báo</a></li>
+          <li id="auth-dashboard-item" style="display:none;"><a class="dropdown-item" href="/admin/dashboard" target="_top"><i class="bi bi-speedometer2"></i>Trang quản trị</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><button type="button" class="dropdown-item logout-item" id="auth-logout-btn"><i class="bi bi-box-arrow-right"></i>Đăng xuất</button></li>
         </ul>
       </div>
 
@@ -112,462 +132,6 @@
       </div>
 
     </section><!-- /Hero Section -->
-
-    <!-- About Section -->
-    <section id="about" class="about section">
-
-      <div class="container">
-
-        <div class="row gy-4">
-          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-            <h3>Voluptatem dignissimos provident laboris nisi ut aliquip ex ea commodo</h3>
-            <img src="assets/img/about.jpg" class="img-fluid rounded-4 mb-4" alt="">
-            <p>Ut fugiat ut sunt quia veniam. Voluptate perferendis perspiciatis quod nisi et. Placeat debitis quia recusandae odit et consequatur voluptatem. Dignissimos pariatur consectetur fugiat voluptas ea.</p>
-            <p>Temporibus nihil enim deserunt sed ea. Provident sit expedita aut cupiditate nihil vitae quo officia vel. Blanditiis eligendi possimus et in cum. Quidem eos ut sint rem veniam qui. Ut ut repellendus nobis tempore doloribus debitis explicabo similique sit. Accusantium sed ut omnis beatae neque deleniti repellendus.</p>
-          </div>
-          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="250">
-            <div class="content ps-0 ps-lg-5">
-              <p class="fst-italic">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                magna aliqua.
-              </p>
-              <ul>
-                <li><i class="bi bi-check-circle-fill"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-                <li><i class="bi bi-check-circle-fill"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-                <li><i class="bi bi-check-circle-fill"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
-              </ul>
-              <p>
-                Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident
-              </p>
-
-              <div class="position-relative mt-4">
-                <img src="assets/img/about-2.jpg" class="img-fluid rounded-4" alt="">
-                <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-    </section><!-- /About Section -->
-
-    <!-- Stats Section -->
-    <section id="stats" class="stats section light-background">
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="row gy-4">
-
-          <div class="col-lg-3 col-md-6">
-            <div class="stats-item d-flex align-items-center w-100 h-100">
-              <i class="bi bi-emoji-smile color-blue flex-shrink-0"></i>
-              <div>
-                <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
-                <p>Happy Clients</p>
-              </div>
-            </div>
-          </div><!-- End Stats Item -->
-
-          <div class="col-lg-3 col-md-6">
-            <div class="stats-item d-flex align-items-center w-100 h-100">
-              <i class="bi bi-journal-richtext color-orange flex-shrink-0"></i>
-              <div>
-                <span data-purecounter-start="0" data-purecounter-end="521" data-purecounter-duration="1" class="purecounter"></span>
-                <p>Projects</p>
-              </div>
-            </div>
-          </div><!-- End Stats Item -->
-
-          <div class="col-lg-3 col-md-6">
-            <div class="stats-item d-flex align-items-center w-100 h-100">
-              <i class="bi bi-headset color-green flex-shrink-0"></i>
-              <div>
-                <span data-purecounter-start="0" data-purecounter-end="1463" data-purecounter-duration="1" class="purecounter"></span>
-                <p>Hours Of Support</p>
-              </div>
-            </div>
-          </div><!-- End Stats Item -->
-
-          <div class="col-lg-3 col-md-6">
-            <div class="stats-item d-flex align-items-center w-100 h-100">
-              <i class="bi bi-people color-pink flex-shrink-0"></i>
-              <div>
-                <span data-purecounter-start="0" data-purecounter-end="15" data-purecounter-duration="1" class="purecounter"></span>
-                <p>Hard Workers</p>
-              </div>
-            </div>
-          </div><!-- End Stats Item -->
-
-        </div>
-
-      </div>
-
-    </section><!-- /Stats Section -->
-
-    <!-- Services Section -->
-    <section id="services" class="services section">
-
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Services</h2>
-        <p>Featured Srvices<br></p>
-      </div><!-- End Section Title -->
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="row gy-5">
-
-          <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="200">
-            <div class="service-item">
-              <div class="img">
-                <img src="assets/img/services-1.jpg" class="img-fluid" alt="">
-              </div>
-              <div class="details position-relative">
-                <div class="icon">
-                  <i class="bi bi-activity"></i>
-                </div>
-                <a href="service-details.html" class="stretched-link">
-                  <h3>Nesciunt Mete</h3>
-                </a>
-                <p>Provident nihil minus qui consequatur non omnis maiores. Eos accusantium minus dolores iure perferendis.</p>
-              </div>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="300">
-            <div class="service-item">
-              <div class="img">
-                <img src="assets/img/services-2.jpg" class="img-fluid" alt="">
-              </div>
-              <div class="details position-relative">
-                <div class="icon">
-                  <i class="bi bi-broadcast"></i>
-                </div>
-                <a href="service-details.html" class="stretched-link">
-                  <h3>Eosle Commodi</h3>
-                </a>
-                <p>Ut autem aut autem non a. Sint sint sit facilis nam iusto sint. Libero corrupti neque eum hic non ut nesciunt dolorem.</p>
-              </div>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="400">
-            <div class="service-item">
-              <div class="img">
-                <img src="assets/img/services-3.jpg" class="img-fluid" alt="">
-              </div>
-              <div class="details position-relative">
-                <div class="icon">
-                  <i class="bi bi-easel"></i>
-                </div>
-                <a href="service-details.html" class="stretched-link">
-                  <h3>Ledo Markt</h3>
-                </a>
-                <p>Ut excepturi voluptatem nisi sed. Quidem fuga consequatur. Minus ea aut. Vel qui id voluptas adipisci eos earum corrupti.</p>
-              </div>
-            </div>
-          </div><!-- End Service Item -->
-
-        </div>
-
-      </div>
-
-    </section><!-- /Services Section -->
-
-    <!-- Clients Section -->
-    <section id="clients" class="clients section light-background">
-
-      <div class="container" data-aos="fade-up">
-
-        <div class="row gy-4">
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="assets/img/clients/client-1.png" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="assets/img/clients/client-2.png" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="assets/img/clients/client-3.png" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="assets/img/clients/client-4.png" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="assets/img/clients/client-5.png" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-          <div class="col-xl-2 col-md-3 col-6 client-logo">
-            <img src="assets/img/clients/client-6.png" class="img-fluid" alt="">
-          </div><!-- End Client Item -->
-
-        </div>
-
-      </div>
-
-    </section><!-- /Clients Section -->
-
-    <!-- Features Section -->
-    <section id="features" class="features section">
-
-      <div class="container">
-
-        <ul class="nav nav-tabs row  d-flex" data-aos="fade-up" data-aos-delay="100">
-          <li class="nav-item col-3">
-            <a class="nav-link active show" data-bs-toggle="tab" data-bs-target="#features-tab-1">
-              <i class="bi bi-binoculars"></i>
-              <h4 class="d-none d-lg-block">Modi sit est dela pireda nest</h4>
-            </a>
-          </li>
-          <li class="nav-item col-3">
-            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#features-tab-2">
-              <i class="bi bi-box-seam"></i>
-              <h4 class="d-none d-lg-block">Unde praesenti mara setra le</h4>
-            </a>
-          </li>
-          <li class="nav-item col-3">
-            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#features-tab-3">
-              <i class="bi bi-brightness-high"></i>
-              <h4 class="d-none d-lg-block">Pariatur explica nitro dela</h4>
-            </a>
-          </li>
-          <li class="nav-item col-3">
-            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#features-tab-4">
-              <i class="bi bi-command"></i>
-              <h4 class="d-none d-lg-block">Nostrum qui dile node</h4>
-            </a>
-          </li>
-        </ul><!-- End Tab Nav -->
-
-        <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
-
-          <div class="tab-pane fade active show" id="features-tab-1">
-            <div class="row">
-              <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
-                <h3>Voluptatem dignissimos provident quasi corporis voluptates sit assumenda.</h3>
-                <p class="fst-italic">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                  magna aliqua.
-                </p>
-                <ul>
-                  <li><i class="bi bi-check2-all"></i>
-                    <spab>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</spab>
-                  </li>
-                  <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit</span>.</li>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
-                </ul>
-                <p>
-                  Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                  culpa qui officia deserunt mollit anim id est laborum
-                </p>
-              </div>
-              <div class="col-lg-6 order-1 order-lg-2 text-center">
-                <img src="assets/img/working-1.jpg" alt="" class="img-fluid">
-              </div>
-            </div>
-          </div><!-- End Tab Content Item -->
-
-          <div class="tab-pane fade" id="features-tab-2">
-            <div class="row">
-              <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
-                <h3>Neque exercitationem debitis soluta quos debitis quo mollitia officia est</h3>
-                <p>
-                  Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                  culpa qui officia deserunt mollit anim id est laborum
-                </p>
-                <p class="fst-italic">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                  magna aliqua.
-                </p>
-                <ul>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Provident mollitia neque rerum asperiores dolores quos qui a. Ipsum neque dolor voluptate nisi sed.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
-                </ul>
-              </div>
-              <div class="col-lg-6 order-1 order-lg-2 text-center">
-                <img src="assets/img/working-2.jpg" alt="" class="img-fluid">
-              </div>
-            </div>
-          </div><!-- End Tab Content Item -->
-
-          <div class="tab-pane fade" id="features-tab-3">
-            <div class="row">
-              <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
-                <h3>Voluptatibus commodi ut accusamus ea repudiandae ut autem dolor ut assumenda</h3>
-                <p>
-                  Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                  culpa qui officia deserunt mollit anim id est laborum
-                </p>
-                <ul>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Provident mollitia neque rerum asperiores dolores quos qui a. Ipsum neque dolor voluptate nisi sed.</span></li>
-                </ul>
-                <p class="fst-italic">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                  magna aliqua.
-                </p>
-              </div>
-              <div class="col-lg-6 order-1 order-lg-2 text-center">
-                <img src="assets/img/working-3.jpg" alt="" class="img-fluid">
-              </div>
-            </div>
-          </div><!-- End Tab Content Item -->
-
-          <div class="tab-pane fade" id="features-tab-4">
-            <div class="row">
-              <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
-                <h3>Omnis fugiat ea explicabo sunt dolorum asperiores sequi inventore rerum</h3>
-                <p>
-                  Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                  culpa qui officia deserunt mollit anim id est laborum
-                </p>
-                <p class="fst-italic">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                  magna aliqua.
-                </p>
-                <ul>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-                  <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
-                </ul>
-              </div>
-              <div class="col-lg-6 order-1 order-lg-2 text-center">
-                <img src="assets/img/working-4.jpg" alt="" class="img-fluid">
-              </div>
-            </div>
-          </div><!-- End Tab Content Item -->
-
-        </div>
-
-      </div>
-
-    </section><!-- /Features Section -->
-
-    <!-- Testimonials Section -->
-    <section id="testimonials" class="testimonials section dark-background">
-
-      <img src="assets/img/testimonials-bg.jpg" class="testimonials-bg" alt="">
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="swiper init-swiper">
-          <script type="application/json" class="swiper-config">
-            {
-              "loop": true,
-              "speed": 600,
-              "autoplay": {
-                "delay": 5000
-              },
-              "slidesPerView": "auto",
-              "pagination": {
-                "el": ".swiper-pagination",
-                "type": "bullets",
-                "clickable": true
-              }
-            }
-          </script>
-          <div class="swiper-wrapper">
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="assets/img/testimonials/testimonials-1.jpg" class="testimonial-img" alt="">
-                <h3>Saul Goodman</h3>
-                <h4>Ceo &amp; Founder</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!-- End testimonial item -->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="assets/img/testimonials/testimonials-2.jpg" class="testimonial-img" alt="">
-                <h3>Sara Wilsson</h3>
-                <h4>Designer</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!-- End testimonial item -->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="assets/img/testimonials/testimonials-3.jpg" class="testimonial-img" alt="">
-                <h3>Jena Karlis</h3>
-                <h4>Store Owner</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!-- End testimonial item -->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="assets/img/testimonials/testimonials-4.jpg" class="testimonial-img" alt="">
-                <h3>Matt Brandon</h3>
-                <h4>Freelancer</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat minim velit minim dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!-- End testimonial item -->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <img src="assets/img/testimonials/testimonials-5.jpg" class="testimonial-img" alt="">
-                <h3>John Larson</h3>
-                <h4>Entrepreneur</h4>
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam enim culpa labore duis sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-              </div>
-            </div><!-- End testimonial item -->
-
-          </div>
-          <div class="swiper-pagination"></div>
-        </div>
-
-      </div>
-
-    </section><!-- /Testimonials Section -->
 
     <!-- Tours Section -->
     <section id="portfolio" class="portfolio section">
@@ -613,14 +177,13 @@
           box-shadow: 0 2px 8px rgba(0,0,0,0.3);
           text-shadow: 0 1px 1px rgba(0,0,0,0.2);
         }
-        /* Bảng màu theo chuẩn Bootstrap (primary/success/warning/danger/secondary) */
-        .tc-status.pendingapproval { background: #A18F7A; }
-        .tc-status.upcoming  { background: #0d6efd; }
-        .tc-status.open      { background: #198754; }
-        .tc-status.ongoing   { background: #198754; }
-        .tc-status.closed    { background: #ffc107; color: #212529; text-shadow: none; }
-        .tc-status.completed { background: #6c757d; }
-        .tc-status.cancelled { background: #dc3545; }
+        /* Bảng màu theo chuẩn Bootstrap (primary/success/warning/danger/secondary) — dùng
+           publishStatus (Published/OnGoing/Expired/Archived) thay cho status cũ. */
+        .tc-status.hidden    { background: #A18F7A; }
+        .tc-status.published { background: #198754; }
+        .tc-status.ongoing   { background: #0d6efd; }
+        .tc-status.expired   { background: #ffc107; color: #212529; text-shadow: none; }
+        .tc-status.archived  { background: #6c757d; }
         .tour-card .tc-body {
           padding: 20px;
           flex: 1;
@@ -634,7 +197,8 @@
           color: #1a1a2e;
           margin: 0;
           display: -webkit-box;
-          -webkit-line-clamp: 2;
+          line-clamp: 2;          /* Thuộc tính chuẩn */
+          -webkit-line-clamp: 2;  /* Hỗ trợ trình duyệt hiện tại */
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
@@ -738,6 +302,121 @@
           cursor: not-allowed;
           transform: none !important;
         }
+        @keyframes tt-shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
+        .sk{display:block;background:linear-gradient(90deg,#ebebeb 25%,#f5f5f5 50%,#ebebeb 75%);background-size:600px 100%;animation:tt-shimmer 1.4s infinite linear;border-radius:4px;}
+
+        /* ── Tour filter card ── */
+        .tf-card {
+          background:#fff; border-radius:16px;
+          box-shadow:0 4px 28px rgba(0,0,0,.09), 0 1px 5px rgba(0,0,0,.04);
+          padding:22px 24px 20px; margin-bottom:0;
+        }
+
+        /* Search */
+        .tour-search-wrap { position:relative; }
+        .tour-search-wrap .bi-search { position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#c0c0c0; font-size:.95rem; pointer-events:none; z-index:1; }
+        #tour-filter-search {
+          padding-left:44px; border-radius:10px;
+          border:1.5px solid #e8e8e8; font-size:.9rem;
+          background:#f8f9fa; height:46px;
+          transition:border-color .2s, background .2s, box-shadow .2s;
+        }
+        #tour-filter-search:focus { border-color:#e84545; box-shadow:0 0 0 3px rgba(232,69,69,.1); background:#fff; outline:none; }
+
+        /* Tabs row */
+        .tf-tabs-row { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+        .tour-tabs { display:flex; gap:6px; flex-wrap:wrap; flex:1; }
+        .tour-tab-pill {
+          padding:6px 16px; border-radius:8px;
+          border:1.5px solid #e8e8e8; background:#f8f9fa; color:#666;
+          font-size:.8rem; font-weight:600; cursor:pointer;
+          transition:all .18s; white-space:nowrap; line-height:1.5;
+        }
+        .tour-tab-pill:hover { border-color:#e84545; color:#e84545; background:#fff5f5; }
+        .tour-tab-pill.active { background:#e84545; border-color:#e84545; color:#fff; box-shadow:0 2px 8px rgba(232,69,69,.28); }
+        .tour-tab-pill[data-status="ongoing"].active { background:#0d6efd; border-color:#0d6efd; box-shadow:0 2px 8px rgba(13,110,253,.28); }
+        .tour-tab-pill[data-status="expired"].active { background:#6c757d; border-color:#6c757d; box-shadow:none; }
+
+        /* Clear button */
+        .tf-clear-btn {
+          white-space:nowrap; flex-shrink:0;
+          background:#fff; border:1.5px solid #e8e8e8;
+          border-radius:8px; padding:6px 14px;
+          font-size:.8rem; font-weight:600; color:#aaa;
+          cursor:pointer; transition:all .18s;
+          display:inline-flex; align-items:center; gap:5px; line-height:1.5;
+        }
+        .tf-clear-btn:hover { border-color:#e84545; color:#e84545; background:#fff5f5; }
+
+        /* Divider inside card */
+        .tf-divider { border:none; border-top:1px solid #f2f2f2; margin:18px 0; }
+
+        /* Field labels */
+        .tf-field-label {
+          font-size:.7rem; font-weight:700; color:#b0b0b0;
+          text-transform:uppercase; letter-spacing:.07em;
+          display:flex; align-items:center; justify-content:space-between;
+          margin-bottom:8px;
+        }
+        .tf-price-val { font-size:.82rem; font-weight:700; color:#e84545; text-transform:none; letter-spacing:0; }
+
+        /* Company select */
+        #tour-filter-company {
+          border-radius:8px; border:1.5px solid #e8e8e8;
+          font-size:.85rem; height:40px; background:#f8f9fa;
+          color:#333; width:100%; padding:0 10px;
+          transition:border-color .2s, box-shadow .2s;
+          appearance:auto;
+        }
+        #tour-filter-company:focus { border-color:#e84545; box-shadow:0 0 0 3px rgba(232,69,69,.1); outline:none; background:#fff; }
+
+        /* Price slider */
+        .price-track-wrap { position:relative; height:6px; background:#ebebeb; border-radius:3px; margin:10px 0 14px; }
+        .price-track-fill { position:absolute; top:0; height:100%; background:linear-gradient(90deg,#e84545,#ff7b7b); border-radius:3px; pointer-events:none; }
+        .price-thumbs { position:absolute; inset:0; top:-7px; pointer-events:none; }
+        .price-thumbs input[type="range"] {
+          -webkit-appearance:none; appearance:none;
+          position:absolute; width:100%;
+          top:0; height:20px; margin:0;
+          background:transparent; pointer-events:none;
+        }
+        .price-thumbs input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance:none;
+          width:20px; height:20px; border-radius:50%;
+          background:#e84545; cursor:pointer; pointer-events:all;
+          border:3px solid #fff;
+          box-shadow:0 1px 8px rgba(232,69,69,.4);
+          transition:transform .15s, box-shadow .15s;
+        }
+        .price-thumbs input[type="range"]::-webkit-slider-thumb:hover { transform:scale(1.2); box-shadow:0 2px 14px rgba(232,69,69,.5); }
+        .price-thumbs input[type="range"]::-moz-range-thumb {
+          width:20px; height:20px; border-radius:50%;
+          background:#e84545; cursor:pointer; pointer-events:all;
+          border:3px solid #fff; box-shadow:0 1px 8px rgba(232,69,69,.4);
+        }
+
+        /* Stats chips */
+        .tour-stats-bar { display:flex; gap:8px; flex-wrap:wrap; }
+        .tour-stat-chip { display:inline-flex; align-items:center; gap:5px; padding:5px 14px; border-radius:8px; font-size:.78rem; font-weight:600; border:1px solid transparent; }
+        .tour-stat-chip.total        { background:#f4f5f7; color:#6c757d; border-color:#e4e5e7; }
+        .tour-stat-chip.open         { background:#d1e7dd; color:#0a5c36; border-color:#b0d9c8; }
+        .tour-stat-chip.ongoing-chip { background:#cfe2ff; color:#084298; border-color:#b1ccf5; }
+
+        /* Featured first card */
+        .col-featured .tc-thumb { height:300px; }
+        .col-featured .tc-title { font-size:1.15rem; }
+
+        /* Mobile horizontal cards */
+        @media (max-width:575.98px) {
+          .tour-card { flex-direction:row; min-height:140px; }
+          .tour-card .tc-thumb { width:110px; min-width:110px; height:auto; flex-shrink:0; }
+          .tour-card .tc-thumb img { position:absolute; inset:0; width:100%; height:100%; }
+          .tour-card .tc-body { padding:12px; font-size:.82rem; }
+          .tour-card .tc-title { font-size:.9rem; }
+          .tour-card .tc-footer { flex-direction:column; align-items:flex-start; gap:3px; padding:10px 12px; }
+          .col-featured .tour-card { flex-direction:column; }
+          .col-featured .tc-thumb { width:100%; min-width:unset; height:200px; }
+        }
       </style>
 
       <!-- Section Title -->
@@ -748,41 +427,79 @@
 
       <div class="container">
 
-        <!-- Search / filter bar -->
-        <div class="row gy-2 align-items-end mb-4" id="tours-filter-bar" style="display:none;" data-aos="fade-up">
-          <div class="col-md-4">
-            <input type="text" id="tour-filter-search" class="form-control" placeholder="Tìm theo tên tour, doanh nghiệp...">
+        <!-- Tour filter card -->
+        <div id="tours-filter-bar" style="display:none;" data-aos="fade-up">
+          <div class="tf-card">
+            <!-- Search -->
+            <div class="tour-search-wrap mb-4">
+              <i class="bi bi-search"></i>
+              <input type="text" id="tour-filter-search" class="form-control" placeholder="Tìm theo tên tour, địa điểm, doanh nghiệp...">
+            </div>
+            <!-- Tabs + Clear -->
+            <div class="tf-tabs-row">
+              <div class="tour-tabs">
+                <button type="button" class="tour-tab-pill active" data-status="">Tất cả</button>
+                <button type="button" class="tour-tab-pill" data-status="published">🟢 Mở đăng ký</button>
+                <button type="button" class="tour-tab-pill" data-status="ongoing">🔵 Đang diễn ra</button>
+                <button type="button" class="tour-tab-pill" data-status="expired">⚫ Đã đóng</button>
+              </div>
+              <button type="button" id="tour-filter-clear" class="tf-clear-btn">
+                <i class="bi bi-x-lg"></i>Xóa lọc
+              </button>
+            </div>
+            <hr class="tf-divider">
+            <!-- Company + Price -->
+            <div class="row gx-4 gy-3 align-items-start">
+              <div class="col-md-4">
+                <div class="tf-field-label"><span><i class="bi bi-building me-1"></i>Doanh nghiệp</span></div>
+                <select id="tour-filter-company">
+                  <option value="">Tất cả doanh nghiệp</option>
+                </select>
+              </div>
+              <div class="col-md-8">
+                <div class="tf-field-label">
+                  <span><i class="bi bi-cash-coin me-1"></i>Khoảng phí</span>
+                  <span class="tf-price-val" id="price-range-display">0 ₫ — Tất cả</span>
+                </div>
+                <div class="price-track-wrap">
+                  <div id="price-track-fill" class="price-track-fill" style="left:0%;width:100%;"></div>
+                  <div class="price-thumbs">
+                    <input type="range" id="price-min-slider" min="0" max="10000000" value="0" step="50000">
+                    <input type="range" id="price-max-slider" min="0" max="10000000" value="10000000" step="50000">
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="col-md-3 col-6">
-            <select id="tour-filter-status" class="form-select">
-              <option value="">Tất cả trạng thái</option>
-              <option value="upcoming">Sắp diễn ra</option>
-              <option value="open">Mở đăng ký</option>
-              <option value="closed">Đã đóng</option>
-              <option value="cancelled">Đã hủy</option>
-              <option value="completed">Đã kết thúc</option>
-            </select>
-          </div>
-          <div class="col-md-3 col-6">
-            <select id="tour-filter-company" class="form-select">
-              <option value="">Tất cả doanh nghiệp</option>
-            </select>
-          </div>
-          <div class="col-md-2">
-            <button type="button" id="tour-filter-clear" class="btn btn-outline-secondary w-100">Xóa lọc</button>
+          <!-- Stats chips -->
+          <div class="tour-stats-bar mt-3 mb-4">
+            <span class="tour-stat-chip total"><i class="bi bi-collection-fill"></i><span id="stat-total">0</span> tour tìm thấy</span>
+            <span class="tour-stat-chip open"><i class="bi bi-calendar-check-fill"></i><span id="stat-open">0</span> mở đăng ký</span>
+            <span class="tour-stat-chip ongoing-chip"><i class="bi bi-play-circle-fill"></i><span id="stat-ongoing">0</span> đang diễn ra</span>
           </div>
         </div>
 
-        <!-- Loading state -->
-        <div id="tours-loading" data-aos="fade-up">
-          <div class="spinner-border text-primary mb-3" role="status"></div>
-          <p>Đang tải danh sách tour…</p>
+        <!-- Loading state: skeleton cards -->
+        <div id="tours-loading" data-aos="fade-up" style="text-align:unset;padding:0;color:inherit;">
+          <div class="row gy-4 tours-grid">
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:88%;"></div><div class="sk" style="height:13px;width:50%;"></div><div class="sk" style="height:13px;width:66%;"></div><div class="sk" style="height:13px;width:57%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:80px;"></div><div class="sk" style="height:13px;width:70px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:75%;"></div><div class="sk" style="height:13px;width:58%;"></div><div class="sk" style="height:13px;width:72%;"></div><div class="sk" style="height:13px;width:48%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:90px;"></div><div class="sk" style="height:13px;width:75px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:82%;"></div><div class="sk" style="height:13px;width:45%;"></div><div class="sk" style="height:13px;width:60%;"></div><div class="sk" style="height:13px;width:54%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:85px;"></div><div class="sk" style="height:13px;width:68px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:91%;"></div><div class="sk" style="height:13px;width:54%;"></div><div class="sk" style="height:13px;width:68%;"></div><div class="sk" style="height:13px;width:62%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:78px;"></div><div class="sk" style="height:13px;width:72px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:78%;"></div><div class="sk" style="height:13px;width:47%;"></div><div class="sk" style="height:13px;width:63%;"></div><div class="sk" style="height:13px;width:55%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:88px;"></div><div class="sk" style="height:13px;width:65px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:85%;"></div><div class="sk" style="height:13px;width:53%;"></div><div class="sk" style="height:13px;width:70%;"></div><div class="sk" style="height:13px;width:59%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:82px;"></div><div class="sk" style="height:13px;width:74px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:72%;"></div><div class="sk" style="height:13px;width:60%;"></div><div class="sk" style="height:13px;width:55%;"></div><div class="sk" style="height:13px;width:50%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:76px;"></div><div class="sk" style="height:13px;width:66px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:80%;"></div><div class="sk" style="height:13px;width:56%;"></div><div class="sk" style="height:13px;width:64%;"></div><div class="sk" style="height:13px;width:52%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:84px;"></div><div class="sk" style="height:13px;width:69px;"></div></div></div></div>
+          </div>
         </div>
 
         <!-- Error state -->
         <div id="tours-error" style="display:none;" data-aos="fade-up">
-          <i class="bi bi-exclamation-triangle" style="font-size:2.5rem;"></i>
+          <i class="bi bi-exclamation-triangle" style="font-size:2.5rem;color:#e84545;"></i>
           <p id="tours-error-msg" class="mt-2">Không thể tải danh sách tour.</p>
+          <button type="button" class="btn btn-outline-danger btn-sm mt-1" onclick="window.loadTours && window.loadTours()">
+            <i class="bi bi-arrow-clockwise me-1"></i>Thử lại
+          </button>
         </div>
 
         <!-- Empty state -->
@@ -792,8 +509,15 @@
         </div>
 
         <!-- Tour cards grid -->
-        <div id="tours-grid" class="row gy-4 tours-grid" style="display:none;" data-aos="fade-up" data-aos-delay="100">
+        <div id="tours-grid" class="row gy-4 gx-4 tours-grid" style="display:none;" data-aos="fade-up" data-aos-delay="100">
         </div><!-- End Tours Grid -->
+
+        <!-- Load more -->
+        <div id="tours-load-more-wrapper" style="display:none; text-align:center; margin-top:36px;">
+          <button type="button" id="tours-load-more-btn" class="btn btn-outline-danger px-5 py-2" onclick="window.loadMoreTours && window.loadMoreTours()">
+            <i class="bi bi-chevron-down me-1"></i>Xem thêm
+          </button>
+        </div>
 
       </div>
 
@@ -801,7 +525,8 @@
 
     <script>
     (function () {
-      var API = 'https://turtour-production.up.railway.app/api/tours';
+      var API_BASE = window.TURTOUR_API_BASE;
+      var API = API_BASE + '/tours';
 
       function getSession() {
         try {
@@ -828,16 +553,31 @@
         return d.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
       }
 
+      // 4 giai đoạn của cửa sổ nhận đăng ký — tách biệt khỏi publishStatus (chỉ quyết định
+      // tour có hiển thị hay không, không quyết định đăng ký được hay không).
+      function getBookingPhase(tour) {
+        var now = new Date();
+        var start = tour.startDate ? new Date(tour.startDate) : null;
+        var end = tour.endDate ? new Date(tour.endDate) : null;
+        if (start && end && now >= start && now <= end) return 'ongoing';
+
+        var openAt = tour.bookingOpenAt ? new Date(tour.bookingOpenAt) : null;
+        if (openAt && now < openAt) return 'before-open';
+
+        var closeAt = tour.bookingCloseAt ? new Date(tour.bookingCloseAt) : null;
+        if (closeAt && now > closeAt) return 'after-close';
+
+        return 'open';
+      }
+
       function statusLabel(s) {
         if (!s) return '';
         switch (s.toLowerCase()) {
-          case 'pendingapproval': return 'Chờ duyệt';
-          case 'upcoming':  return 'Sắp diễn ra';
-          case 'open':      return 'Mở đăng ký';
+          case 'published': return 'Mở đăng ký';
           case 'ongoing':   return 'Đang diễn ra';
-          case 'closed':    return 'Đã đóng';
-          case 'completed': return 'Đã kết thúc';
-          case 'cancelled': return 'Đã hủy';
+          case 'expired':   return 'Đã đóng';
+          case 'archived':  return 'Đã hủy/Lưu trữ';
+          case 'hidden':    return 'Chờ duyệt';
           default: return s;
         }
       }
@@ -928,7 +668,7 @@
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Đang xử lý...';
 
-        fetch('https://turtour-production.up.railway.app/api/registrations', {
+        fetch(API_BASE + '/registrations', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -958,9 +698,21 @@
         });
       };
 
+      window.shareTour = function (id, title, url) {
+        if (navigator.share) {
+          navigator.share({ title: title, url: url }).catch(function () {});
+        } else {
+          navigator.clipboard.writeText(url).then(function () {
+            showToast('Đã sao chép liên kết tour!', 'success');
+          }).catch(function () {
+            showToast('Không tự động sao chép được. Liên kết: ' + url, 'info', { duration: 8000 });
+          });
+        }
+      };
+
       function renderCard(tour) {
         var imgUrl = thumbnail(tour);
-        var status = (tour.status || '').toLowerCase();
+        var status = (tour.publishStatus || '').toLowerCase();
         var p = priceText(tour.fee);
         var company = (tour.company && tour.company.name) ? tour.company.name : '';
         var loc = tour.location || '';
@@ -971,39 +723,67 @@
             + '<div class="tc-placeholder" style="display:none; width: 100%; height: 100%; align-items: center; justify-content: center; background: linear-gradient(135deg,#e8f4fd,#d1ecf1); color: #5bc0de; font-size: 3rem;"><i class="bi bi-image"></i></div>'
           : '<div class="tc-placeholder"><i class="bi bi-image"></i></div>';
 
-        // Chỉ cho đăng ký khi tour đang ở trạng thái "Mở đăng ký". Tour "Sắp diễn ra" thì cho
-        // sinh viên đánh dấu "Quan tâm" để được báo khi tour đó mở đăng ký.
-        var btnHtml;
-        if (status === 'upcoming') {
-          var interested = !!tour.isInterested;
-          btnHtml = '<div class="d-flex gap-2 mt-3">'
-            + '<a href="tour-details.html?id=' + tour.id + '" class="btn-detail"><i class="bi bi-info-circle"></i> Chi tiết</a>'
-            + '<button class="btn-register" onclick="toggleInterest(\'' + tour.id + '\', this)" data-interested="' + interested + '">'
-            + '<i class="bi ' + (interested ? 'bi-heart-fill' : 'bi-heart') + '"></i> ' + (interested ? 'Đã quan tâm' : 'Quan tâm')
-            + '</button>'
-            + '</div>';
-        } else {
-          var canRegisterStatus = status === 'open';
-          var btnText = 'Đăng ký ngay';
-          if (status === 'completed') btnText = 'Đã kết thúc';
-          else if (status === 'cancelled') btnText = 'Đã hủy';
-          else if (status === 'closed') btnText = 'Đã đóng';
-          else if (status === 'pendingapproval') btnText = 'Chờ duyệt';
-
-          btnHtml = '<div class="d-flex gap-2 mt-3">'
-            + '<a href="tour-details.html?id=' + tour.id + '" class="btn-detail"><i class="bi bi-info-circle"></i> Chi tiết</a>'
-            + '<button class="btn-register" onclick="registerTour(\'' + tour.id + '\', this)"'
-            + (canRegisterStatus ? '' : ' disabled') + '>'
-            + '<i class="bi bi-send-fill"></i> ' + btnText
-            + '</button>'
-            + '</div>';
+        // Published chỉ nghĩa là "xem được" — đăng ký được hay không còn tùy cửa sổ riêng
+        // (bookingOpenAt..bookingCloseAt), và việc tour đang diễn ra (start..end) luôn chặn đăng ký
+        // dù còn trong cửa sổ hay không.
+        var canRegisterStatus = false;
+        var btnText = 'Đăng ký ngay';
+        if (status === 'expired') {
+          btnText = 'Đã đóng';
+        } else if (status === 'archived') {
+          btnText = 'Đã hủy';
+        } else if (status === 'published') {
+          var phase = getBookingPhase(tour);
+          if (phase === 'open') {
+            canRegisterStatus = true;
+          } else if (phase === 'before-open') {
+            btnText = 'Đăng ký mở từ ' + fmtDateTime(tour.bookingOpenAt);
+          } else if (phase === 'ongoing') {
+            btnText = 'Tour đang diễn ra';
+          } else {
+            btnText = 'Đã đóng đăng ký';
+          }
         }
 
-        return '<div class="col-xl-4 col-md-6">'
-          + '<div class="tour-card">'
+        // Nếu student đã đăng ký tour này, thay nút bằng badge trạng thái đăng ký.
+        var regStatusLabel = {
+          Pending:       { text: 'Chờ duyệt',        icon: 'bi-hourglass-split',   cls: 'btn-warning text-dark' },
+          Waitinglisted: { text: 'Danh sách chờ',     icon: 'bi-people',            cls: 'btn-secondary' },
+          Approved:      { text: 'Đã được duyệt',     icon: 'bi-check-circle-fill', cls: 'btn-outline-success' },
+          Paid:          { text: 'Đã thanh toán',      icon: 'bi-patch-check-fill',  cls: 'btn-success' },
+          CheckedIn:     { text: 'Đã check-in',        icon: 'bi-qr-code-scan',      cls: 'btn-success' },
+          Completed:     { text: 'Đã hoàn thành',      icon: 'bi-trophy-fill',       cls: 'btn-outline-dark' },
+          Rejected:      { text: 'Đã hủy/từ chối',    icon: 'bi-x-circle',          cls: 'btn-outline-danger' },
+        };
+        var myReg = tour.isRegistered ? (regStatusLabel[tour.myRegistrationStatus] || null) : null;
+
+        var isInterested = !!tour.isInterested;
+        var shareUrl = window.location.origin + window.location.pathname.replace('index.html', '') + 'tour-details.html?id=' + tour.id;
+
+        var registerBtnHtml = myReg
+          ? '<a href="my-tours.html" class="btn-register ' + myReg.cls + '" style="text-decoration:none;font-size:0.82rem;">'
+              + '<i class="bi ' + myReg.icon + '"></i> ' + myReg.text + '</a>'
+          : '<button class="btn-register" onclick="registerTour(\'' + tour.id + '\', this)"'
+              + (canRegisterStatus ? '' : ' disabled') + '>'
+              + '<i class="bi bi-send-fill"></i> ' + btnText + '</button>';
+
+        var btnHtml = '<div class="d-flex gap-2 mt-3">'
+          + '<a href="tour-details.html?id=' + tour.id + '" class="btn-detail"><i class="bi bi-info-circle"></i> Chi tiết</a>'
+          + registerBtnHtml
+          + '</div>'
+          + '<div class="d-flex gap-2 mt-2">'
+          + '<button class="btn btn-sm ' + (isInterested ? 'btn-danger' : 'btn-outline-danger') + ' tc-interest-btn" style="font-size:0.78rem;border-radius:6px;flex:1;" data-interested="' + isInterested + '" onclick="toggleInterest(\'' + tour.id + '\', this)">'
+          + '<i class="bi ' + (isInterested ? 'bi-heart-fill' : 'bi-heart') + '"></i> ' + (isInterested ? 'Đã lưu' : 'Lưu tour')
+          + '</button>'
+          + '<button class="btn btn-sm btn-outline-secondary" style="font-size:0.78rem;border-radius:6px;" onclick="shareTour(\'' + tour.id + '\', \'' + title.replace(/'/g, "\\'") + '\', \'' + shareUrl + '\')">'
+          + '<i class="bi bi-share"></i>'
+          + '</button>'
+          + '</div>';
+
+        return '<div class="tour-card">'
             + '<div class="tc-thumb">'
               + thumbHtml
-              + '<span class="tc-status ' + status + '">' + statusLabel(tour.status) + '</span>'
+              + '<span class="tc-status ' + status + '">' + statusLabel(tour.publishStatus) + '</span>'
             + '</div>'
             + '<div class="tc-body">'
               + '<h4 class="tc-title">' + title + '</h4>'
@@ -1016,101 +796,271 @@
               + '<span class="tc-price' + (p.free ? ' free' : '') + '">' + p.text + '</span>'
               + '<span class="tc-slots"><i class="bi bi-people me-1"></i>' + slots(tour) + '</span>'
             + '</div>'
-          + '</div>'
-        + '</div>';
+          + '</div>';
       }
 
       var allTours = [];
+      var currentFiltered = [];
+      var TOURS_PER_PAGE = 6;
+      var visibleCount = TOURS_PER_PAGE;
+      var activeTab = '';
+      var priceSliderMax = 10000000;
 
-      function applyFilters() {
-        var searchEl = document.getElementById('tour-filter-search');
-        var statusEl = document.getElementById('tour-filter-status');
-        var companyEl = document.getElementById('tour-filter-company');
-        var grid = document.getElementById('tours-grid');
-        var emptyEl = document.getElementById('tours-empty');
+      function fmtFee(n) {
+        if (n === 0) return '0 ₫';
+        return Number(n).toLocaleString('vi-VN') + ' ₫';
+      }
 
-        var term = (searchEl.value || '').trim().toLowerCase();
-        var statusVal = statusEl.value;
-        var companyVal = companyEl.value;
+      function updatePriceTrack() {
+        var minSlider = document.getElementById('price-min-slider');
+        var maxSlider = document.getElementById('price-max-slider');
+        var fill = document.getElementById('price-track-fill');
+        var label = document.getElementById('price-range-display');
+        if (!minSlider || !maxSlider) return;
+        var lo = parseInt(minSlider.value);
+        var hi = parseInt(maxSlider.value);
+        var sliderMax = parseInt(minSlider.max) || priceSliderMax;
+        fill.style.left = (lo / sliderMax * 100) + '%';
+        fill.style.width = ((hi - lo) / sliderMax * 100) + '%';
+        var loLabel = lo === 0 ? 'Miễn phí' : fmtFee(lo);
+        var hiLabel = hi >= sliderMax ? 'Tất cả' : fmtFee(hi);
+        label.textContent = loLabel + ' — ' + hiLabel;
+      }
 
-        var filtered = allTours.filter(function (tour) {
-          if (term) {
-            var title = (tour.tittle || tour.title || '').toLowerCase();
-            var company = (tour.company && tour.company.name ? tour.company.name : '').toLowerCase();
-            if (title.indexOf(term) === -1 && company.indexOf(term) === -1) return false;
-          }
-          if (statusVal && (tour.status || '').toLowerCase() !== statusVal) return false;
-          if (companyVal && (!tour.company || tour.company.name !== companyVal)) return false;
-          return true;
-        });
-
-        if (filtered.length === 0) {
-          grid.style.display = 'none';
-          grid.innerHTML = '';
-          emptyEl.style.display = 'block';
-        } else {
-          emptyEl.style.display = 'none';
-          grid.innerHTML = filtered.map(renderCard).join('');
-          grid.style.display = '';
-        }
+      function setPriceSliderMax(max) {
+        var rounded = Math.ceil(max / 500000) * 500000 || 10000000;
+        priceSliderMax = rounded;
+        var minSlider = document.getElementById('price-min-slider');
+        var maxSlider = document.getElementById('price-max-slider');
+        minSlider.max = rounded;
+        maxSlider.max = rounded;
+        minSlider.value = 0;
+        maxSlider.value = rounded;
+        minSlider.step = Math.max(50000, Math.round(rounded / 200 / 50000) * 50000);
+        maxSlider.step = minSlider.step;
+        updatePriceTrack();
       }
 
       function populateCompanyFilter() {
-        var companyEl = document.getElementById('tour-filter-company');
+        var sel = document.getElementById('tour-filter-company');
+        var prev = sel.value;
+        while (sel.options.length > 1) sel.remove(1);
         var names = [];
-        allTours.forEach(function (tour) {
-          var name = tour.company && tour.company.name;
-          if (name && names.indexOf(name) === -1) names.push(name);
+        allTours.forEach(function (t) {
+          var n = t.company && t.company.name;
+          if (n && names.indexOf(n) === -1) names.push(n);
         });
-        names.sort();
-        names.forEach(function (name) {
+        names.sort().forEach(function (n) {
           var opt = document.createElement('option');
-          opt.value = name;
-          opt.textContent = name;
-          companyEl.appendChild(opt);
+          opt.value = n; opt.textContent = n;
+          sel.appendChild(opt);
         });
+        sel.value = names.indexOf(prev) !== -1 ? prev : '';
+      }
+
+      function renderVisible() {
+        var grid = document.getElementById('tours-grid');
+        var emptyEl = document.getElementById('tours-empty');
+        var wrapper = document.getElementById('tours-load-more-wrapper');
+        var btn = document.getElementById('tours-load-more-btn');
+
+        if (currentFiltered.length === 0) {
+          grid.innerHTML = '';
+          grid.style.display = 'none';
+          emptyEl.style.display = 'block';
+          wrapper.style.display = 'none';
+          return;
+        }
+
+        emptyEl.style.display = 'none';
+        var slice = currentFiltered.slice(0, visibleCount);
+        grid.innerHTML = slice.map(function (tour, idx) {
+          var isFirst = idx === 0 && currentFiltered.length > 1;
+          var colClass = isFirst ? 'col-xl-8 col-md-12 col-featured' : 'col-xl-4 col-md-6';
+          return '<div class="' + colClass + '">' + renderCard(tour) + '</div>';
+        }).join('');
+        grid.style.display = '';
+
+        var remaining = currentFiltered.length - visibleCount;
+        if (remaining > 0) {
+          btn.innerHTML = '<i class="bi bi-chevron-down me-1"></i>Xem thêm (' + remaining + ' tour)';
+          wrapper.style.display = 'block';
+        } else {
+          wrapper.style.display = 'none';
+        }
+      }
+
+      window.loadMoreTours = function () {
+        visibleCount += TOURS_PER_PAGE;
+        renderVisible();
+      };
+
+      function updateStats() {
+        var total = currentFiltered.length;
+        var open = currentFiltered.filter(function (t) { return (t.publishStatus || '').toLowerCase() === 'published'; }).length;
+        var ongoing = currentFiltered.filter(function (t) { return (t.publishStatus || '').toLowerCase() === 'ongoing'; }).length;
+        var elTotal = document.getElementById('stat-total');
+        var elOpen = document.getElementById('stat-open');
+        var elOngoing = document.getElementById('stat-ongoing');
+        if (elTotal) elTotal.textContent = total;
+        if (elOpen) elOpen.textContent = open;
+        if (elOngoing) elOngoing.textContent = ongoing;
+      }
+
+      function applyFilters() {
+        var term = (document.getElementById('tour-filter-search').value || '').trim().toLowerCase();
+        var companyVal = document.getElementById('tour-filter-company').value;
+        var minSlider = document.getElementById('price-min-slider');
+        var maxSlider = document.getElementById('price-max-slider');
+        var feeMin = minSlider ? parseInt(minSlider.value) : 0;
+        var feeMax = maxSlider ? parseInt(maxSlider.value) : priceSliderMax;
+        var isMaxed = feeMax >= priceSliderMax;
+
+        var statusOrder = { published: 0, ongoing: 1, expired: 2, hidden: 3, archived: 4 };
+
+        currentFiltered = allTours.filter(function (tour) {
+          if (term) {
+            var title = (tour.tittle || tour.title || '').toLowerCase();
+            var company = (tour.company && tour.company.name ? tour.company.name : '').toLowerCase();
+            var loc = (tour.location || '').toLowerCase();
+            if (title.indexOf(term) === -1 && company.indexOf(term) === -1 && loc.indexOf(term) === -1) return false;
+          }
+          if (activeTab && (tour.publishStatus || '').toLowerCase() !== activeTab) return false;
+          if (companyVal && (!tour.company || tour.company.name !== companyVal)) return false;
+          var fee = tour.fee || 0;
+          if (fee < feeMin) return false;
+          if (!isMaxed && fee > feeMax) return false;
+          return true;
+        }).sort(function (a, b) {
+          var sa = statusOrder[(a.publishStatus || '').toLowerCase()] ?? 9;
+          var sb = statusOrder[(b.publishStatus || '').toLowerCase()] ?? 9;
+          if (sa !== sb) return sa - sb;
+          // Trong cùng nhóm "published": đóng đăng ký sớm nhất lên đầu (urgent first)
+          if (sa === 0) {
+            var ca = a.bookingCloseAt ? new Date(a.bookingCloseAt).getTime() : Infinity;
+            var cb = b.bookingCloseAt ? new Date(b.bookingCloseAt).getTime() : Infinity;
+            return ca - cb;
+          }
+          // Nhóm khác: ngày bắt đầu gần nhất lên đầu
+          var da = a.startDate ? new Date(a.startDate).getTime() : 0;
+          var db = b.startDate ? new Date(b.startDate).getTime() : 0;
+          return db - da;
+        });
+
+        visibleCount = TOURS_PER_PAGE;
+        updateStats();
+        renderVisible();
       }
 
       document.getElementById('tour-filter-search').addEventListener('input', applyFilters);
-      document.getElementById('tour-filter-status').addEventListener('change', applyFilters);
       document.getElementById('tour-filter-company').addEventListener('change', applyFilters);
       document.getElementById('tour-filter-clear').addEventListener('click', function () {
         document.getElementById('tour-filter-search').value = '';
-        document.getElementById('tour-filter-status').value = '';
         document.getElementById('tour-filter-company').value = '';
+        document.querySelectorAll('.tour-tab-pill').forEach(function (p) { p.classList.remove('active'); });
+        var allPill = document.querySelector('.tour-tab-pill[data-status=""]');
+        if (allPill) allPill.classList.add('active');
+        activeTab = '';
+        setPriceSliderMax(priceSliderMax);
         applyFilters();
       });
 
-      fetch(API, { headers: authHeaders() })
-        .then(function(res) {
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          return res.json();
-        })
-        .then(function(tours) {
-          document.getElementById('tours-loading').style.display = 'none';
-          if (!Array.isArray(tours) || tours.length === 0) {
-            document.getElementById('tours-empty').style.display = 'block';
-            return;
-          }
-          allTours = tours;
-          document.getElementById('tours-filter-bar').style.display = '';
-          populateCompanyFilter();
+      (function () {
+        var minSlider = document.getElementById('price-min-slider');
+        var maxSlider = document.getElementById('price-max-slider');
+        minSlider.addEventListener('input', function () {
+          if (parseInt(minSlider.value) > parseInt(maxSlider.value)) minSlider.value = maxSlider.value;
+          updatePriceTrack();
           applyFilters();
-        })
-        .catch(function(err) {
-          document.getElementById('tours-loading').style.display = 'none';
-          document.getElementById('tours-error').style.display = 'block';
-          document.getElementById('tours-error-msg').textContent = 'Không thể tải danh sách tour: ' + err.message;
         });
+        maxSlider.addEventListener('input', function () {
+          if (parseInt(maxSlider.value) < parseInt(minSlider.value)) maxSlider.value = minSlider.value;
+          updatePriceTrack();
+          applyFilters();
+        });
+      })();
+
+      document.querySelectorAll('.tour-tab-pill').forEach(function (pill) {
+        pill.addEventListener('click', function () {
+          document.querySelectorAll('.tour-tab-pill').forEach(function (p) { p.classList.remove('active'); });
+          pill.classList.add('active');
+          activeTab = pill.getAttribute('data-status') || '';
+          applyFilters();
+        });
+      });
+
+      function friendlyError(err) {
+        var msg = (err && err.message) || '';
+        if (!msg || msg === 'Failed to fetch' || err.name === 'TypeError') return 'Không thể kết nối đến máy chủ — kiểm tra kết nối mạng hoặc thử lại sau.';
+        if (msg.indexOf('HTTP 401') !== -1) return 'Phiên đăng nhập đã hết hạn — vui lòng đăng nhập lại.';
+        if (msg.indexOf('HTTP 403') !== -1) return 'Không có quyền truy cập nội dung này.';
+        if (msg.indexOf('HTTP 404') !== -1) return 'Không tìm thấy dữ liệu (404).';
+        if (msg.indexOf('HTTP 5') !== -1) return 'Lỗi phía máy chủ — vui lòng thử lại sau.';
+        return msg;
+      }
+
+      function loadTours() {
+        document.getElementById('tours-loading').style.display = '';
+        document.getElementById('tours-error').style.display = 'none';
+        document.getElementById('tours-empty').style.display = 'none';
+        document.getElementById('tours-grid').style.display = 'none';
+        document.getElementById('tours-filter-bar').style.display = 'none';
+        document.getElementById('tours-load-more-wrapper').style.display = 'none';
+        allTours = [];
+        currentFiltered = [];
+        visibleCount = TOURS_PER_PAGE;
+        activeTab = '';
+
+        fetch(API, { headers: authHeaders() })
+          .then(function(res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function(tours) {
+            document.getElementById('tours-loading').style.display = 'none';
+            var visibleTours = (Array.isArray(tours) ? tours : []).filter(function (t) {
+              return (t.publishStatus || '').toLowerCase() !== 'archived';
+            });
+            if (visibleTours.length === 0) {
+              document.getElementById('tours-empty').style.display = 'block';
+              return;
+            }
+            allTours = visibleTours;
+            document.getElementById('tours-filter-bar').style.display = '';
+            // reset controls
+            document.querySelectorAll('.tour-tab-pill').forEach(function (p) { p.classList.remove('active'); });
+            var allPill = document.querySelector('.tour-tab-pill[data-status=""]');
+            if (allPill) allPill.classList.add('active');
+            document.getElementById('tour-filter-search').value = '';
+            document.getElementById('tour-filter-company').value = '';
+            populateCompanyFilter();
+            var maxFee = Math.max.apply(null, allTours.map(function (t) { return t.fee || 0; }));
+            setPriceSliderMax(maxFee || 10000000);
+            applyFilters();
+          })
+          .catch(function(err) {
+            document.getElementById('tours-loading').style.display = 'none';
+            document.getElementById('tours-error').style.display = 'block';
+            document.getElementById('tours-error-msg').textContent = friendlyError(err);
+          });
+      }
+
+      window.loadTours = loadTours;
+      loadTours();
 
       // Tour bị đổi trạng thái (mở/đóng đăng ký...) từ admin — cập nhật ngay trên trang,
       // không cần F5.
       if (window.TurTourRealtime) {
         window.TurTourRealtime.onTourUpdated(function (payload) {
           if (!payload) return;
+          if ((payload.publishStatus || '').toLowerCase() === 'archived') {
+            allTours = allTours.filter(function (t) { return t.id !== payload.tourId; });
+            applyFilters();
+            return;
+          }
           var tour = allTours.find(function (t) { return t.id === payload.tourId; });
           if (tour) {
-            tour.status = payload.status;
+            tour.publishStatus = payload.publishStatus;
             applyFilters();
           }
         });
@@ -1118,80 +1068,696 @@
     })();
     </script>
 
-    <!-- Team Section -->
-    <section id="team" class="team section light-background">
 
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Team</h2>
-        <p>CHECK OUR TEAM</p>
-      </div><!-- End Section Title -->
+    <!-- About Section -->
+    <section id="about" class="about section">
 
       <div class="container">
 
-        <div class="row gy-5">
+        <div class="row gy-4">
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <h3>TurTour là gì?</h3>
+            <img src="assets/img/about.jpg" class="img-fluid rounded-4 mb-4" alt="">
+            <p>TurTour là nền tảng kết nối sinh viên với các doanh nghiệp tổ chức tour tham quan thực tế, giúp sinh viên có cơ hội tìm hiểu quy trình vận hành và môi trường làm việc ngay tại doanh nghiệp.</p>
+            <p>Thay vì tìm kiếm thông tin tour rải rác qua nhiều kênh, sinh viên có thể xem toàn bộ danh sách tour đang mở đăng ký, theo dõi lịch trình chi tiết và đăng ký tham gia chỉ trong vài bước trên cùng một nền tảng.</p>
+          </div>
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="250">
+            <div class="content ps-0 ps-lg-5">
+              <p class="fst-italic">
+                Đăng ký tour minh bạch, theo dõi trạng thái rõ ràng, nhận thông báo ngay khi có thay đổi.
+              </p>
+              <ul>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Tìm và lọc tour theo doanh nghiệp, trạng thái đăng ký và thời gian diễn ra.</span></li>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Đăng ký tham gia trực tuyến, theo dõi trạng thái duyệt hoặc danh sách chờ theo thời gian thực.</span></li>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Nhận thông báo tức thời khi tour mở đăng ký, được duyệt hoặc có thay đổi lịch trình.</span></li>
+              </ul>
+              <p>
+                Toàn bộ quy trình — từ tìm tour, đăng ký, đến nhận thông báo — đều được thực hiện ngay trên nền tảng, giúp sinh viên chủ động hơn trong việc lựa chọn trải nghiệm thực tế phù hợp.
+              </p>
 
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-            <div class="member">
-              <div class="pic"><img src="assets/img/team/team-1.jpg" class="img-fluid" alt=""></div>
-              <div class="member-info">
-                <h4>Walter White</h4>
-                <span>Chief Executive Officer</span>
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
+              <div class="position-relative mt-4">
+                <img src="assets/img/about-2.jpg" class="img-fluid rounded-4" alt="">
               </div>
             </div>
-          </div><!-- End Team Member -->
+          </div>
+        </div>
 
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <div class="member">
-              <div class="pic"><img src="assets/img/team/team-2.jpg" class="img-fluid" alt=""></div>
-              <div class="member-info">
-                <h4>Sarah Jhonson</h4>
-                <span>Product Manager</span>
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
+      </div>
+
+    </section><!-- /About Section -->
+
+    <!-- Stats Section -->
+    <section id="stats" class="stats section light-background">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-4">
+
+          <div class="col-lg-3 col-md-6">
+            <div class="stats-item d-flex align-items-center w-100 h-100">
+              <i class="bi bi-search color-blue flex-shrink-0"></i>
+              <div>
+                <p class="mb-0 fw-bold">Tìm tour dễ dàng</p>
+                <p>Lọc theo doanh nghiệp, trạng thái và thời gian diễn ra</p>
               </div>
             </div>
-          </div><!-- End Team Member -->
+          </div><!-- End Stats Item -->
 
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <div class="member">
-              <div class="pic"><img src="assets/img/team/team-3.jpg" class="img-fluid" alt=""></div>
-              <div class="member-info">
-                <h4>William Anderson</h4>
-                <span>CTO</span>
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="stats-item d-flex align-items-center w-100 h-100">
+              <i class="bi bi-send-check color-orange flex-shrink-0"></i>
+              <div>
+                <p class="mb-0 fw-bold">Đăng ký nhanh chóng</p>
+                <p>Gửi đăng ký và theo dõi trạng thái duyệt ngay trên hệ thống</p>
               </div>
             </div>
-          </div><!-- End Team Member -->
+          </div><!-- End Stats Item -->
+
+          <div class="col-lg-3 col-md-6">
+            <div class="stats-item d-flex align-items-center w-100 h-100">
+              <i class="bi bi-bell color-green flex-shrink-0"></i>
+              <div>
+                <p class="mb-0 fw-bold">Thông báo tức thời</p>
+                <p>Cập nhật ngay khi tour mở đăng ký hoặc thay đổi lịch trình</p>
+              </div>
+            </div>
+          </div><!-- End Stats Item -->
+
+          <div class="col-lg-3 col-md-6">
+            <div class="stats-item d-flex align-items-center w-100 h-100">
+              <i class="bi bi-building color-pink flex-shrink-0"></i>
+              <div>
+                <p class="mb-0 fw-bold">Doanh nghiệp uy tín</p>
+                <p>Hợp tác cùng các doanh nghiệp đã xác thực trên hệ thống</p>
+              </div>
+            </div>
+          </div><!-- End Stats Item -->
 
         </div>
 
       </div>
 
-    </section><!-- /Team Section -->
+    </section><!-- /Stats Section -->
+
+    <!-- Services Section -->
+    <section id="services" class="services section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Cách thức hoạt động</h2>
+        <p>Ba bước để tham gia một tour tham quan doanh nghiệp<br></p>
+      </div><!-- End Section Title -->
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-5">
+
+          <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="200">
+            <div class="service-item">
+              <div class="img">
+                <img src="assets/img/services-1.jpg" class="img-fluid" alt="">
+              </div>
+              <div class="details position-relative">
+                <div class="icon">
+                  <i class="bi bi-search"></i>
+                </div>
+                <h3>1. Tìm tour phù hợp</h3>
+                <p>Duyệt qua danh sách tour theo doanh nghiệp, địa điểm, thời gian diễn ra và mức phí tham gia.</p>
+              </div>
+            </div>
+          </div><!-- End Service Item -->
+
+          <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="300">
+            <div class="service-item">
+              <div class="img">
+                <img src="assets/img/services-2.jpg" class="img-fluid" alt="">
+              </div>
+              <div class="details position-relative">
+                <div class="icon">
+                  <i class="bi bi-send-fill"></i>
+                </div>
+                <h3>2. Đăng ký tham gia</h3>
+                <p>Gửi yêu cầu đăng ký chỉ với một cú nhấp, theo dõi trạng thái chờ duyệt hoặc danh sách chờ.</p>
+              </div>
+            </div>
+          </div><!-- End Service Item -->
+
+          <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="400">
+            <div class="service-item">
+              <div class="img">
+                <img src="assets/img/services-3.jpg" class="img-fluid" alt="">
+              </div>
+              <div class="details position-relative">
+                <div class="icon">
+                  <i class="bi bi-emoji-smile"></i>
+                </div>
+                <h3>3. Tham gia &amp; trải nghiệm</h3>
+                <p>Check-in tại điểm hẹn, tham quan thực tế theo lịch trình và nhận thông báo trong suốt chuyến đi.</p>
+              </div>
+            </div>
+          </div><!-- End Service Item -->
+
+        </div>
+
+      </div>
+
+    </section><!-- /Services Section -->
+
+
+    <!-- Partners Section -->
+    <section id="team" class="team section light-background">
+
+      <style>
+        .partners-swiper .swiper-wrapper { align-items: stretch; }
+        .partners-swiper .swiper-slide { height: auto; }
+        .partner-card {
+          background: #fff;
+          border-radius: 12px;
+          padding: 24px 20px;
+          text-align: center;
+          box-shadow: 0 4px 16px rgba(0,0,0,.06);
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          box-sizing: border-box;
+        }
+        .partner-logo {
+          width: 84px; height: 84px;
+          flex-shrink: 0;
+          margin: 0 auto 14px;
+          border-radius: 50%;
+          overflow: hidden;
+          display: flex; align-items: center; justify-content: center;
+          background: linear-gradient(135deg,#e8f4fd,#d1ecf1);
+          color: #5bc0de;
+          font-size: 2rem;
+        }
+        .partner-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .partner-card h4 {
+          font-size: 1rem; font-weight: 700; margin: 0 0 4px; color: #1a1a2e;
+          width: 100%;
+          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .partner-card span {
+          font-size: .82rem; color: #888;
+          width: 100%;
+          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+          display: block;
+        }
+        #partners-empty { text-align: center; padding: 30px 20px; color: #888; }
+        .partners-swiper { padding-bottom: 40px !important; }
+        .partners-swiper .swiper-pagination { bottom: 0; }
+        @keyframes tt-shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
+        .sk{display:block;background:linear-gradient(90deg,#ebebeb 25%,#f5f5f5 50%,#ebebeb 75%);background-size:600px 100%;animation:tt-shimmer 1.4s infinite linear;border-radius:4px;}
+      </style>
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Đối tác</h2>
+        <p>DOANH NGHIỆP ĐỒNG HÀNH CÙNG TURTOUR</p>
+      </div><!-- End Section Title -->
+
+      <div class="container">
+
+        <div id="partners-loading">
+          <div class="row gy-4">
+            <div class="col-lg-3 col-md-4 col-6"><div class="partner-card"><div class="sk" style="width:84px;height:84px;border-radius:50%;margin:0 auto 14px;"></div><div class="sk" style="height:16px;width:68%;margin:0 auto 6px;"></div><div class="sk" style="height:12px;width:44%;margin:0 auto;"></div></div></div>
+            <div class="col-lg-3 col-md-4 col-6"><div class="partner-card"><div class="sk" style="width:84px;height:84px;border-radius:50%;margin:0 auto 14px;"></div><div class="sk" style="height:16px;width:72%;margin:0 auto 6px;"></div><div class="sk" style="height:12px;width:50%;margin:0 auto;"></div></div></div>
+            <div class="col-lg-3 col-md-4 col-6"><div class="partner-card"><div class="sk" style="width:84px;height:84px;border-radius:50%;margin:0 auto 14px;"></div><div class="sk" style="height:16px;width:60%;margin:0 auto 6px;"></div><div class="sk" style="height:12px;width:40%;margin:0 auto;"></div></div></div>
+            <div class="col-lg-3 col-md-4 col-6"><div class="partner-card"><div class="sk" style="width:84px;height:84px;border-radius:50%;margin:0 auto 14px;"></div><div class="sk" style="height:16px;width:76%;margin:0 auto 6px;"></div><div class="sk" style="height:12px;width:48%;margin:0 auto;"></div></div></div>
+            <div class="col-lg-3 col-md-4 col-6"><div class="partner-card"><div class="sk" style="width:84px;height:84px;border-radius:50%;margin:0 auto 14px;"></div><div class="sk" style="height:16px;width:65%;margin:0 auto 6px;"></div><div class="sk" style="height:12px;width:42%;margin:0 auto;"></div></div></div>
+            <div class="col-lg-3 col-md-4 col-6"><div class="partner-card"><div class="sk" style="width:84px;height:84px;border-radius:50%;margin:0 auto 14px;"></div><div class="sk" style="height:16px;width:70%;margin:0 auto 6px;"></div><div class="sk" style="height:12px;width:46%;margin:0 auto;"></div></div></div>
+            <div class="col-lg-3 col-md-4 col-6"><div class="partner-card"><div class="sk" style="width:84px;height:84px;border-radius:50%;margin:0 auto 14px;"></div><div class="sk" style="height:16px;width:64%;margin:0 auto 6px;"></div><div class="sk" style="height:12px;width:38%;margin:0 auto;"></div></div></div>
+            <div class="col-lg-3 col-md-4 col-6"><div class="partner-card"><div class="sk" style="width:84px;height:84px;border-radius:50%;margin:0 auto 14px;"></div><div class="sk" style="height:16px;width:74%;margin:0 auto 6px;"></div><div class="sk" style="height:12px;width:52%;margin:0 auto;"></div></div></div>
+          </div>
+        </div>
+
+        <div id="partners-error" style="display:none;text-align:center;padding:30px 20px;color:#888;">
+          <i class="bi bi-exclamation-triangle" style="font-size:2rem;color:#e84545;"></i>
+          <p id="partners-error-msg" class="mt-2">Không thể tải danh sách đối tác.</p>
+          <button type="button" class="btn btn-outline-danger btn-sm" onclick="window.loadPartners && window.loadPartners()">
+            <i class="bi bi-arrow-clockwise me-1"></i>Thử lại
+          </button>
+        </div>
+
+        <div id="partners-empty" style="display:none;">
+          <p>Hiện chưa có doanh nghiệp đối tác nào được công bố.</p>
+        </div>
+
+        <div class="swiper partners-swiper" id="partners-swiper" style="display:none;" data-aos="fade-up" data-aos-delay="100">
+          <div id="partners-grid" class="swiper-wrapper"></div>
+          <div class="swiper-pagination partners-pagination"></div>
+        </div>
+
+      </div>
+
+      <script>
+      (function () {
+        var API_BASE = window.TURTOUR_API_BASE;
+
+        var _partners = [];
+
+        function renderPartner(c, idx) {
+          var logo = c.logoUrl
+            ? '<img src="' + c.logoUrl + '" alt="' + c.name + '" onerror="this.parentNode.innerHTML=\'<i class=&quot;bi bi-building&quot;></i>\'">'
+            : '<i class="bi bi-building"></i>';
+          return '<div class="swiper-slide">'
+            + '<div class="partner-card" onclick="window.showPartnerModal(' + idx + ')" style="cursor:pointer;" title="Xem thông tin">'
+              + '<div class="partner-logo">' + logo + '</div>'
+              + '<h4>' + c.name + '</h4>'
+              + (c.industry ? '<span>' + c.industry + '</span>' : '')
+            + '</div>'
+          + '</div>';
+        }
+
+        window.showPartnerModal = function (idx) {
+          var c = _partners[idx];
+          if (!c) return;
+
+          var logo = c.logoUrl
+            ? '<img src="' + c.logoUrl + '" alt="' + c.name + '" onerror="this.parentNode.innerHTML=\'<i class=&quot;bi bi-building&quot;></i>\'">'
+            : '<i class="bi bi-building"></i>';
+          document.getElementById('pm-logo').innerHTML = logo;
+          document.getElementById('pm-name').textContent = c.name || '';
+
+          var industryEl = document.getElementById('pm-industry');
+          industryEl.textContent = c.industry || '';
+          industryEl.style.display = c.industry ? '' : 'none';
+
+          document.getElementById('pm-desc').textContent = c.description || 'Chưa có mô tả.';
+          document.getElementById('pm-desc').style.display = c.description ? '' : 'none';
+
+          var show = function (itemId, valEl, val, href) {
+            var item = document.getElementById(itemId);
+            item.style.display = val ? '' : 'none';
+            var el = document.getElementById(valEl);
+            el.textContent = val || '';
+            if (href) el.href = href;
+          };
+          show('pm-address-item', 'pm-address', c.address);
+          show('pm-email-item',   'pm-email',   c.email,   'mailto:' + (c.email || ''));
+          show('pm-phone-item',   'pm-phone',   c.phone,   'tel:'    + (c.phone || ''));
+          show('pm-website-item', 'pm-website', c.website, c.website || '#');
+
+          var modal = new bootstrap.Modal(document.getElementById('partnerModal'));
+          modal.show();
+        };
+
+        var _partnersSwiper = null;
+
+        function friendlyError(err) {
+          var msg = (err && err.message) || '';
+          if (!msg || msg === 'Failed to fetch' || err.name === 'TypeError') return 'Không thể kết nối đến máy chủ — kiểm tra kết nối mạng hoặc thử lại sau.';
+          if (msg.indexOf('HTTP 401') !== -1) return 'Phiên đăng nhập đã hết hạn — vui lòng đăng nhập lại.';
+          if (msg.indexOf('HTTP 403') !== -1) return 'Không có quyền truy cập nội dung này.';
+          if (msg.indexOf('HTTP 404') !== -1) return 'Không tìm thấy dữ liệu (404).';
+          if (msg.indexOf('HTTP 5') !== -1) return 'Lỗi phía máy chủ — vui lòng thử lại sau.';
+          return msg;
+        }
+
+        function loadPartners() {
+          if (_partnersSwiper) { _partnersSwiper.destroy(true, true); _partnersSwiper = null; }
+          document.getElementById('partners-loading').style.display = '';
+          document.getElementById('partners-error').style.display = 'none';
+          document.getElementById('partners-empty').style.display = 'none';
+          document.getElementById('partners-swiper').style.display = 'none';
+
+          fetch(API_BASE + '/companies')
+            .then(function (res) {
+              if (!res.ok) throw new Error('HTTP ' + res.status);
+              return res.json();
+            })
+            .then(function (companies) {
+              document.getElementById('partners-loading').style.display = 'none';
+              var active = (companies || []).filter(function (c) { return c.isActive !== false; });
+              if (active.length === 0) {
+                document.getElementById('partners-empty').style.display = 'block';
+                return;
+              }
+              _partners = active;
+              document.getElementById('partners-grid').innerHTML = active.map(function (c, i) { return renderPartner(c, i); }).join('');
+              var swiperEl = document.getElementById('partners-swiper');
+              swiperEl.style.display = '';
+              if (typeof Swiper !== 'undefined') {
+                _partnersSwiper = new Swiper('#partners-swiper', {
+                  loop: active.length > 4,
+                  autoplay: { delay: 2800, disableOnInteraction: false, pauseOnMouseEnter: true },
+                  slidesPerView: 2,
+                  spaceBetween: 20,
+                  breakpoints: {
+                    576: { slidesPerView: 3, spaceBetween: 20 },
+                    992: { slidesPerView: 4, spaceBetween: 24 },
+                    1400: { slidesPerView: 5, spaceBetween: 24 }
+                  },
+                  pagination: { el: '.partners-pagination', clickable: true }
+                });
+              }
+            })
+            .catch(function (err) {
+              document.getElementById('partners-loading').style.display = 'none';
+              document.getElementById('partners-error').style.display = 'block';
+              document.getElementById('partners-error-msg').textContent = friendlyError(err);
+            });
+        }
+
+        window.loadPartners = loadPartners;
+        loadPartners();
+      })();
+      </script>
+
+    </section><!-- /Partners Section -->
+
+    <!-- Staff Section -->
+    <section id="staff" class="staff section">
+
+      <style>
+        .staff.section { padding: 80px 0; background: #fff; }
+        .staff-intro { max-width: 680px; margin: 0 auto 48px; text-align: center; color: #666; font-size: 0.95rem; }
+        .anon-member {
+          background: #f4f6fb; border-radius: 16px; padding: 30px 20px;
+          text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+          border: 1px solid #f1f3f5; transition: transform .25s, box-shadow .25s; height: 100%;
+        }
+        .anon-member:hover { transform: translateY(-6px); box-shadow: 0 12px 28px rgba(0,0,0,0.1); }
+        .anon-avatar {
+          width: 100px; height: 100px; margin: 0 auto 16px; border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          background: linear-gradient(135deg, #e8f4fd, #d1ecf1);
+          color: #5bc0de; font-size: 3rem;
+        }
+        .anon-member h4 { font-size: 1rem; font-weight: 700; color: #1a1a2e; margin: 0 0 4px; }
+        .anon-member .role {
+          display: inline-block; font-size: 0.78rem; font-weight: 600; color: #e84545;
+          background: #fdf2f2; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px;
+        }
+        .anon-member p.desc { font-size: 0.84rem; color: #888; margin: 0; }
+      </style>
+
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Our Team</h2>
+        <p>ĐỘI NGŨ THỰC HIỆN ĐỒ ÁN TURTOUR</p>
+      </div>
+
+      <div class="container">
+        <p class="staff-intro" data-aos="fade-up">TurTour là đồ án tốt nghiệp được xây dựng và phát triển bởi nhóm sinh viên thực hiện. Vì lý do bảo mật thông tin cá nhân, ảnh đại diện của các thành viên được hiển thị ở dạng ẩn danh.</p>
+        <div class="row gy-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="col-lg-3 col-md-6">
+            <div class="anon-member">
+              <div class="anon-avatar"><i class="bi bi-person-fill"></i></div>
+              <h4>Thành viên 1</h4><span class="role">Trưởng nhóm</span>
+              <p class="desc">Quản lý tiến độ &amp; kiến trúc hệ thống</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="anon-member">
+              <div class="anon-avatar"><i class="bi bi-person-fill"></i></div>
+              <h4>Thành viên 2</h4><span class="role">Backend Developer</span>
+              <p class="desc">Xây dựng API &amp; cơ sở dữ liệu</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="anon-member">
+              <div class="anon-avatar"><i class="bi bi-person-fill"></i></div>
+              <h4>Thành viên 3</h4><span class="role">Frontend Developer</span>
+              <p class="desc">Xây dựng giao diện người dùng</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="anon-member">
+              <div class="anon-avatar"><i class="bi bi-person-fill"></i></div>
+              <h4>Thành viên 4</h4><span class="role">Tester / QA</span>
+              <p class="desc">Kiểm thử &amp; đảm bảo chất lượng</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section><!-- /Staff Section -->
+
+    <!-- Reviews Section -->
+    <section id="reviews" class="reviews-all section">
+
+      <style>
+        .reviews-all { background: #ffffff; padding: 80px 0; }
+
+        .ra-header { text-align: center; margin-bottom: 48px; }
+        .ra-header h2 { font-family: 'Raleway', sans-serif; font-size: 2rem; font-weight: 800; color: #1a1a2e; margin-bottom: 8px; }
+        .ra-header p { color: #868e96; font-size: 0.95rem; }
+        .ra-header .ra-avg-chip {
+          display: inline-flex; align-items: center; gap: 8px;
+          background: #fff; border: 1.5px solid #f0c040; border-radius: 32px;
+          padding: 8px 20px; font-size: 0.88rem; font-weight: 700; color: #1a1a2e;
+          box-shadow: 0 2px 12px rgba(245,158,11,0.12); margin-top: 16px;
+        }
+        .ra-avg-chip .ra-score { font-size: 1.35rem; font-weight: 800; color: #d97706; }
+        .ra-avg-chip .ra-stars { color: #f59e0b; font-size: 1rem; letter-spacing: 1px; }
+
+        .ra-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+        }
+        @media (max-width: 991px) { .ra-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 575px)  { .ra-grid { grid-template-columns: 1fr; } }
+
+        .ra-card {
+          background: #fff; border-radius: 18px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.05);
+          padding: 22px 22px 18px; display: flex; flex-direction: column; gap: 12px;
+          transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .ra-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.1); transform: translateY(-3px); }
+
+        .ra-card-top { display: flex; align-items: flex-start; gap: 13px; }
+        .ra-avatar {
+          width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+          background: linear-gradient(135deg,#e84545,#ff9a9a);
+          display: flex; align-items: center; justify-content: center;
+          color: #fff; font-size: 1.05rem; font-weight: 800;
+        }
+        .ra-meta { flex: 1; min-width: 0; }
+        .ra-name { font-size: 0.9rem; font-weight: 700; color: #1a1a2e; }
+        .ra-tour {
+          font-size: 0.75rem; color: #e84545; font-weight: 600;
+          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+          display: block; margin-top: 2px;
+        }
+        .ra-stars { color: #f59e0b; font-size: 0.9rem; letter-spacing: 1px; margin-top: 3px; }
+        .ra-comment {
+          font-size: 0.84rem; color: #495057; line-height: 1.6;
+          display: -webkit-box;line-clamp: 4; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .ra-photos { display: flex; gap: 6px; flex-wrap: wrap; }
+        .ra-photos img {
+          width: 56px; height: 56px; object-fit: cover; border-radius: 8px;
+          border: 1px solid #e9ecef; cursor: pointer; transition: transform 0.18s;
+        }
+        .ra-photos img:hover { transform: scale(1.08); }
+        .ra-date { font-size: 0.73rem; color: #adb5bd; margin-top: auto; }
+
+        .ra-tour-link {
+          display: inline-flex; align-items: center; gap: 5px;
+          font-size: 0.78rem; font-weight: 600; color: #1a1a2e;
+          text-decoration: none; padding: 4px 11px; border-radius: 8px;
+          border: 1.5px solid #e9ecef; background: #f8f9fa;
+          transition: border-color 0.18s, background 0.18s; align-self: flex-start;
+        }
+        .ra-tour-link:hover { border-color: #adb5bd; background: #f0f1f3; }
+
+        .ra-loading { text-align: center; padding: 60px 0; }
+        .ra-empty  { text-align: center; padding: 60px 0; color: #adb5bd; font-size: 0.95rem; }
+        .ra-show-more { text-align: center; margin-top: 32px; }
+        .ra-show-more button {
+          padding: 11px 30px; border-radius: 24px;
+          border: 2px solid #1a1a2e; background: transparent;
+          font-weight: 700; font-size: 0.88rem; color: #1a1a2e; cursor: pointer;
+          transition: background 0.2s, color 0.2s;
+        }
+        .ra-show-more button:hover { background: #1a1a2e; color: #fff; }
+
+        /* lightbox reuse */
+        .ra-lb-overlay {
+          position: fixed; inset: 0; z-index: 9999;
+          background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center;
+          opacity: 0; pointer-events: none; transition: opacity 0.2s;
+        }
+        .ra-lb-overlay.open { opacity: 1; pointer-events: auto; }
+        .ra-lb-overlay img { max-width: 90vw; max-height: 88vh; border-radius: 10px; object-fit: contain; }
+        .ra-lb-close {
+          position: absolute; top: 18px; right: 22px;
+          background: rgba(255,255,255,0.15); border: none; color: #fff;
+          width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem;
+          display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .ra-lb-close:hover { background: rgba(255,255,255,0.25); }
+      </style>
+
+      <!-- Lightbox -->
+      <div class="ra-lb-overlay" id="raLbOverlay">
+        <button class="ra-lb-close" id="raLbClose">&#x2715;</button>
+        <img id="raLbImg" src="" alt="ảnh phóng to">
+      </div>
+
+      <div class="container">
+        <!-- Header -->
+        <div class="ra-header" data-aos="fade-up">
+          <h2>Sinh viên nói gì về TurTour</h2>
+          <p>Những chia sẻ thực tế từ các sinh viên đã tham gia tour</p>
+          <div id="ra-avg-chip" class="ra-avg-chip" style="display:none;">
+            <span class="ra-score" id="ra-score">0</span>
+            <span class="ra-stars" id="ra-stars"></span>
+            <span id="ra-total-label"></span>
+          </div>
+        </div>
+
+        <!-- Grid -->
+        <div id="ra-loading" class="ra-loading">
+          <div class="spinner-border text-warning" role="status" style="width:2.4rem;height:2.4rem;"></div>
+          <p class="mt-3 text-muted" style="font-size:0.88rem;">Đang tải đánh giá...</p>
+        </div>
+        <div id="ra-empty" class="ra-empty" style="display:none;">
+          <i class="bi bi-star" style="font-size:2.5rem; opacity:0.3;"></i>
+          <p class="mt-3">Chưa có đánh giá nào.</p>
+        </div>
+        <div id="ra-grid" class="ra-grid" style="display:none;"></div>
+        <div id="ra-show-more" class="ra-show-more" style="display:none;">
+          <button id="ra-show-more-btn">Xem thêm đánh giá</button>
+        </div>
+      </div>
+
+      <script>
+      (function () {
+        var API_BASE = window.TURTOUR_API_BASE;
+        var PAGE_SIZE = 9;
+        var allReviews = [];
+        var shown = 0;
+
+        var loadingEl   = document.getElementById('ra-loading');
+        var emptyEl     = document.getElementById('ra-empty');
+        var gridEl      = document.getElementById('ra-grid');
+        var showMoreWrap = document.getElementById('ra-show-more');
+        var showMoreBtn  = document.getElementById('ra-show-more-btn');
+        var avgChip      = document.getElementById('ra-avg-chip');
+
+        // Lightbox
+        var lbOverlay = document.getElementById('raLbOverlay');
+        var lbImg = document.getElementById('raLbImg');
+        document.getElementById('raLbClose').addEventListener('click', function () { lbOverlay.classList.remove('open'); });
+        lbOverlay.addEventListener('click', function (e) { if (e.target === lbOverlay) lbOverlay.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') lbOverlay.classList.remove('open'); });
+
+        function starsHtml(r) {
+          var f = Math.max(0, Math.min(5, Math.round(r)));
+          return '<span style="color:#f59e0b;">' + '★'.repeat(f) + '</span>'
+               + '<span style="color:#dee2e6;">' + '☆'.repeat(5 - f) + '</span>';
+        }
+
+        function fmtDate(iso) {
+          return new Date(iso).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+
+        function initial(name) {
+          if (!name) return '?';
+          var parts = name.trim().split(' ');
+          return parts[parts.length - 1].charAt(0).toUpperCase();
+        }
+
+        function renderCards(items) {
+          var frag = document.createDocumentFragment();
+          items.forEach(function (r) {
+            var card = document.createElement('div');
+            card.className = 'ra-card';
+            card.setAttribute('data-aos', 'fade-up');
+
+            var photos = (r.photoUrls && r.photoUrls.length)
+              ? '<div class="ra-photos">' + r.photoUrls.slice(0, 3).map(function (u) {
+                  return '<img src="' + u + '" alt="ảnh" loading="lazy" data-lb="' + u + '">';
+                }).join('') + '</div>'
+              : '';
+
+            var tourLink = r.tourId
+              ? '<a href="tour-details.html?id=' + r.tourId + '" class="ra-tour-link"><i class="bi bi-eye"></i> Xem tour</a>'
+              : '';
+
+            card.innerHTML =
+              '<div class="ra-card-top">'
+                + '<div class="ra-avatar">' + initial(r.studentName) + '</div>'
+                + '<div class="ra-meta">'
+                  + '<div class="ra-name">' + (r.studentName || 'Sinh viên') + '</div>'
+                  + (r.tourTitle ? '<span class="ra-tour">' + r.tourTitle + '</span>' : '')
+                  + '<div class="ra-stars">' + starsHtml(r.rating) + '</div>'
+                + '</div>'
+              + '</div>'
+              + (r.comment ? '<p class="ra-comment">' + r.comment + '</p>' : '')
+              + photos
+              + '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">'
+                + '<span class="ra-date"><i class="bi bi-calendar3 me-1"></i>' + fmtDate(r.createdAt) + '</span>'
+                + tourLink
+              + '</div>';
+
+            frag.appendChild(card);
+          });
+          gridEl.appendChild(frag);
+
+          // Bind lightbox
+          gridEl.querySelectorAll('[data-lb]').forEach(function (img) {
+            img.addEventListener('click', function () {
+              lbImg.src = img.getAttribute('data-lb');
+              lbOverlay.classList.add('open');
+            });
+          });
+
+          if (typeof AOS !== 'undefined') AOS.refresh();
+        }
+
+        function showMore() {
+          var next = allReviews.slice(shown, shown + PAGE_SIZE);
+          renderCards(next);
+          shown += next.length;
+          showMoreWrap.style.display = shown < allReviews.length ? 'block' : 'none';
+        }
+
+        showMoreBtn.addEventListener('click', showMore);
+
+        fetch(API_BASE + '/feedbacks/all/public')
+          .then(function (res) { return res.ok ? res.json() : Promise.reject(res.status); })
+          .then(function (data) {
+            loadingEl.style.display = 'none';
+            allReviews = data.feedbacks || [];
+
+            if (allReviews.length === 0) {
+              emptyEl.style.display = 'block';
+              return;
+            }
+
+            // Avg chip
+            if (data.averageRating && data.total) {
+              document.getElementById('ra-score').textContent = (+data.averageRating).toFixed(1);
+              document.getElementById('ra-stars').innerHTML = starsHtml(Math.round(data.averageRating));
+              document.getElementById('ra-total-label').textContent = data.total + ' đánh giá';
+              avgChip.style.display = 'inline-flex';
+            }
+
+            gridEl.style.display = 'grid';
+            showMore();
+          })
+          .catch(function () {
+            loadingEl.style.display = 'none';
+            emptyEl.style.display = 'block';
+          });
+      })();
+      </script>
+
+    </section><!-- /Reviews Section -->
 
     <!-- Contact Section -->
     <section id="contact" class="contact section">
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
-        <h2>Contact</h2>
-        <p>Necessitatibus eius consequatur</p>
+        <h2>Liên hệ</h2>
+        <p>Cần hỗ trợ? Hãy gửi thông tin cho chúng tôi</p>
       </div><!-- End Section Title -->
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -1203,7 +1769,7 @@
               <div class="col-lg-12">
                 <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="200">
                   <i class="bi bi-geo-alt"></i>
-                  <h3>Address</h3>
+                  <h3>Địa chỉ</h3>
                   <p>Gia Định, TP.HCM</p>
                 </div>
               </div><!-- End Info Item -->
@@ -1211,16 +1777,16 @@
               <div class="col-md-6">
                 <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="300">
                   <i class="bi bi-telephone"></i>
-                  <h3>Call Us</h3>
-                  <p>Upcoming</p>
+                  <h3>Điện thoại</h3>
+                  <p>Đang cập nhật</p>
                 </div>
               </div><!-- End Info Item -->
 
               <div class="col-md-6">
                 <div class="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="400">
                   <i class="bi bi-envelope"></i>
-                  <h3>Email Us</h3>
-                  <p>Upcoming</p>
+                  <h3>Email</h3>
+                  <p>Đang cập nhật</p>
                 </div>
               </div><!-- End Info Item -->
 
@@ -1228,31 +1794,27 @@
           </div>
 
           <div class="col-lg-6">
-            <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="500">
+            <form id="contact-form" data-aos="fade-up" data-aos-delay="500">
               <div class="row gy-4">
 
                 <div class="col-md-6">
-                  <input type="text" name="name" class="form-control" placeholder="Your Name" required="">
+                  <input type="text" id="cf-name" class="form-control" placeholder="Họ và tên" required>
                 </div>
 
-                <div class="col-md-6 ">
-                  <input type="email" class="form-control" name="email" placeholder="Your Email" required="">
-                </div>
-
-                <div class="col-md-12">
-                  <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
+                <div class="col-md-6">
+                  <input type="email" id="cf-email" class="form-control" placeholder="Email của bạn" required>
                 </div>
 
                 <div class="col-md-12">
-                  <textarea class="form-control" name="message" rows="4" placeholder="Message" required=""></textarea>
+                  <input type="text" id="cf-subject" class="form-control" placeholder="Tiêu đề" required>
+                </div>
+
+                <div class="col-md-12">
+                  <textarea id="cf-message" class="form-control" rows="4" placeholder="Nội dung" required></textarea>
                 </div>
 
                 <div class="col-md-12 text-center">
-                  <div class="loading">Loading</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Your message has been sent. Thank you!</div>
-
-                  <button type="submit">Send Message</button>
+                  <button id="cf-submit" type="submit">Gửi liên hệ</button>
                 </div>
 
               </div>
@@ -1267,6 +1829,47 @@
 
   </main>
 
+  <!-- Partner Detail Modal -->
+  <div class="modal fade" id="partnerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content" style="border-radius:16px;overflow:hidden;border:none;box-shadow:0 20px 60px rgba(0,0,0,.18);">
+        <!-- Header -->
+        <div class="modal-header" style="border-bottom:1px solid #f1f3f5;padding:20px 24px 16px;gap:16px;align-items:flex-start;">
+          <div class="d-flex align-items-center gap-3 flex-1" style="min-width:0;">
+            <div id="pm-logo" class="partner-logo" style="flex-shrink:0;width:64px;height:64px;font-size:1.6rem;margin:0;"></div>
+            <div style="min-width:0;">
+              <h5 class="mb-1" id="pm-name" style="font-size:1.1rem;font-weight:700;color:#1a1a2e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></h5>
+              <span id="pm-industry" style="display:inline-block;background:#e8f4fd;color:#1a7abf;font-size:.72rem;font-weight:700;padding:2px 10px;border-radius:20px;"></span>
+            </div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" style="flex-shrink:0;margin:0;"></button>
+        </div>
+        <!-- Body -->
+        <div class="modal-body" style="padding:20px 24px 24px;">
+          <p id="pm-desc" style="font-size:.9rem;color:#555;line-height:1.65;margin-bottom:18px;"></p>
+          <ul class="list-unstyled mb-0" style="font-size:.875rem;">
+            <li id="pm-address-item" class="d-flex align-items-start gap-2 mb-2">
+              <i class="bi bi-geo-alt-fill text-danger mt-1" style="flex-shrink:0;"></i>
+              <span id="pm-address" style="color:#444;"></span>
+            </li>
+            <li id="pm-email-item" class="d-flex align-items-center gap-2 mb-2">
+              <i class="bi bi-envelope-fill text-danger" style="flex-shrink:0;"></i>
+              <a id="pm-email" href="#" style="color:#e84545;text-decoration:none;word-break:break-all;"></a>
+            </li>
+            <li id="pm-phone-item" class="d-flex align-items-center gap-2 mb-2">
+              <i class="bi bi-telephone-fill text-danger" style="flex-shrink:0;"></i>
+              <a id="pm-phone" href="#" style="color:#e84545;text-decoration:none;"></a>
+            </li>
+            <li id="pm-website-item" class="d-flex align-items-center gap-2">
+              <i class="bi bi-globe text-danger" style="flex-shrink:0;"></i>
+              <a id="pm-website" href="#" target="_blank" rel="noopener noreferrer" style="color:#e84545;text-decoration:none;word-break:break-all;"></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer id="footer" class="footer dark-background">
 
     <div class="container footer-top">
@@ -1275,64 +1878,45 @@
           <a href="index.html" class="logo d-flex align-items-center">
             <span class="sitename">TurTour</span>
           </a>
-          <div class="footer-contact pt-3">
+          <p class="mt-2">Nền tảng kết nối sinh viên với các tour tham quan thực tế tại doanh nghiệp.</p>
+          <div class="footer-contact pt-2">
             <p>Gia Định, TP.HCM</p>
-            <p class="mt-3"><strong>Phone:</strong> <span>Upcoming</span></p>
-            <p><strong>Email:</strong> <span>Upcoming</span></p>
+            <p class="mt-3"><strong>Điện thoại:</strong> <span>Đang cập nhật</span></p>
+            <p><strong>Email:</strong> <span>Đang cập nhật</span></p>
           </div>
           <div class="social-links d-flex mt-4">
-            <a href=""><i class="bi bi-twitter-x"></i></a>
             <a href=""><i class="bi bi-facebook"></i></a>
             <a href=""><i class="bi bi-instagram"></i></a>
-            <a href=""><i class="bi bi-linkedin"></i></a>
           </div>
         </div>
 
-        <div class="col-lg-2 col-md-3 footer-links">
-          <h4>Useful Links</h4>
+        <div class="col-lg-4 col-md-3 footer-links">
+          <h4>Liên kết nhanh</h4>
           <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Home</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">About us</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Services</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Terms of service</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Privacy policy</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#hero">Trang chủ</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#about">Giới thiệu</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#portfolio">Danh sách tour</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#team">Đối tác</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#staff">Đội ngũ</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#contact">Liên hệ</a></li>
           </ul>
         </div>
 
-        <div class="col-lg-2 col-md-3 footer-links">
-          <h4>Our Services</h4>
+        <div class="col-lg-4 col-md-3 footer-links">
+          <h4>Tài khoản</h4>
           <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Design</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Development</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Product Management</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Marketing</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Graphic Design</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="my-tours.html">Tour của tôi</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="profile.html">Hồ sơ của tôi</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="notifications.html">Thông báo</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="/auth/sign-in" target="_top">Đăng nhập</a></li>
           </ul>
-        </div>
-
-        <div class="col-lg-4 col-md-12 footer-newsletter">
-          <h4>Our Newsletter</h4>
-          <p>Subscribe to our newsletter and receive the latest news about our products and services!</p>
-          <form action="forms/newsletter.php" method="post" class="php-email-form">
-            <div class="newsletter-form"><input type="email" name="email"><input type="submit" value="Subscribe"></div>
-            <div class="loading">Loading</div>
-            <div class="error-message"></div>
-            <div class="sent-message">Your subscription request has been sent. Thank you!</div>
-          </form>
         </div>
 
       </div>
     </div>
 
     <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">TurTour</strong> <span>All Rights Reserved</span></p>
-      <div class="credits">
-        <!-- All the links in the footer should remain intact. -->
-        <!-- You can delete the links only if you've purchased the pro version. -->
-        <!-- Licensing information: https://bootstrapmade.com/license/ -->
-        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed by <a href=“https://themewagon.com>ThemeWagon
-      </div>
+      <p>© <span>Bản quyền</span> <strong class="px-1 sitename">TurTour</strong> <span>Đã đăng ký bản quyền</span></p>
     </div>
 
   </footer>
@@ -1340,15 +1924,11 @@
   <!-- Scroll Top -->
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-  <!-- Preloader -->
-  <div id="preloader"></div>
-
   <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
+
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
   <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
   <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
@@ -1360,6 +1940,62 @@
     <script src="assets/vendor/signalr/signalr.min.js"></script>
   <script src="assets/js/realtime.js"></script>
 <script src="assets/js/notifications-badge.js"></script>
+<script src="assets/js/header-avatar.js"></script>
+
+  <script>
+    (function () {
+      var form = document.getElementById('contact-form');
+      if (!form) return;
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var submitBtn = document.getElementById('cf-submit');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Đang gửi…';
+
+        var payload = {
+          fullName: document.getElementById('cf-name').value.trim(),
+          email: document.getElementById('cf-email').value.trim(),
+          subject: document.getElementById('cf-subject').value.trim(),
+          message: document.getElementById('cf-message').value.trim(),
+        };
+
+        var cfHeaders = { 'Content-Type': 'application/json' };
+        try {
+          var cfSession = JSON.parse(localStorage.getItem('turtour.admin.session'));
+          if (cfSession && cfSession.token) cfHeaders['Authorization'] = 'Bearer ' + cfSession.token;
+        } catch { /* ignore */ }
+
+        fetch((window.TURTOUR_API_BASE || '') + '/contacts', {
+          method: 'POST',
+          headers: cfHeaders,
+          body: JSON.stringify(payload),
+        })
+          .then(function (res) {
+            return res.text().then(function (text) {
+              var d = null;
+              try { d = text ? JSON.parse(text) : null; } catch { /* ignore */ }
+              if (!res.ok) {
+                var detail = (d && (d.message || d.title)) || text || '';
+                throw new Error('HTTP ' + res.status + (detail ? ' — ' + detail : ''));
+              }
+              return d;
+            });
+          })
+          .then(function () {
+            showToast('Tin nhắn của bạn đã được gửi. Cảm ơn bạn!', 'success');
+            form.reset();
+          })
+          .catch(function (err) {
+            showToast(err && err.message ? err.message : 'Gửi thất bại — vui lòng thử lại.', 'error');
+          })
+          .finally(function () {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Gửi liên hệ';
+          });
+      });
+    })();
+  </script>
 
   <script>
     (function () {
@@ -1368,6 +2004,8 @@
       var profileName = document.getElementById('auth-profile-name');
       var dashboardItem = document.getElementById('auth-dashboard-item');
       var myToursItem = document.getElementById('auth-mytours-item');
+      var myReviewsItem = document.getElementById('auth-myreviews-item');
+      var savedToursItem = document.getElementById('auth-savedtours-item');
       var logoutBtn = document.getElementById('auth-logout-btn');
 
       var session = null;
@@ -1382,10 +2020,16 @@
 
         var roles = session.roles || [];
         if (roles.includes('Admin') || roles.includes('Organizator') || roles.includes('Company')) {
+          var dashboardLink = dashboardItem.querySelector('a');
+          if (dashboardLink) {
+            dashboardLink.href = roles.includes('Admin') ? '/admin/dashboard' : '/partner/dashboard';
+          }
           dashboardItem.style.display = 'block';
         }
         if (roles.includes('Student')) {
           myToursItem.style.display = 'block';
+          if (myReviewsItem) myReviewsItem.style.display = 'block';
+          if (savedToursItem) savedToursItem.style.display = 'block';
         }
       } else {
         guestBtn.style.display = '';

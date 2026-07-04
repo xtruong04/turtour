@@ -21,6 +21,42 @@ namespace TurTour.Controllers
             _context = context;
         }
 
+        [HttpGet("my")]
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> GetMy()
+        {
+            var userId = CurrentUserHelper.GetUserId(User);
+            if (userId == null) return Unauthorized();
+
+            var feedbacks = await _context.Feedbacks
+                .Where(f => f.StudentId == userId)
+                .Include(f => f.Tour).ThenInclude(t => t!.Company)
+                .Include(f => f.Tour).ThenInclude(t => t!.TourImages)
+                .OrderByDescending(f => f.CreatedAt)
+                .ToListAsync();
+
+            var result = feedbacks.Select(f =>
+            {
+                var thumbnail = f.Tour?.TourImages
+                    .Where(i => i.Isthumbnail).OrderBy(i => i.DisplayOrder).FirstOrDefault()
+                    ?? f.Tour?.TourImages.OrderBy(i => i.DisplayOrder).FirstOrDefault();
+                return new
+                {
+                    id = f.Id,
+                    tourId = f.TourId,
+                    tourTitle = f.Tour?.Tittle ?? "",
+                    companyName = f.Tour?.Company?.Name ?? "",
+                    thumbnailUrl = thumbnail?.ImageUrl ?? "",
+                    rating = f.Rating,
+                    comment = f.Comment,
+                    photoUrls = f.PhotoUrls,
+                    createdAt = f.CreatedAt
+                };
+            }).ToList();
+
+            return Ok(result);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Student")]
         public async Task<IActionResult> Create(CreateFeedbackRequest request)
@@ -50,7 +86,10 @@ namespace TurTour.Controllers
                 return BadRequest(new { message = "Chỉ có thể đánh giá sau khi đã thanh toán tour." });
             }
 
-            if (registration.Tour == null || registration.Tour.Status != TourStatus.Completed)
+            // Dùng RegistrationStatus.Completed (đánh dấu riêng cho từng lượt đăng ký, qua
+            // CompleteRegistration) thay vì tour.Status cũ — chính xác hơn vì không gộp lẫn
+            // với tour bị huỷ (giờ cùng PublishStatus.Archived với tour hoàn thành thật).
+            if (registration.Status != RegistrationStatus.Completed)
             {
                 return BadRequest(new { message = "Chỉ có thể đánh giá khi tour đã hoàn thành." });
             }
@@ -66,7 +105,8 @@ namespace TurTour.Controllers
                 TourId = request.TourId,
                 StudentId = userId.Value,
                 Rating = request.Rating,
-                Comment = request.Comment
+                Comment = request.Comment,
+                PhotoUrls = request.PhotoUrls
             };
 
             _context.Feedbacks.Add(feedback);
@@ -93,6 +133,63 @@ namespace TurTour.Controllers
                 total = feedbacks.Count,
                 feedbacks
             });
+        }
+
+        // Public — tất cả đánh giá của mọi tour, dùng cho trang chủ.
+        [HttpGet("all/public")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAllPublic([FromQuery] int limit = 50)
+        {
+            limit = Math.Clamp(limit, 1, 200);
+
+            var feedbacks = await _context.Feedbacks
+                .Include(f => f.Student)
+                .Include(f => f.Tour)
+                .OrderByDescending(f => f.CreatedAt)
+                .Take(limit)
+                .ToListAsync();
+
+            var avg = feedbacks.Count == 0 ? 0 : Math.Round(feedbacks.Average(f => f.Rating), 1);
+            var total = await _context.Feedbacks.CountAsync();
+
+            var items = feedbacks.Select(f => new
+            {
+                rating = f.Rating,
+                comment = f.Comment,
+                photoUrls = f.PhotoUrls,
+                studentName = f.Student?.FullName ?? "Sinh viên",
+                tourId = f.TourId,
+                tourTitle = f.Tour?.Tittle ?? "",
+                createdAt = f.CreatedAt
+            }).ToList();
+
+            return Ok(new { averageRating = avg, total, feedbacks = items });
+        }
+
+        // Public — không cần đăng nhập, dùng để hiển thị đánh giá trên trang chi tiết tour.
+        [HttpGet("tour/{tourId:guid}/public")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPublicByTour(Guid tourId)
+        {
+            var feedbacks = await _context.Feedbacks
+                .Where(f => f.TourId == tourId)
+                .Include(f => f.Student)
+                .OrderByDescending(f => f.CreatedAt)
+                .Take(50)
+                .ToListAsync();
+
+            var avg = feedbacks.Count == 0 ? 0 : Math.Round(feedbacks.Average(f => f.Rating), 1);
+
+            var items = feedbacks.Select(f => new
+            {
+                rating = f.Rating,
+                comment = f.Comment,
+                photoUrls = f.PhotoUrls,
+                studentName = f.Student?.FullName ?? "Sinh viên",
+                createdAt = f.CreatedAt
+            }).ToList();
+
+            return Ok(new { averageRating = avg, total = feedbacks.Count, feedbacks = items });
         }
     }
 }
