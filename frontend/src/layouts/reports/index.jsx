@@ -3,14 +3,12 @@ import { useEffect, useMemo, useState } from "react";
 import Alert from "@mui/material/Alert";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
-import MenuItem from "@mui/material/MenuItem";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import TextField from "@mui/material/TextField";
 
 import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
@@ -18,6 +16,7 @@ import SoftInput from "components/SoftInput";
 import SoftButton from "components/SoftButton";
 import PageLoader from "components/PageLoader";
 import NeoBadge from "components/NeoBadge";
+import NeoDropdown from "components/NeoDropdown";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -25,26 +24,34 @@ import Footer from "examples/Footer";
 import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
 
 import apiService from "../../services/apiService";
+import { hideSplash } from "utils/splash";
 
 const statusOptions = [
   { value: "", label: "Tất cả trạng thái" },
-  { value: "PendingApproval", label: "Chờ duyệt" },
-  { value: "Upcoming", label: "Sắp diễn ra" },
-  { value: "Open", label: "Mở đăng ký" },
-  { value: "Closed", label: "Đã đóng" },
-  { value: "Cancelled", label: "Đã hủy" },
-  { value: "Completed", label: "Đã hoàn thành" },
+  { value: "Pending", label: "Chờ duyệt" },
+  { value: "Rejected", label: "Bị từ chối" },
+  { value: "Published", label: "Mở đăng ký" },
+  { value: "Expired", label: "Đã đóng" },
+  { value: "Archived", label: "Đã hủy/Lưu trữ" },
 ];
 
 // Bảng màu theo chuẩn Bootstrap, đồng bộ với badge trạng thái ở trang Tours và trang sinh viên.
 const tourStatusColors = {
-  PendingApproval: { bgColor: "#A18F7A", textColor: "#fff" },
-  Upcoming: { bgColor: "#0d6efd", textColor: "#fff" },
-  Open: { bgColor: "#198754", textColor: "#fff" },
-  Closed: { bgColor: "#ffc107", textColor: "#212529" },
-  Cancelled: { bgColor: "#dc3545", textColor: "#fff" },
-  Completed: { bgColor: "#6c757d", textColor: "#fff" },
+  Pending: { bgColor: "#A18F7A", textColor: "#fff" },
+  Rejected: { bgColor: "#dc3545", textColor: "#fff" },
+  Published: { bgColor: "#198754", textColor: "#fff" },
+  Expired: { bgColor: "#ffc107", textColor: "#212529" },
+  Archived: { bgColor: "#6c757d", textColor: "#fff" },
 };
+
+// Tổng hợp ApprovalStatus + PublishStatus thành 1 badge — Pending/Rejected luôn "thắng",
+// PublishStatus chỉ có nghĩa khi tour đã Approved (xem ToursController.ComputeEffectivePublishStatus).
+function getRowStatusKey(row) {
+  if (row.approvalStatus === "Pending" || row.approvalStatus === "Rejected") {
+    return row.approvalStatus;
+  }
+  return row.publishStatus || "Hidden";
+}
 
 function tourStatusLabel(status) {
   return statusOptions.find((option) => option.value === status)?.label || status || "-";
@@ -81,6 +88,7 @@ function Reports() {
         setErrorMessage(error?.message || "Không tải được dữ liệu báo cáo.");
       } finally {
         setLoading(false);
+        hideSplash();
       }
     }
 
@@ -99,7 +107,7 @@ function Reports() {
         const haystack = `${row.title} ${row.code} ${row.companyName}`.toLowerCase();
         if (!haystack.includes(term)) return false;
       }
-      if (statusFilter && row.status !== statusFilter) return false;
+      if (statusFilter && getRowStatusKey(row) !== statusFilter) return false;
       if (from && new Date(row.startDate) < from) return false;
       if (to && new Date(row.startDate) > to) return false;
       return true;
@@ -123,6 +131,7 @@ function Reports() {
 
   const revenueByMonth = report?.revenueByMonth || [];
   const revenueByCompany = report?.revenueByCompany || [];
+  const registrationsByMonth = report?.registrationsByMonth || [];
 
   const monthChart = {
     labels: revenueByMonth.length > 0 ? revenueByMonth.map((m) => formatMonthLabel(m.month)) : ["Chưa có dữ liệu"],
@@ -137,6 +146,14 @@ function Reports() {
     datasets: {
       label: "Doanh thu",
       data: revenueByCompany.length > 0 ? revenueByCompany.map((c) => c.revenue) : [0],
+    },
+  };
+
+  const registrationsChart = {
+    labels: registrationsByMonth.length > 0 ? registrationsByMonth.map((m) => formatMonthLabel(m.month)) : ["Chưa có dữ liệu"],
+    datasets: {
+      label: "Đăng ký",
+      data: registrationsByMonth.length > 0 ? registrationsByMonth.map((m) => m.count) : [0],
     },
   };
 
@@ -166,11 +183,11 @@ function Reports() {
                 </Grid>
                 <Grid item xs={12} sm={6} md={2.5}>
                   <SoftTypography variant="caption" fontWeight="bold">Trạng thái</SoftTypography>
-                  <TextField select fullWidth size="small" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                    {statusOptions.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-                    ))}
-                  </TextField>
+                  <NeoDropdown
+                    value={statusFilter}
+                    options={statusOptions.map((option) => ({ value: option.value, label: option.label }))}
+                    onChange={setStatusFilter}
+                  />
                 </Grid>
                 <Grid item xs={6} sm={3} md={1.75}>
                   <SoftTypography variant="caption" fontWeight="bold">Từ ngày</SoftTypography>
@@ -236,6 +253,14 @@ function Reports() {
                   chart={companyChart}
                 />
               </Grid>
+              <Grid item xs={12}>
+                <ReportsBarChart
+                  color="dark"
+                  title="Đăng ký theo tháng"
+                  description="Số lượt đăng ký tour trong 12 tháng gần nhất"
+                  chart={registrationsChart}
+                />
+              </Grid>
             </Grid>
 
             <Card>
@@ -247,7 +272,7 @@ function Reports() {
                     sx={{
                       tableLayout: "fixed",
                       minWidth: 1000,
-                      "& th": { fontSize: "0.75rem", fontWeight: 700, color: "#344767", whiteSpace: "nowrap", py: 1.5 },
+                      "& th": { fontSize: "0.75rem", fontWeight: 700, color: "#2b2a27", whiteSpace: "nowrap", py: 1.5 },
                       "& td": { fontSize: "0.875rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", py: 1.25 },
                     }}
                   >
@@ -282,7 +307,7 @@ function Reports() {
                           <TableCell title={row.title}>{row.title || "-"}</TableCell>
                           <TableCell title={row.companyName}>{row.companyName || "-"}</TableCell>
                           <TableCell>
-                            <NeoBadge label={tourStatusLabel(row.status)} {...(tourStatusColors[row.status] || {})} />
+                            <NeoBadge label={tourStatusLabel(getRowStatusKey(row))} {...(tourStatusColors[getRowStatusKey(row)] || {})} />
                           </TableCell>
                           <TableCell align="center">{row.totalRegistrations} / {row.maxParticipants}</TableCell>
                           <TableCell align="center">{row.approvedCount}</TableCell>

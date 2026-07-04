@@ -1,5 +1,5 @@
 (function () {
-  var HUB_URL = 'https://turtour-production.up.railway.app/hubs/app';
+  var HUB_URL = window.TURTOUR_HUB_URL;
   var AUTH_STORAGE_KEY = 'turtour.admin.session';
 
   function getToken() {
@@ -45,5 +45,6 @@
     onNotification: function (callback) { return on('ReceiveNotification', callback); },
     onTourUpdated: function (callback) { return on('TourUpdated', callback); },
     onAdminBoardUpdated: function (callback) { return on('AdminBoardUpdated', callback); },
+    onNewContact: function (callback) { return on('NewContact', callback); },
   };
 })();

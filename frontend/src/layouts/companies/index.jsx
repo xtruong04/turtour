@@ -19,7 +19,8 @@ import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
 import SoftButton from "components/SoftButton";
 import SoftInput from "components/SoftInput";
-import PageLoader from "components/PageLoader";
+import AddressPicker from "components/AddressPicker";
+import SkeletonLoader from "components/SkeletonLoader";
 import NeoBadge from "components/NeoBadge";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -29,6 +30,7 @@ import Footer from "examples/Footer";
 import neoIconButtonSx from "assets/theme/functions/neoIconButtonSx";
 
 import apiService from "../../services/apiService";
+import { hideSplash } from "utils/splash";
 
 function IconEdit() {
   return (
@@ -72,6 +74,8 @@ function Companies() {
   const [saving, setSaving] = useState(false);
   const [dialogError, setDialogError] = useState("");
   const [refreshToken, setRefreshToken] = useState(0);
+  const [deletingCompany, setDeletingCompany] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     async function fetchCompanies() {
@@ -84,6 +88,7 @@ function Companies() {
         setErrorMessage(error?.message || "Không tải được danh sách doanh nghiệp.");
       } finally {
         setLoading(false);
+        hideSplash();
       }
     }
 
@@ -136,16 +141,20 @@ function Companies() {
     }
   };
 
-  const handleDelete = async (company) => {
-    if (!window.confirm(`Xóa doanh nghiệp "${company.name}"? Nếu doanh nghiệp đã có tour, hệ thống sẽ chuyển sang trạng thái ngừng hoạt động thay vì xóa hẳn.`)) {
-      return;
-    }
+  const handleDelete = (company) => setDeletingCompany(company);
 
+  const handleConfirmDelete = async () => {
+    if (!deletingCompany) return;
+    setDeleting(true);
     try {
-      await apiService.deleteCompany(company.id);
+      await apiService.deleteCompany(deletingCompany.id);
+      setDeletingCompany(null);
       refresh();
     } catch (error) {
       setErrorMessage(error?.message || "Xóa doanh nghiệp thất bại.");
+      setDeletingCompany(null);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -160,7 +169,7 @@ function Companies() {
               <SoftTypography variant="button" color="text">Quản lý thông tin doanh nghiệp đã đăng ký trên hệ thống.</SoftTypography>
             </SoftBox>
 
-            {loading ? <PageLoader label="Đang tải danh sách doanh nghiệp..." /> : null}
+            {loading ? <SkeletonLoader.Table rows={5} cols={6} /> : null}
             {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
 
             {!loading && !errorMessage ? (
@@ -173,7 +182,7 @@ function Companies() {
                     "& th": {
                       fontSize: "0.75rem",
                       fontWeight: 700,
-                      color: "#344767",
+                      color: "#2b2a27",
                       whiteSpace: "nowrap",
                       py: 1.5,
                     },
@@ -252,6 +261,81 @@ function Companies() {
       </SoftBox>
       <Footer />
 
+      {/* ── Delete confirm dialog ── */}
+      <Dialog
+        open={Boolean(deletingCompany)}
+        onClose={() => !deleting && setDeletingCompany(null)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{
+          sx: { borderRadius: "16px", p: 1 },
+        }}
+      >
+        <DialogContent sx={{ textAlign: "center", pt: 3, pb: 1 }}>
+          {/* Icon */}
+          <SoftBox
+            sx={{
+              width: 60, height: 60, borderRadius: "16px",
+              background: "linear-gradient(135deg, #fff1f1, #ffe4e4)",
+              border: "1px solid #fecaca",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              mx: "auto", mb: 2,
+            }}
+          >
+            <IconTrash />
+          </SoftBox>
+
+          <SoftTypography variant="h6" fontWeight="bold" sx={{ mb: 0.75, color: "#1a1a2e" }}>
+            Xóa doanh nghiệp?
+          </SoftTypography>
+
+          <SoftTypography variant="button" color="text" sx={{ display: "block", mb: 1 }}>
+            Bạn sắp xóa{" "}
+            <SoftTypography component="span" variant="button" fontWeight="bold" sx={{ color: "#1a1a2e" }}>
+              &ldquo;{deletingCompany?.name}&rdquo;
+            </SoftTypography>
+          </SoftTypography>
+
+          <SoftBox
+            sx={{
+              background: "#fffbeb",
+              border: "1px solid #fde68a",
+              borderRadius: "10px",
+              px: 2, py: 1.25,
+              textAlign: "left",
+              display: "flex", gap: 1, alignItems: "flex-start",
+            }}
+          >
+            <SoftTypography variant="caption" sx={{ color: "#92400e", lineHeight: 1.5 }}>
+              Nếu doanh nghiệp đã có tour, hệ thống sẽ chuyển sang trạng thái{" "}
+              <strong>ngừng hoạt động</strong> thay vì xóa hẳn.
+            </SoftTypography>
+          </SoftBox>
+        </DialogContent>
+
+        <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
+          <SoftButton
+            variant="outlined"
+            color="dark"
+            fullWidth
+            onClick={() => setDeletingCompany(null)}
+            disabled={deleting}
+          >
+            Hủy
+          </SoftButton>
+          <SoftButton
+            variant="gradient"
+            color="error"
+            fullWidth
+            onClick={handleConfirmDelete}
+            disabled={deleting}
+          >
+            {deleting ? "Đang xóa..." : "Xác nhận xóa"}
+          </SoftButton>
+        </DialogActions>
+      </Dialog>
+
+      {/* ── Edit dialog ── */}
       <Dialog open={Boolean(editing)} onClose={closeEdit} fullWidth maxWidth="sm">
         <DialogTitle>Sửa thông tin doanh nghiệp</DialogTitle>
         <DialogContent>
@@ -261,7 +345,11 @@ function Companies() {
           </SoftBox>
           <SoftBox mb={2}>
             <SoftTypography variant="caption" fontWeight="bold">Địa chỉ *</SoftTypography>
-            <SoftInput value={form.address} onChange={(e) => handleFormChange("address", e.target.value)} />
+            <AddressPicker
+              value={form.address}
+              onChange={(v) => handleFormChange("address", v)}
+              showDetail
+            />
           </SoftBox>
           <SoftBox mb={2}>
             <SoftTypography variant="caption" fontWeight="bold">Email</SoftTypography>

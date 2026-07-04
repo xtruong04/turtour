@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 
 import Alert from "@mui/material/Alert";
 import Card from "@mui/material/Card";
+import Tooltip from "@mui/material/Tooltip";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -28,7 +29,9 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
 import apiService from "../../services/apiService";
+import { hideSplash } from "utils/splash";
 import realtimeService from "../../services/realtime";
+import useTourBasePath from "../../hooks/useTourBasePath";
 
 // Bảng màu theo chuẩn Bootstrap, đồng bộ với badge trạng thái ở các trang admin khác.
 const statusBadgeColors = {
@@ -53,6 +56,7 @@ const statusLabel = {
 
 function TourRegistrations() {
   const { id } = useParams();
+  const base = useTourBasePath();
 
   const [tour, setTour] = useState(null);
   const [registrations, setRegistrations] = useState([]);
@@ -96,6 +100,7 @@ function TourRegistrations() {
         setErrorMessage(error?.message || "Không tải được dữ liệu đăng ký.");
       } finally {
         setLoading(false);
+        hideSplash();
       }
     }
 
@@ -255,6 +260,41 @@ function TourRegistrations() {
     setActionMessage(message);
   };
 
+  const handleExportCsv = () => {
+    const headers = ["STT", "Họ tên", "Email", "Số điện thoại", "Ngày đăng ký", "Trạng thái", "Thanh toán", "Ngày thanh toán", "Ghi chú"];
+
+    const rows = registrations.map((reg, idx) => {
+      const isPaid = reg.payment?.paymentStatus === "Paid" || ["Paid", "CheckedIn", "Completed"].includes(reg.status);
+      const phone = reg.raw?.student?.phoneNumber || "";
+      const regDate = reg.registrationDate ? new Date(reg.registrationDate).toLocaleDateString("vi-VN") : "";
+      const paidDate = reg.payment?.paidAt ? new Date(reg.payment.paidAt).toLocaleDateString("vi-VN") : "";
+      const note = reg.rejectionReason ? `Từ chối: ${reg.rejectionReason}` : (reg.notes || "");
+      return [
+        idx + 1,
+        reg.studentName,
+        reg.studentEmail,
+        phone,
+        regDate,
+        statusLabel[reg.status] || reg.status,
+        isPaid ? "Đã thanh toán" : "Chưa thanh toán",
+        paidDate,
+        note,
+      ].map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`).join(",");
+    });
+
+    const csvContent = "﻿" + [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const safeName = (tour?.title || "tour").replace(/[^a-z0-9]/gi, "-").toLowerCase();
+    a.href = url;
+    a.download = `dang-ky-${safeName}-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -266,9 +306,19 @@ function TourRegistrations() {
                 <SoftTypography variant="h5" fontWeight="bold">Quản lý đăng ký</SoftTypography>
                 <SoftTypography variant="button" color="text">{tour?.title || "Đang tải..."}</SoftTypography>
               </div>
-              <SoftButton component={Link} to={`/admin/tours/${id}`} variant="outlined" color="dark">
-                Quay lại tour
-              </SoftButton>
+              <SoftBox display="flex" gap={1}>
+                <SoftButton
+                  variant="outlined"
+                  color="success"
+                  disabled={registrations.length === 0}
+                  onClick={handleExportCsv}
+                >
+                  Xuất CSV
+                </SoftButton>
+                <SoftButton component={Link} to={`${base}/tours/${id}`} variant="outlined" color="dark">
+                  Quay lại tour
+                </SoftButton>
+              </SoftBox>
             </SoftBox>
 
             {loading ? <PageLoader label="Đang tải dữ liệu đăng ký..." /> : null}
@@ -277,7 +327,7 @@ function TourRegistrations() {
 
             {!loading && !errorMessage ? (
               <>
-                <SoftBox mb={3} p={2} sx={{ border: "1px solid #e9ecef", borderRadius: "12px" }}>
+                <SoftBox mb={3} p={2} sx={{ border: "1px solid #d9caa6", borderRadius: "12px" }}>
                   <SoftTypography variant="button" fontWeight="bold">Quét mã check-in</SoftTypography>
                   <SoftBox display="flex" gap={1} mt={1} flexWrap="wrap">
                     <SoftBox flexGrow={1} minWidth="220px">
@@ -305,7 +355,7 @@ function TourRegistrations() {
                       "& th": {
                         fontSize: "0.75rem",
                         fontWeight: 700,
-                        color: "#344767",
+                        color: "#2b2a27",
                         whiteSpace: "nowrap",
                         py: 1.5,
                       },
@@ -355,15 +405,18 @@ function TourRegistrations() {
                             />
                           </TableCell>
                           <TableCell align="center">
-                            <NeoBadge
-                              label={isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
-                              bgColor={isPaid ? "#198754" : "#6c757d"}
-                            />
-                            {isPaid && reg.payment?.paidAt ? (
-                              <SoftTypography variant="caption" color="text" display="block">
-                                {new Date(reg.payment.paidAt).toLocaleDateString("vi-VN")}
-                              </SoftTypography>
-                            ) : null}
+                            <Tooltip
+                              title={isPaid && reg.payment?.paidAt ? `Thanh toán ngày ${new Date(reg.payment.paidAt).toLocaleDateString("vi-VN")}` : ""}
+                              disableHoverListener={!isPaid || !reg.payment?.paidAt}
+                              arrow
+                            >
+                              <SoftBox display="inline-flex">
+                                <NeoBadge
+                                  label={isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
+                                  bgColor={isPaid ? "#198754" : "#6c757d"}
+                                />
+                              </SoftBox>
+                            </Tooltip>
                           </TableCell>
                           <TableCell title={reg.notes}>{reg.notes || "-"}</TableCell>
                           <TableCell align="center" sx={{ overflow: "visible" }}>
@@ -419,8 +472,8 @@ function TourRegistrations() {
                   ) : (
                     <Grid container spacing={2} mt={1}>
                       {feedbackData.feedbacks.map((fb) => (
-                        <Grid item xs={12} md={6} key={fb.id}>
-                          <SoftBox p={2} sx={{ border: "1px solid #e9ecef", borderRadius: "12px" }}>
+                        <Grid item xs={12} md={6} key={fb.id ?? fb.createdAt}>
+                          <SoftBox p={2} sx={{ border: "1px solid #d9caa6", borderRadius: "12px" }}>
                             <SoftBox display="flex" justifyContent="space-between">
                               <SoftTypography variant="button" fontWeight="bold">{fb.studentName}</SoftTypography>
                               <SoftTypography variant="button" fontWeight="bold" color="warning">{"★".repeat(fb.rating)}{"☆".repeat(5 - fb.rating)}</SoftTypography>
@@ -509,7 +562,7 @@ function TourRegistrations() {
                   component="img"
                   src={paymentForm.proofImageUrl}
                   alt="Ảnh chứng minh thanh toán"
-                  sx={{ maxWidth: "100%", maxHeight: 220, borderRadius: "0.75rem", border: "1px solid #d2d6da", display: "block" }}
+                  sx={{ maxWidth: "100%", maxHeight: 220, borderRadius: "0.75rem", border: "1px solid #d9caa6", display: "block" }}
                 />
               </SoftBox>
             ) : null}
@@ -529,7 +582,7 @@ function TourRegistrations() {
           <SoftTypography variant="button" color="text">
             Gửi mã này cho sinh viên hoặc dùng để check-in tại sự kiện:
           </SoftTypography>
-          <SoftBox mt={1.5} p={2} sx={{ border: "1px dashed #d2d6da", borderRadius: "8px", wordBreak: "break-all", fontFamily: "monospace" }}>
+          <SoftBox mt={1.5} p={2} sx={{ border: "1px dashed #d9caa6", borderRadius: "8px", wordBreak: "break-all", fontFamily: "monospace" }}>
             {qrResult?.qrCode}
           </SoftBox>
         </DialogContent>

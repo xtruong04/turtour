@@ -19,7 +19,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 // @mui material components
-import Alert from "@mui/material/Alert";
 import Switch from "@mui/material/Switch";
 
 // Soft UI Dashboard React components
@@ -27,6 +26,7 @@ import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
 import SoftInput from "components/SoftInput";
 import SoftButton from "components/SoftButton";
+import AppToast from "components/AppToast";
 import apiService from "../../../services/apiService";
 
 // Authentication layout components
@@ -40,7 +40,12 @@ function SignIn() {
   const [rememberMe, setRememberMe] = useState(true);
   const [form, setForm] = useState({ email: "", password: "" });
   const [submitting, setSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [needsConfirmation, setNeedsConfirmation] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [toast, setToast] = useState({ open: false, severity: "error", message: "" });
+
+  const showToast = (severity, message) => setToast({ open: true, severity, message });
+  const closeToast = () => setToast((current) => ({ ...current, open: false }));
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
 
@@ -51,23 +56,36 @@ function SignIn() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!form.email || !form.password) {
-      setErrorMessage("Vui long nhap day du email va mat khau.");
+      showToast("error", "Vui lòng nhập đầy đủ email và mật khẩu.");
       return;
     }
 
     setSubmitting(true);
-    setErrorMessage("");
+    setNeedsConfirmation(false);
 
     try {
       const session = await apiService.login(form.email, form.password);
       const roles = session?.roles || [];
-      const isStudent = roles.includes("Student");
 
-      navigate(isStudent ? "/" : "/admin/dashboard", { replace: true });
+      navigate(apiService.getDefaultRouteForRoles(roles), { replace: true });
     } catch (error) {
-      setErrorMessage(error?.message || "Dang nhap that bai.");
+      const message = error?.message || "Đăng nhập thất bại.";
+      showToast("error", message);
+      setNeedsConfirmation(message.includes("xác thực email"));
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleResend = async () => {
+    setResending(true);
+    try {
+      const result = await apiService.resendConfirmation(form.email);
+      showToast("info", result?.message || "Đã gửi lại email xác thực.");
+    } catch (error) {
+      showToast("error", error?.message || "Gửi lại email xác thực thất bại.");
+    } finally {
+      setResending(false);
     }
   };
 
@@ -104,9 +122,11 @@ function SignIn() {
             onChange={(event) => handleChange("password", event.target.value)}
           />
         </SoftBox>
-        {errorMessage ? (
+        {needsConfirmation ? (
           <SoftBox mb={2}>
-            <Alert severity="error">{errorMessage}</Alert>
+            <SoftButton variant="outlined" color="dark" fullWidth onClick={handleResend} disabled={resending}>
+              {resending ? "Đang gửi lại..." : "Gửi lại email xác thực"}
+            </SoftButton>
           </SoftBox>
         ) : null}
         <SoftBox display="flex" alignItems="center">
@@ -141,6 +161,13 @@ function SignIn() {
           </SoftTypography>
         </SoftBox>
       </SoftBox>
+
+      <AppToast
+        open={toast.open}
+        severity={toast.severity}
+        message={toast.message}
+        onClose={closeToast}
+      />
     </CoverLayout>
   );
 }
