@@ -6,6 +6,7 @@
 * License: https://bootstrapmade.com/license/
 */
 
+/* eslint-disable no-undef */
 (function() {
   "use strict";
 
@@ -113,29 +114,29 @@
   /**
    * Initiate glightbox
    */
-  const glightbox = GLightbox({
-    selector: '.glightbox'
-  });
+  try { GLightbox({ selector: '.glightbox' }); } catch { /* CDN not loaded */ }
 
   /**
    * Initiate Pure Counter
    */
-  new PureCounter();
+  try { new PureCounter(); } catch { /* CDN not loaded */ }
 
   /**
    * Init swiper sliders
    */
   function initSwiper() {
     document.querySelectorAll(".init-swiper").forEach(function(swiperElement) {
-      let config = JSON.parse(
-        swiperElement.querySelector(".swiper-config").innerHTML.trim()
-      );
+      try {
+        let config = JSON.parse(
+          swiperElement.querySelector(".swiper-config").innerHTML.trim()
+        );
 
-      if (swiperElement.classList.contains("swiper-tab")) {
-        initSwiperWithCustomPagination(swiperElement, config);
-      } else {
-        new Swiper(swiperElement, config);
-      }
+        if (swiperElement.classList.contains("swiper-tab")) {
+          initSwiperWithCustomPagination(swiperElement, config);
+        } else {
+          new Swiper(swiperElement, config);
+        }
+      } catch { /* CDN not loaded or invalid config */ }
     });
   }
 
@@ -144,40 +145,41 @@
   /**
    * Init isotope layout and filters
    */
-  document.querySelectorAll('.isotope-layout').forEach(function(isotopeItem) {
-    let layout = isotopeItem.getAttribute('data-layout') ?? 'masonry';
-    let filter = isotopeItem.getAttribute('data-default-filter') ?? '*';
-    let sort = isotopeItem.getAttribute('data-sort') ?? 'original-order';
+  try {
+    document.querySelectorAll('.isotope-layout').forEach(function(isotopeItem) {
+      let layout = isotopeItem.getAttribute('data-layout') ?? 'masonry';
+      let filter = isotopeItem.getAttribute('data-default-filter') ?? '*';
+      let sort = isotopeItem.getAttribute('data-sort') ?? 'original-order';
 
-    let initIsotope;
-    imagesLoaded(isotopeItem.querySelector('.isotope-container'), function() {
-      initIsotope = new Isotope(isotopeItem.querySelector('.isotope-container'), {
-        itemSelector: '.isotope-item',
-        layoutMode: layout,
-        filter: filter,
-        sortBy: sort
+      let initIsotope;
+      imagesLoaded(isotopeItem.querySelector('.isotope-container'), function() {
+        initIsotope = new Isotope(isotopeItem.querySelector('.isotope-container'), {
+          itemSelector: '.isotope-item',
+          layoutMode: layout,
+          filter: filter,
+          sortBy: sort
+        });
+      });
+
+      isotopeItem.querySelectorAll('.isotope-filters li').forEach(function(filters) {
+        filters.addEventListener('click', function() {
+          isotopeItem.querySelector('.isotope-filters .filter-active').classList.remove('filter-active');
+          this.classList.add('filter-active');
+          initIsotope.arrange({
+            filter: this.getAttribute('data-filter')
+          });
+          if (typeof aosInit === 'function') {
+            aosInit();
+          }
+        }, false);
       });
     });
-
-    isotopeItem.querySelectorAll('.isotope-filters li').forEach(function(filters) {
-      filters.addEventListener('click', function() {
-        isotopeItem.querySelector('.isotope-filters .filter-active').classList.remove('filter-active');
-        this.classList.add('filter-active');
-        initIsotope.arrange({
-          filter: this.getAttribute('data-filter')
-        });
-        if (typeof aosInit === 'function') {
-          aosInit();
-        }
-      }, false);
-    });
-
-  });
+  } catch { /* CDN not loaded */ }
 
   /**
    * Correct scrolling position upon page load for URLs containing hash links.
    */
-  window.addEventListener('load', function(e) {
+  window.addEventListener('load', function() {
     if (window.location.hash) {
       if (document.querySelector(window.location.hash)) {
         setTimeout(() => {
@@ -198,20 +200,102 @@
   let navmenulinks = document.querySelectorAll('.navmenu a');
 
   function navmenuScrollspy() {
-    navmenulinks.forEach(navmenulink => {
-      if (!navmenulink.hash) return;
-      let section = document.querySelector(navmenulink.hash);
-      if (!section) return;
-      let position = window.scrollY + 200;
-      if (position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)) {
-        document.querySelectorAll('.navmenu a.active').forEach(link => link.classList.remove('active'));
-        navmenulink.classList.add('active');
-      } else {
-        navmenulink.classList.remove('active');
+    if (_scrollspyPaused) return;
+    // Collect links that have matching sections on this page
+    var pairs = [];
+    navmenulinks.forEach(function (link) {
+      if (!link.hash) return;
+      var section = document.querySelector(link.hash);
+      if (section) pairs.push({ link: link, top: section.offsetTop });
+    });
+
+    if (pairs.length === 0) return;
+
+    // Active = the section whose top is closest to (but not above) scroll position.
+    // When two sections share the same offsetTop (e.g. portfolio is empty/loading),
+    // the first one in DOM order wins — so "Tour" beats "Giới thiệu" when portfolio
+    // has zero height.
+    var position = window.scrollY + 120;
+    var active = null;
+    var activeTop = -1;
+    pairs.forEach(function (p) {
+      if (p.top <= position && p.top > activeTop) {
+        active = p.link;
+        activeTop = p.top;
       }
-    })
+    });
+
+    // Fallback: if scrolled above all sections, activate the first
+    if (!active) active = pairs[0].link;
+
+    navmenulinks.forEach(function (link) { link.classList.remove('active'); });
+    active.classList.add('active');
   }
+
+  // On click: set active immediately, pause scrollspy until scroll stops.
+  // A fixed timeout would be unreliable (scroll duration varies by distance).
+  // Instead we debounce on the scroll event: when scroll has been silent for
+  // 150ms we know the animation finished, then re-run scrollspy once.
+  var _scrollspyPaused = false;
+  var _scrollEndTimer = null;
+
+  document.querySelectorAll('.navmenu a[href^="#"]').forEach(function (link) {
+    link.addEventListener('click', function () {
+      navmenulinks.forEach(function (l) { l.classList.remove('active'); });
+      link.classList.add('active');
+      _scrollspyPaused = true;
+    });
+  });
+
   window.addEventListener('load', navmenuScrollspy);
-  document.addEventListener('scroll', navmenuScrollspy);
+  document.addEventListener('scroll', function () {
+    if (_scrollspyPaused) {
+      // While paused: each scroll event resets the 150ms "scroll has stopped" timer
+      clearTimeout(_scrollEndTimer);
+      _scrollEndTimer = setTimeout(function () {
+        _scrollspyPaused = false;
+        navmenuScrollspy();
+      }, 150);
+    } else {
+      navmenuScrollspy();
+    }
+  });
+
+  // Auto-set active nav link for sub-pages (my-tours, saved-tours, tour-details, etc.)
+  // On index.html the scrollspy handles it; on other pages we match by URL.
+  (function () {
+    var filename = (window.location.pathname.split('/').pop() || '').split('?')[0] || 'index.html';
+    if (filename === 'index.html' || filename === '') return;
+
+    // 1. Exact href filename match (e.g. tours.html → <a href="tours.html">)
+    var exactMatched = false;
+    navmenulinks.forEach(function (link) {
+      var hrefFile = (link.getAttribute('href') || '').split('#')[0].split('/').pop();
+      if (hrefFile && hrefFile === filename) {
+        link.classList.add('active');
+        exactMatched = true;
+      }
+    });
+
+    if (exactMatched) return;
+
+    // 2. Group tour sub-pages under the "Tour" nav item
+    var tourSubPages = ['my-tours.html', 'my-reviews.html', 'saved-tours.html', 'tour-details.html', 'notifications.html'];
+    if (tourSubPages.indexOf(filename) !== -1) {
+      navmenulinks.forEach(function (link) {
+        var href = link.getAttribute('href') || '';
+        // Match links that point to the tours section or tours page
+        if (href.indexOf('#portfolio') !== -1 || href === 'tours.html' || href.indexOf('tours.html') !== -1) {
+          link.classList.add('active');
+        }
+      });
+    }
+  })();
+
+  // Allow external scripts (loadTours, loadRegistrations, etc.) to re-trigger
+  // scrollspy after async content changes the page height.
+  window.refreshNavScrollspy = function () {
+    document.dispatchEvent(new Event('scroll'));
+  };
 
 })();

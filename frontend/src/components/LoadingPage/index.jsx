@@ -1,21 +1,24 @@
-/**
- * LoadingPage — full-screen loading overlay with Lottie animation.
- * Use this for route-level loading, initial auth check, or any full-page transition.
- *
- * Usage:
- *   if (appLoading) return <LoadingPage />;
- *   if (appLoading) return <LoadingPage message="Đang xác thực tài khoản..." />;
- */
-
+import { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import lottie from "lottie-web";
 import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
 
-const LOTTIE_URL =
-  "https://lottie.host/3ff9baf3-3e77-4906-a454-ccb295313a7f/Ms4tMee3Lz.lottie";
-
 function LoadingPage({ message, overlay }) {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const anim = lottie.loadAnimation({
+      container: containerRef.current,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      path: "/running-cat.json",
+    });
+    return () => anim.destroy();
+  }, []);
+
   const containerSx = overlay
     ? {
         position: "fixed",
@@ -39,7 +42,6 @@ function LoadingPage({ message, overlay }) {
 
   return (
     <SoftBox sx={containerSx}>
-      {/* Brand wordmark */}
       <SoftTypography
         variant="h4"
         fontWeight="bold"
@@ -53,15 +55,8 @@ function LoadingPage({ message, overlay }) {
         TurTour
       </SoftTypography>
 
-      {/* Lottie */}
-      <DotLottieReact
-        src={LOTTIE_URL}
-        loop
-        autoplay
-        style={{ width: 200, height: 200 }}
-      />
+      <div ref={containerRef} style={{ width: 200, height: 200 }} />
 
-      {/* Message */}
       <SoftTypography
         variant="button"
         fontWeight="medium"
@@ -70,7 +65,6 @@ function LoadingPage({ message, overlay }) {
         {message}
       </SoftTypography>
 
-      {/* Neo-Brutalism bottom accent bar */}
       <SoftBox
         sx={{
           position: "absolute",

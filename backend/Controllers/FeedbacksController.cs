@@ -15,10 +15,12 @@ namespace TurTour.Controllers
     public class FeedbacksController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<FeedbacksController> _logger;
 
-        public FeedbacksController(ApplicationDbContext context)
+        public FeedbacksController(ApplicationDbContext context, ILogger<FeedbacksController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [HttpGet("my")]
@@ -142,28 +144,36 @@ namespace TurTour.Controllers
         {
             limit = Math.Clamp(limit, 1, 200);
 
-            var feedbacks = await _context.Feedbacks
-                .Include(f => f.Student)
-                .Include(f => f.Tour)
-                .OrderByDescending(f => f.CreatedAt)
-                .Take(limit)
-                .ToListAsync();
-
-            var avg = feedbacks.Count == 0 ? 0 : Math.Round(feedbacks.Average(f => f.Rating), 1);
-            var total = await _context.Feedbacks.CountAsync();
-
-            var items = feedbacks.Select(f => new
+            try
             {
-                rating = f.Rating,
-                comment = f.Comment,
-                photoUrls = f.PhotoUrls,
-                studentName = f.Student?.FullName ?? "Sinh viên",
-                tourId = f.TourId,
-                tourTitle = f.Tour?.Tittle ?? "",
-                createdAt = f.CreatedAt
-            }).ToList();
+                var feedbacks = await _context.Feedbacks
+                    .Include(f => f.Student)
+                    .Include(f => f.Tour)
+                    .OrderByDescending(f => f.CreatedAt)
+                    .Take(limit)
+                    .ToListAsync();
 
-            return Ok(new { averageRating = avg, total, feedbacks = items });
+                var avg = feedbacks.Count == 0 ? 0 : Math.Round(feedbacks.Average(f => f.Rating), 1);
+                var total = await _context.Feedbacks.CountAsync();
+
+                var items = feedbacks.Select(f => new
+                {
+                    rating = f.Rating,
+                    comment = f.Comment,
+                    photoUrls = f.PhotoUrls,
+                    studentName = f.Student?.FullName ?? "Sinh viên",
+                    tourId = f.TourId,
+                    tourTitle = f.Tour?.Tittle ?? "",
+                    createdAt = f.CreatedAt
+                }).ToList();
+
+                return Ok(new { averageRating = avg, total, feedbacks = items });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi tải đánh giá công khai");
+                return Ok(new { averageRating = 0, total = 0, feedbacks = Array.Empty<object>() });
+            }
         }
 
         // Public — không cần đăng nhập, dùng để hiển thị đánh giá trên trang chi tiết tour.
