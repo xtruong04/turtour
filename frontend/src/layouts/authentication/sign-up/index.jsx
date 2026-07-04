@@ -21,6 +21,7 @@ import { Link } from "react-router-dom";
 // @mui material components
 import Card from "@mui/material/Card";
 import Checkbox from "@mui/material/Checkbox";
+import Grid from "@mui/material/Grid";
 
 // Soft UI Dashboard React components
 import SoftBox from "components/SoftBox";
@@ -34,6 +35,7 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 import Separator from "layouts/authentication/components/Separator";
 
 import apiService from "../../../services/apiService";
+import AddressPicker from "components/AddressPicker";
 
 // Images
 import curved6 from "assets/images/curved-images/curved14.jpg";
@@ -45,58 +47,29 @@ const accountOptions = [
     title: "Đăng ký tài khoản sinh viên",
     description: "Điền thông tin cá nhân cơ bản để tham gia tour.",
     submitLabel: "Đăng ký sinh viên",
-    fields: [
-      {
-        name: "fullName",
-        label: "Họ và tên",
-        placeholder: "Ví dụ: Nguyễn Văn A",
-        type: "text",
-      },
-      {
-        name: "email",
-        label: "Email",
-        placeholder: "Ví dụ: nguyenvana@student.edu.vn",
-        type: "email",
-      },
-      {
-        name: "password",
-        label: "Mật khẩu",
-        placeholder: "Ví dụ: Abc12345",
-        type: "password",
-      },
+    required: [
+      { name: "fullName", label: "Họ và tên", placeholder: "Ví dụ: Nguyễn Văn A",              type: "text"     },
+      { name: "email",    label: "Email",      placeholder: "Ví dụ: nguyenvana@student.edu.vn", type: "email"    },
+      { name: "password", label: "Mật khẩu",  placeholder: "Ít nhất 6 ký tự",                  type: "password", fullWidth: true },
     ],
+    optional: [],
   },
   {
     value: "company",
     label: "Doanh nghiệp",
     title: "Đăng ký tài khoản doanh nghiệp",
-    description: "Cung cấp thông tin doanh nghiệp bắt buộc để tạo tài khoản.",
+    description: "Cung cấp thông tin doanh nghiệp để tạo tài khoản đối tác.",
     submitLabel: "Đăng ký doanh nghiệp",
-    fields: [
-      {
-        name: "companyName",
-        label: "Tên doanh nghiệp",
-        placeholder: "Ví dụ: Công ty TNHH ABC Tech",
-        type: "text",
-      },
-      {
-        name: "companyEmail",
-        label: "Email doanh nghiệp",
-        placeholder: "Ví dụ: contact@abctech.vn",
-        type: "email",
-      },
-      {
-        name: "address",
-        label: "Địa chỉ",
-        placeholder: "Ví dụ: 12 Nguyễn Huệ, Quận 1, TP.HCM",
-        type: "text",
-      },
-      {
-        name: "password",
-        label: "Mật khẩu",
-        placeholder: "Ví dụ: Company123",
-        type: "password",
-      },
+    required: [
+      { name: "companyName",  label: "Tên doanh nghiệp",  placeholder: "Ví dụ: Công ty TNHH ABC Tech", type: "text"     },
+      { name: "companyEmail", label: "Email doanh nghiệp", placeholder: "Ví dụ: contact@abctech.vn",   type: "email"    },
+      { name: "address",      label: "Địa chỉ",            placeholder: "",                             type: "address",  fullWidth: true },
+      { name: "password",     label: "Mật khẩu",           placeholder: "Ít nhất 6 ký tự",             type: "password", fullWidth: true },
+    ],
+    optional: [
+      { name: "companyPhone", label: "Số điện thoại", placeholder: "Ví dụ: 028 1234 5678",       type: "tel"  },
+      { name: "website",      label: "Website",        placeholder: "Ví dụ: https://abctech.vn",  type: "url"  },
+      { name: "industry",     label: "Ngành nghề",     placeholder: "Ví dụ: Công nghệ thông tin", type: "text", fullWidth: true },
     ],
   },
   {
@@ -105,31 +78,15 @@ const accountOptions = [
     title: "Đăng ký tài khoản người tổ chức",
     description: "Điền thông tin đơn vị tổ chức để quản lý tour và lịch trình.",
     submitLabel: "Đăng ký người tổ chức",
-    fields: [
-      {
-        name: "organizatorName",
-        label: "Tên người tổ chức",
-        placeholder: "Ví dụ: Trung tâm Hỗ trợ Sinh viên",
-        type: "text",
-      },
-      {
-        name: "organizatorEmail",
-        label: "Email người tổ chức",
-        placeholder: "Ví dụ: event@turtour.vn",
-        type: "email",
-      },
-      {
-        name: "address",
-        label: "Địa chỉ",
-        placeholder: "Ví dụ: 25 Lý Tự Trọng, Quận 1, TP.HCM",
-        type: "text",
-      },
-      {
-        name: "password",
-        label: "Mật khẩu",
-        placeholder: "Ví dụ: Organizer123",
-        type: "password",
-      },
+    required: [
+      { name: "organizatorName",  label: "Tên đơn vị tổ chức", placeholder: "Ví dụ: Trung tâm Hỗ trợ Sinh viên", type: "text"     },
+      { name: "organizatorEmail", label: "Email liên hệ",       placeholder: "Ví dụ: event@turtour.vn",           type: "email"    },
+      { name: "address",          label: "Địa chỉ",             placeholder: "",                                   type: "address",  fullWidth: true },
+      { name: "password",         label: "Mật khẩu",            placeholder: "Ít nhất 6 ký tự",                   type: "password", fullWidth: true },
+    ],
+    optional: [
+      { name: "organizatorPhone", label: "Số điện thoại", placeholder: "Ví dụ: 028 1234 5678",      type: "tel" },
+      { name: "website",          label: "Website",        placeholder: "Ví dụ: https://turtour.vn", type: "url" },
     ],
   },
 ];
@@ -140,8 +97,12 @@ const initialFormState = {
   password: "",
   companyName: "",
   companyEmail: "",
+  companyPhone: "",
+  website: "",
+  industry: "",
   organizatorName: "",
   organizatorEmail: "",
+  organizatorPhone: "",
   address: "",
 };
 
@@ -170,7 +131,7 @@ function SignUp() {
   };
 
   const validateRequiredFields = () => {
-    const missingField = activeOption.fields.find((field) => !form[field.name]?.trim());
+    const missingField = activeOption.required.find((field) => !form[field.name]?.trim());
 
     if (missingField) {
       return `Vui lòng nhập ${missingField.label.toLowerCase()}.`;
@@ -183,6 +144,8 @@ function SignUp() {
     return "";
   };
 
+  const opt = (key) => form[key]?.trim() || undefined;
+
   const buildPayload = () => {
     if (accountType === "company") {
       return {
@@ -190,6 +153,9 @@ function SignUp() {
         companyEmail: form.companyEmail.trim(),
         address: form.address.trim(),
         password: form.password,
+        companyPhone: opt("companyPhone"),
+        website: opt("website"),
+        industry: opt("industry"),
       };
     }
 
@@ -199,6 +165,8 @@ function SignUp() {
         organizatorEmail: form.organizatorEmail.trim(),
         address: form.address.trim(),
         password: form.password,
+        organizatorPhone: opt("organizatorPhone"),
+        website: opt("website"),
       };
     }
 
@@ -318,30 +286,44 @@ function SignUp() {
             <Separator />
             <SoftBox pt={2} pb={3} px={3}>
               <SoftBox component="form" role="form" onSubmit={handleSubmit}>
-                {activeOption.fields.map((field) => (
-                  <SoftBox mb={2} key={field.name}>
-                    <SoftBox mb={1} ml={0.5}>
-                      <SoftTypography component="label" variant="caption" fontWeight="bold">
-                        {field.label} *
-                      </SoftTypography>
-                    </SoftBox>
-                    <SoftInput
-                      type={field.type}
-                      placeholder={field.placeholder}
-                      value={form[field.name]}
-                      onChange={(event) => handleChange(field.name, event.target.value)}
-                    />
-                  </SoftBox>
-                ))}
+                <Grid container spacing={2}>
+                  {[...activeOption.required.map((f) => ({ ...f, required: true })), ...activeOption.optional].map((field) => (
+                    <Grid item xs={12} sm={field.fullWidth ? 12 : 6} key={field.name}>
+                      <SoftBox mb={1} ml={0.5}>
+                        <SoftTypography component="label" variant="caption" fontWeight="bold">
+                          {field.label}
+                          {field.required && (
+                            <SoftTypography component="span" variant="caption" sx={{ color: "#ea0606", ml: 0.25 }}>*</SoftTypography>
+                          )}
+                        </SoftTypography>
+                      </SoftBox>
+                      {field.type === "address" ? (
+                        <AddressPicker
+                          value={form.address}
+                          onChange={(v) => handleChange("address", v)}
+                          showDetail
+                        />
+                      ) : (
+                        <SoftInput
+                          type={field.type}
+                          placeholder={field.placeholder}
+                          value={form[field.name]}
+                          onChange={(event) => handleChange(field.name, event.target.value)}
+                        />
+                      )}
+                    </Grid>
+                  ))}
+                </Grid>
+
                 <SoftBox display="flex" alignItems="center">
                   <Checkbox checked={agreement} onChange={handleSetAgremment} />
                   <SoftTypography
                     variant="button"
                     fontWeight="regular"
                     onClick={handleSetAgremment}
-                    sx={{ cursor: "poiner", userSelect: "none" }}
+                    sx={{ cursor: "pointer", userSelect: "none" }}
                   >
-                    &nbsp;&nbsp;I agree the&nbsp;
+                    &nbsp;&nbsp;Tôi đồng ý với&nbsp;
                   </SoftTypography>
                   <SoftTypography
                     component="a"
@@ -350,7 +332,7 @@ function SignUp() {
                     fontWeight="bold"
                     textGradient
                   >
-                    Terms and Conditions
+                    Điều khoản sử dụng
                   </SoftTypography>
                 </SoftBox>
                 <SoftBox mt={4} mb={1}>

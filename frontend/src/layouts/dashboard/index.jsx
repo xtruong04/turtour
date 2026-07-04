@@ -22,6 +22,12 @@ function formatCurrency(value) {
   return Number(value || 0).toLocaleString("vi-VN") + " ₫";
 }
 
+function formatMonthLabel(month) {
+  if (!month) return "";
+  const [year, m] = month.split("-");
+  return `T${m}/${year}`;
+}
+
 function Dashboard() {
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -47,12 +53,21 @@ function Dashboard() {
 
   const topCompanies = overview?.topCompanies || [];
   const completionRate = Number(overview?.completionRate || 0);
+  const registrationsByMonth = overview?.registrationsByMonth || [];
 
-  const chart = {
+  const companyChart = {
     labels: topCompanies.length > 0 ? topCompanies.map((c) => c.companyName) : ["Chưa có dữ liệu"],
     datasets: {
       label: "Lượt đăng ký",
       data: topCompanies.length > 0 ? topCompanies.map((c) => c.interestedCount) : [0],
+    },
+  };
+
+  const monthChart = {
+    labels: registrationsByMonth.length > 0 ? registrationsByMonth.map((m) => formatMonthLabel(m.month)) : ["Chưa có dữ liệu"],
+    datasets: {
+      label: "Đăng ký",
+      data: registrationsByMonth.length > 0 ? registrationsByMonth.map((m) => m.count) : [0],
     },
   };
 
@@ -118,7 +133,7 @@ function Dashboard() {
                   color="info"
                   title="Doanh nghiệp được quan tâm nhiều nhất"
                   description="Xếp theo số lượt sinh viên đăng ký tour của từng doanh nghiệp"
-                  chart={chart}
+                  chart={companyChart}
                 />
               </Grid>
               <Grid item xs={12} lg={5}>
@@ -145,6 +160,14 @@ function Dashboard() {
                     {overview?.completedRegistrations ?? 0} / {overview?.totalRegistrations ?? 0} lượt đăng ký đã hoàn thành chuyến đi
                   </SoftTypography>
                 </SoftBox>
+              </Grid>
+              <Grid item xs={12}>
+                <ReportsBarChart
+                  color="dark"
+                  title="Đăng ký theo tháng"
+                  description="Số lượt đăng ký tour trong 12 tháng gần nhất"
+                  chart={monthChart}
+                />
               </Grid>
             </Grid>
           </>

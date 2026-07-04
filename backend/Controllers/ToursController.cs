@@ -29,36 +29,28 @@ namespace TurTour.Controllers
         // không sẽ lệch 7 giờ (tour đã mở đăng ký vẫn báo "chưa mở").
         internal static DateTime VietnamNow => DateTime.UtcNow.AddHours(7);
 
-        // Đọc trạng thái hiển thị hiệu lực — chỉ "decay" 1 chiều Published -> Expired khi tour đã
-        // qua EndDate (tour đang diễn ra giữa StartDate..EndDate vẫn tính là Published, chỉ chặn
-        // đăng ký qua booking window, không đổi PublishStatus). Hidden/Expired đã lưu thì giữ
-        // nguyên — chỉ có DecidePublishStatusOnApproval (gọi lúc duyệt/company sửa lại ngày) mới
-        // tái đánh giá Published/Expired từ đầu theo StartDate.
+        // Tính trạng thái hiển thị hiệu lực ở runtime — không ghi DB, chỉ đọc.
+        // TourLifecycleService ghi DB không đồng bộ (mỗi giờ); hàm này bù khoảng trễ đó.
         internal static PublishStatus ComputeEffectivePublishStatus(Tour tour)
         {
-            if (tour.PublishStatus == PublishStatus.Archived)
-            {
-                return PublishStatus.Archived;
-            }
+            if (tour.PublishStatus == PublishStatus.Archived) return PublishStatus.Archived;
+            if (tour.ApprovalStatus != ApprovalStatus.Approved) return PublishStatus.Hidden;
 
-            if (tour.ApprovalStatus != ApprovalStatus.Approved)
-            {
-                return PublishStatus.Hidden;
-            }
-
-            if (tour.PublishStatus == PublishStatus.Published)
-            {
-                return VietnamNow > tour.EndDate ? PublishStatus.Expired : PublishStatus.Published;
-            }
-
-            return tour.PublishStatus;
+            // Published / OnGoing / Expired đã lưu → tính lại theo mốc thời gian thực tế
+            var now = VietnamNow;
+            if (now > tour.EndDate)        return PublishStatus.Archived;
+            if (now > tour.BookingCloseAt) return PublishStatus.OnGoing;
+            return PublishStatus.Published;
         }
 
-        // Quyết định Published/Expired tại các mốc rời rạc: Admin duyệt tour Pending, hoặc Company
-        // sửa lại ngày khởi hành cho 1 tour đã Approved nhưng đang Expired (duyệt muộn / quá hạn).
+        // Quyết định trạng thái DB lúc duyệt tour hoặc company đổi lịch — TourLifecycleService sẽ
+        // tinh chỉnh tiếp theo giờ; hàm này chỉ đặt giá trị hợp lý ngay tại thời điểm gọi.
         private static PublishStatus DecidePublishStatusOnApproval(Tour tour)
         {
-            return tour.StartDate > VietnamNow ? PublishStatus.Published : PublishStatus.Expired;
+            var now = VietnamNow;
+            if (now > tour.EndDate)        return PublishStatus.Archived;
+            if (now > tour.BookingCloseAt) return PublishStatus.OnGoing;
+            return PublishStatus.Published;
         }
 
         // Vai trò quản lý (Admin/Organizator/Company) được thấy cả tour chưa duyệt/bị từ chối —

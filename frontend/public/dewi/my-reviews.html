@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <script src="assets/js/env-config.js"></script>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Đánh giá của tôi - TurTour</title>
+  <meta name="description" content="Danh sách các đánh giá tour bạn đã gửi">
+
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Raleway:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/css/main.css" rel="stylesheet">
+
+  <style>
+    body.my-reviews-page { background: #f4f6fb; }
+    body.my-reviews-page .header {
+      --background-color: rgba(21, 34, 43, 0.97);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+    }
+
+    .my-reviews-section { padding: 130px 0 70px; }
+
+    /* ── Page header ── */
+    .page-title-row {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px; margin-bottom: 28px;
+    }
+    .page-title-row h2 { font-size: 1.6rem; font-weight: 800; color: #1a1a2e; margin: 0; }
+    .page-title-row a.btn-explore {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 10px 18px; border-radius: 10px; background: #e84545;
+      color: #fff; font-weight: 700; font-size: 0.85rem; text-decoration: none; transition: background 0.2s;
+    }
+    .page-title-row a.btn-explore:hover { background: #d33c3c; }
+
+    /* ── Stats chips ── */
+    .stats-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
+    .stat-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+      background: #fff; border: 1.5px solid #e9ecef; color: #495057;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .stat-chip .chip-icon { font-size: 0.9rem; }
+
+    /* ── Review cards ── */
+    .review-card {
+      background: #fff; border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.05);
+      overflow: hidden; margin-bottom: 18px;
+      transition: box-shadow 0.22s, transform 0.22s;
+    }
+    .review-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.1); transform: translateY(-2px); }
+    .review-card-inner { display: flex; gap: 0; align-items: stretch; }
+
+    .review-thumb {
+      width: 110px; min-height: 110px; flex-shrink: 0;
+      background: linear-gradient(135deg, #fff8ec, #fde8c8);
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+      color: #f59e0b; font-size: 2.2rem;
+    }
+    .review-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    .review-body {
+      flex: 1; padding: 16px 20px;
+      display: flex; flex-direction: column; gap: 5px; min-width: 0;
+    }
+    .review-tour-title {
+      font-size: 1rem; font-weight: 700; color: #1a1a2e; margin: 0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .review-company { font-size: 0.8rem; color: #e84545; font-weight: 600; }
+    .review-stars { color: #f59e0b; font-size: 1rem; letter-spacing: 1px; line-height: 1; }
+    .review-stars .empty { color: #dee2e6; }
+    .review-comment {
+      font-size: 0.84rem; color: #495057; line-height: 1.55;
+      display: -webkit-box;line-clamp: 3; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .review-comment.expanded { line-clamp: unset; -webkit-line-clamp: unset; display: block; }
+    .review-meta { font-size: 0.75rem; color: #adb5bd; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .review-actions { display: flex; gap: 8px; margin-top: 6px; align-items: center; flex-wrap: wrap; }
+    .btn-tour-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.8rem; font-weight: 600; color: #1a1a2e;
+      text-decoration: none; padding: 5px 12px; border-radius: 8px;
+      border: 1.5px solid #dee2e6; background: #fff; transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-tour-link:hover { border-color: #adb5bd; background: #f8f9fa; }
+    .btn-expand-comment {
+      background: none; border: none; padding: 0; font-size: 0.78rem;
+      color: #868e96; cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+    }
+
+    /* ── Photo strip ── */
+    .review-photos { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 20px 16px; }
+    .review-photos img {
+      width: 72px; height: 72px; object-fit: cover; border-radius: 10px;
+      border: 1px solid #e9ecef; cursor: pointer; transition: transform 0.18s;
+    }
+    .review-photos img:hover { transform: scale(1.06); }
+
+    /* ── Rating bar ── */
+    .rating-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .rating-bar-label { font-size: 0.75rem; color: #868e96; width: 14px; text-align: right; flex-shrink: 0; }
+    .rating-bar-track { flex: 1; height: 6px; background: #f0f1f3; border-radius: 3px; overflow: hidden; }
+    .rating-bar-fill { height: 100%; background: #f59e0b; border-radius: 3px; transition: width 0.4s ease; }
+    .rating-bar-count { font-size: 0.72rem; color: #adb5bd; width: 20px; }
+
+    /* ── Summary card ── */
+    .summary-card {
+      background: #fff; border-radius: 16px; padding: 24px 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.05);
+      margin-bottom: 28px; display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start;
+    }
+    .summary-avg { text-align: center; }
+    .summary-avg-score { font-family: 'Raleway', sans-serif; font-size: 3.2rem; font-weight: 800; color: #1a1a2e; line-height: 1; }
+    .summary-avg-stars { font-size: 1.25rem; color: #f59e0b; letter-spacing: 2px; margin: 4px 0; }
+    .summary-avg-label { font-size: 0.76rem; color: #868e96; }
+    .summary-bars { flex: 1; min-width: 180px; }
+
+    /* ── Filter ── */
+    .filter-row {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; align-items: center;
+    }
+    .filter-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 6px 14px; border-radius: 20px; border: 1.5px solid #dee2e6;
+      background: #fff; font-size: 0.8rem; font-weight: 600; color: #495057;
+      cursor: pointer; transition: all 0.18s;
+    }
+    .filter-chip:hover, .filter-chip.active { background: #1a1a2e; color: #fff; border-color: #1a1a2e; }
+
+    /* ── State cards ── */
+    .state-card {
+      background: #fff; border-radius: 20px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.07); padding: 60px 32px;
+      text-align: center; max-width: 480px; margin: 80px auto 0;
+    }
+    .state-icon {
+      width: 72px; height: 72px; border-radius: 20px;
+      background: rgba(232,69,69,0.1); color: #e84545;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; margin: 0 auto 20px;
+    }
+    .state-card h3 { font-size: 1.2rem; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; }
+    .state-card p { font-size: 0.9rem; color: #868e96; margin-bottom: 20px; }
+    .btn-state {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #e84545; color: #fff; text-decoration: none;
+      padding: 12px 24px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; transition: background 0.2s;
+    }
+    .btn-state:hover { background: #d33c3c; color: #fff; }
+
+    /* ── Lightbox ── */
+    .lb-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .lb-overlay.open { opacity: 1; pointer-events: auto; }
+    .lb-overlay img { max-width: 90vw; max-height: 88vh; border-radius: 10px; object-fit: contain; }
+    .lb-close {
+      position: absolute; top: 18px; right: 22px;
+      background: rgba(255,255,255,0.15); border: none; color: #fff;
+      width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .lb-close:hover { background: rgba(255,255,255,0.25); }
+
+    @media (max-width: 576px) {
+      .review-thumb { width: 80px; min-height: 80px; font-size: 1.6rem; }
+      .review-body { padding: 12px 14px; }
+      .summary-card { flex-direction: column; gap: 20px; }
+    }
+  </style>
+</head>
+
+<body class="my-reviews-page">
+
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center">
+      <a href="index.html" class="logo d-flex align-items-center me-auto">
+        <h1 class="sitename">TurTour</h1>
+      </a>
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="index.html#hero">Trang chủ</a></li>
+          <li><a href="index.html#about">Giới thiệu</a></li>
+          <li><a href="index.html#services">Cách hoạt động</a></li>
+          <li><a href="index.html#portfolio">Tour</a></li>
+          <li><a href="index.html#team">Đối tác</a></li>
+          <li><a href="index.html#staff">Đội ngũ</a></li>
+          <li><a href="index.html#contact">Liên hệ</a></li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+      <a id="auth-guest" class="cta-btn" href="/auth/sign-in" target="_top" style="display:none;">Đăng Nhập</a>
+      <div id="notif-bell" class="notif-bell dropdown" style="display:none;">
+        <a href="#" class="notif-bell-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-bell"></i>
+          <span id="notif-badge" class="notif-badge" style="display:none;">0</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-end notif-dropdown">
+          <div class="notif-dropdown-header">
+            <span>Thông báo</span>
+            <a href="notifications.html">Xem tất cả</a>
+          </div>
+          <div id="notif-dropdown-list" class="notif-dropdown-list">
+            <div class="notif-dropdown-empty">Đang tải...</div>
+          </div>
+        </div>
+      </div>
+      <div id="auth-profile" class="auth-profile dropdown" style="display:none;">
+        <a href="#" class="auth-profile-toggle d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-person-circle"></i>
+          <span id="auth-profile-name" class="auth-profile-name"></span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end auth-profile-menu">
+          <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person"></i>Hồ sơ của tôi</a></li>
+          <li><a class="dropdown-item" href="my-tours.html"><i class="bi bi-calendar-check"></i>Tour của tôi</a></li>
+          <li><a class="dropdown-item active" href="my-reviews.html"><i class="bi bi-star"></i>Đánh giá của tôi</a></li>
+          <li><a class="dropdown-item" href="saved-tours.html"><i class="bi bi-heart"></i>Tour đã lưu</a></li>
+          <li><a class="dropdown-item" href="notifications.html"><i class="bi bi-bell"></i>Thông báo</a></li>
+          <li id="auth-dashboard-item" style="display:none;"><a class="dropdown-item" href="/admin/dashboard" target="_top"><i class="bi bi-speedometer2"></i>Trang quản trị</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><button type="button" class="dropdown-item logout-item" id="auth-logout-btn"><i class="bi bi-box-arrow-right"></i>Đăng xuất</button></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="my-reviews-section">
+      <div class="container">
+
+        <!-- Guest -->
+        <div id="page-guest" style="display:none;">
+          <div class="state-card" data-aos="fade-up">
+            <div class="state-icon"><i class="bi bi-lock"></i></div>
+            <h3>Bạn chưa đăng nhập</h3>
+            <p>Vui lòng đăng nhập bằng tài khoản Sinh viên để xem đánh giá của bạn.</p>
+            <a href="/auth/sign-in" target="_top" class="btn-state"><i class="bi bi-box-arrow-in-right"></i> Đăng nhập ngay</a>
+          </div>
+        </div>
+
+        <!-- Not student -->
+        <div id="page-unavailable" style="display:none;">
+          <div class="state-card" data-aos="fade-up">
+            <div class="state-icon"><i class="bi bi-info-circle"></i></div>
+            <h3>Chức năng chỉ dành cho sinh viên</h3>
+            <p>Mục "Đánh giá của tôi" chỉ áp dụng cho tài khoản Sinh viên.</p>
+          </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="page-loading" style="text-align:center; padding: 60px 0;">
+          <div class="spinner-border text-danger" role="status"></div>
+          <p class="mt-3 text-muted" style="font-size:0.9rem;">Đang tải đánh giá...</p>
+        </div>
+
+        <!-- Error -->
+        <div id="page-error" style="display:none; text-align:center; padding:60px 0;">
+          <i class="bi bi-exclamation-octagon text-danger" style="font-size:3rem;"></i>
+          <p id="page-error-msg" class="mt-3 text-muted"></p>
+          <button class="btn btn-outline-danger mt-2" onclick="loadReviews()">Thử lại</button>
+        </div>
+
+        <!-- Content -->
+        <div id="page-content" style="display:none;">
+          <!-- Title row -->
+          <div class="page-title-row">
+            <h2><i class="bi bi-star-fill text-warning me-2" style="font-size:1.3rem;"></i>Đánh giá của tôi</h2>
+            <a href="my-tours.html" class="btn-explore">
+              <i class="bi bi-calendar-check"></i> Tour của tôi
+            </a>
+          </div>
+
+          <!-- Stats chips -->
+          <div class="stats-row" id="stats-row"></div>
+
+          <!-- Summary card -->
+          <div class="summary-card" id="summary-card" style="display:none;">
+            <div class="summary-avg">
+              <div class="summary-avg-score" id="summary-score">0</div>
+              <div class="summary-avg-stars" id="summary-stars"></div>
+              <div class="summary-avg-label">Điểm trung bình</div>
+            </div>
+            <div class="summary-bars" id="summary-bars"></div>
+          </div>
+
+          <!-- Filter chips -->
+          <div class="filter-row" id="filter-row" style="display:none;">
+            <span style="font-size:0.8rem; color:#868e96; font-weight:600;">Lọc theo sao:</span>
+            <button class="filter-chip active" data-filter="0">Tất cả</button>
+            <button class="filter-chip" data-filter="5">★★★★★</button>
+            <button class="filter-chip" data-filter="4">★★★★</button>
+            <button class="filter-chip" data-filter="3">★★★</button>
+            <button class="filter-chip" data-filter="2">★★</button>
+            <button class="filter-chip" data-filter="1">★</button>
+          </div>
+
+          <!-- Empty state -->
+          <div id="page-empty" style="display:none;">
+            <div class="state-card" data-aos="fade-up">
+              <div class="state-icon" style="background:rgba(245,158,11,0.1); color:#f59e0b;"><i class="bi bi-star"></i></div>
+              <h3>Chưa có đánh giá nào</h3>
+              <p>Hoàn thành tour và chia sẻ trải nghiệm của bạn để giúp các sinh viên khác.</p>
+              <a href="my-tours.html" class="btn-state"><i class="bi bi-calendar-check"></i> Xem tour của tôi</a>
+            </div>
+          </div>
+
+          <!-- Review list -->
+          <div id="review-list"></div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer" class="footer dark-background">
+    <div class="container footer-top">
+      <div class="row gy-4">
+        <div class="col-lg-4 col-md-6 footer-about">
+          <a href="index.html" class="logo d-flex align-items-center">
+            <span class="sitename">TurTour</span>
+          </a>
+          <p class="mt-2">Nền tảng kết nối sinh viên với các tour tham quan thực tế tại doanh nghiệp.</p>
+        </div>
+        <div class="col-lg-4 col-md-3 footer-links">
+          <h4>Liên kết nhanh</h4>
+          <ul>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#hero">Trang chủ</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#portfolio">Danh sách tour</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#staff">Đội ngũ</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4 col-md-3 footer-links">
+          <h4>Tài khoản</h4>
+          <ul>
+            <li><i class="bi bi-chevron-right"></i> <a href="my-tours.html">Tour của tôi</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="my-reviews.html">Đánh giá của tôi</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="profile.html">Hồ sơ của tôi</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="notifications.html">Thông báo</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="container copyright text-center mt-4">
+      <p>© <span>Bản quyền</span> <strong class="px-1 sitename">TurTour</strong> <span>Đã đăng ký bản quyền</span></p>
+    </div>
+  </footer>
+
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Lightbox -->
+  <div class="lb-overlay" id="lbOverlay">
+    <button class="lb-close" id="lbClose" aria-label="Đóng">&#x2715;</button>
+    <img id="lbImg" src="" alt="Ảnh đánh giá phóng to">
+  </div>
+
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/vendor/signalr/signalr.min.js"></script>
+  <script src="assets/js/realtime.js"></script>
+  <script src="assets/js/notifications-badge.js"></script>
+  <script src="assets/js/header-avatar.js"></script>
+
+  <script>
+    (function () {
+      var API_BASE = window.TURTOUR_API_BASE;
+
+      // ── Auth ──────────────────────────────────────────────────────
+      var session = null;
+      try { session = JSON.parse(localStorage.getItem('turtour.admin.session')); } catch (e) {}
+
+      var guestEl       = document.getElementById('page-guest');
+      var unavailableEl = document.getElementById('page-unavailable');
+      var loadingEl     = document.getElementById('page-loading');
+      var errorEl       = document.getElementById('page-error');
+      var contentEl     = document.getElementById('page-content');
+      var emptyEl       = document.getElementById('page-empty');
+
+      // ── Nav header: show profile or login button ──────────────────
+      var guestBtn    = document.getElementById('auth-guest');
+      var profileBox  = document.getElementById('auth-profile');
+      var profileName = document.getElementById('auth-profile-name');
+      var dashItem    = document.getElementById('auth-dashboard-item');
+      var notifBell   = document.getElementById('notif-bell');
+
+      if (session && session.token) {
+        if (guestBtn)   guestBtn.style.display  = 'none';
+        if (profileBox) profileBox.style.display = 'flex';
+        if (profileName) profileName.textContent = session.fullName || session.email || 'Tài khoản';
+        if (notifBell)  notifBell.style.display  = 'block';
+        var roles = (session.roles || []).map(function (r) { return r.toLowerCase(); });
+        if (dashItem && (roles.includes('admin') || roles.includes('organizator') || roles.includes('company'))) {
+          dashItem.style.display = 'block';
+        }
+      } else {
+        if (guestBtn)   guestBtn.style.display  = 'block';
+        if (profileBox) profileBox.style.display = 'none';
+      }
+
+      var logoutBtn = document.getElementById('auth-logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function () {
+          localStorage.removeItem('turtour.admin.session');
+          window.parent.location.href = '/auth/sign-in';
+        });
+      }
+
+      if (!session || !session.token) {
+        loadingEl.style.display = 'none';
+        guestEl.style.display = 'block';
+        return;
+      }
+
+      var roles = (session.roles || []).map(function (r) { return r.toLowerCase(); });
+      if (!roles.includes('student')) {
+        loadingEl.style.display = 'none';
+        unavailableEl.style.display = 'block';
+        return;
+      }
+
+      function authHeaders() { return { Authorization: 'Bearer ' + session.token }; }
+
+      // ── Lightbox ──────────────────────────────────────────────────
+      var lbOverlay = document.getElementById('lbOverlay');
+      var lbImg = document.getElementById('lbImg');
+      document.getElementById('lbClose').addEventListener('click', function () { lbOverlay.classList.remove('open'); });
+      lbOverlay.addEventListener('click', function (e) { if (e.target === lbOverlay) lbOverlay.classList.remove('open'); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') lbOverlay.classList.remove('open'); });
+      window.openLightbox = function (url) { lbImg.src = url; lbOverlay.classList.add('open'); };
+
+      // ── Render helpers ────────────────────────────────────────────
+      function starsHtml(rating) {
+        var filled = Math.max(0, Math.min(5, Math.round(rating)));
+        return '<span style="color:#f59e0b;">' + '★'.repeat(filled) + '</span>'
+             + '<span style="color:#dee2e6;">' + '☆'.repeat(5 - filled) + '</span>';
+      }
+
+      function fmtDate(iso) {
+        if (!iso) return '';
+        return new Date(iso).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      }
+
+      // ── Filter state ──────────────────────────────────────────────
+      var allReviews = [];
+      var activeFilter = 0;
+
+      function renderList() {
+        var list = document.getElementById('review-list');
+        var filtered = activeFilter === 0 ? allReviews : allReviews.filter(function (r) { return r.rating === activeFilter; });
+
+        if (filtered.length === 0) {
+          list.innerHTML = '<p style="color:#adb5bd;font-size:0.88rem;padding:20px 0;">Không có đánh giá nào phù hợp.</p>';
+          return;
+        }
+
+        list.innerHTML = filtered.map(function (r) {
+          var thumb = r.thumbnailUrl
+            ? '<img src="' + r.thumbnailUrl + '" alt="' + r.tourTitle + '" onerror="this.parentNode.innerHTML=\'<i class=&quot;bi bi-building&quot;></i>\'">'
+            : '<i class="bi bi-building"></i>';
+
+          var comment = r.comment
+            ? '<p class="review-comment" id="cmt-' + r.id + '">' + r.comment + '</p>'
+              + (r.comment.length > 120 ? '<button class="btn-expand-comment" data-cmt="' + r.id + '">Xem thêm</button>' : '')
+            : '<p style="color:#adb5bd;font-size:0.82rem;font-style:italic;">Không có nhận xét.</p>';
+
+          var photos = (r.photoUrls && r.photoUrls.length)
+            ? '<div class="review-photos">' + r.photoUrls.map(function (u) {
+                return '<img src="' + u + '" alt="ảnh" onclick="openLightbox(\'' + u + '\')" loading="lazy">';
+              }).join('') + '</div>'
+            : '';
+
+          return '<div class="review-card" data-rating="' + r.rating + '">'
+            + '<div class="review-card-inner">'
+              + '<div class="review-thumb">' + thumb + '</div>'
+              + '<div class="review-body">'
+                + '<p class="review-tour-title" title="' + r.tourTitle + '">' + r.tourTitle + '</p>'
+                + (r.companyName ? '<div class="review-company"><i class="bi bi-building me-1"></i>' + r.companyName + '</div>' : '')
+                + '<div class="review-stars">' + starsHtml(r.rating) + '</div>'
+                + comment
+                + '<div class="review-meta"><i class="bi bi-calendar3"></i>' + fmtDate(r.createdAt) + '</div>'
+                + '<div class="review-actions">'
+                  + '<a href="tour-details.html?id=' + r.tourId + '" class="btn-tour-link"><i class="bi bi-eye"></i> Xem tour</a>'
+                + '</div>'
+              + '</div>'
+            + '</div>'
+            + photos
+            + '</div>';
+        }).join('');
+
+        // Expand comment toggle
+        list.querySelectorAll('.btn-expand-comment').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var cmt = document.getElementById('cmt-' + btn.getAttribute('data-cmt'));
+            var expanded = cmt.classList.toggle('expanded');
+            btn.textContent = expanded ? 'Thu gọn' : 'Xem thêm';
+          });
+        });
+      }
+
+      // ── Filter chips ──────────────────────────────────────────────
+      document.querySelectorAll('.filter-chip').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          document.querySelectorAll('.filter-chip').forEach(function (c) { c.classList.remove('active'); });
+          chip.classList.add('active');
+          activeFilter = Number(chip.getAttribute('data-filter'));
+          renderList();
+        });
+      });
+
+      // ── Load ──────────────────────────────────────────────────────
+      window.loadReviews = function () {
+        loadingEl.style.display = 'block';
+        errorEl.style.display = 'none';
+        contentEl.style.display = 'none';
+
+        fetch(API_BASE + '/feedbacks/my', { headers: authHeaders() })
+          .then(function (res) {
+            if (!res.ok) return res.json().then(function (d) { throw new Error(d.message || 'HTTP ' + res.status); });
+            return res.json();
+          })
+          .then(function (data) {
+            loadingEl.style.display = 'none';
+            contentEl.style.display = 'block';
+            allReviews = Array.isArray(data) ? data : [];
+
+            if (allReviews.length === 0) {
+              emptyEl.style.display = 'block';
+              document.getElementById('stats-row').innerHTML = '';
+              return;
+            }
+
+            emptyEl.style.display = 'none';
+
+            // Stats chips
+            var avg = allReviews.reduce(function (s, r) { return s + r.rating; }, 0) / allReviews.length;
+            var statsRow = document.getElementById('stats-row');
+            statsRow.innerHTML =
+              '<span class="stat-chip"><span class="chip-icon">✍️</span> ' + allReviews.length + ' đánh giá đã gửi</span>'
+              + '<span class="stat-chip"><span style="color:#f59e0b;">★</span> Trung bình ' + avg.toFixed(1) + '/5</span>';
+
+            // Summary card
+            var summaryCard = document.getElementById('summary-card');
+            summaryCard.style.display = 'flex';
+            document.getElementById('summary-score').textContent = avg.toFixed(1);
+            document.getElementById('summary-stars').innerHTML = starsHtml(Math.round(avg));
+
+            // Rating distribution bars
+            var dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+            allReviews.forEach(function (r) { if (dist[r.rating] !== undefined) dist[r.rating]++; });
+            var barsHtml = '';
+            [5, 4, 3, 2, 1].forEach(function (star) {
+              var pct = allReviews.length ? Math.round(dist[star] / allReviews.length * 100) : 0;
+              barsHtml += '<div class="rating-bar-row">'
+                + '<span class="rating-bar-label">' + star + '</span>'
+                + '<div class="rating-bar-track"><div class="rating-bar-fill" style="width:' + pct + '%"></div></div>'
+                + '<span class="rating-bar-count">' + dist[star] + '</span>'
+                + '</div>';
+            });
+            document.getElementById('summary-bars').innerHTML = barsHtml;
+
+            // Filter row
+            document.getElementById('filter-row').style.display = allReviews.length > 3 ? 'flex' : 'none';
+
+            renderList();
+          })
+          .catch(function (err) {
+            loadingEl.style.display = 'none';
+            errorEl.style.display = 'block';
+            document.getElementById('page-error-msg').textContent = err.message || 'Không tải được dữ liệu.';
+          });
+      };
+
+      loadReviews();
+    })();
+  </script>
+
+</body>
+</html>

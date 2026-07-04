@@ -63,8 +63,8 @@ function RevenueBarChart({ data }) {
   if (!data || data.length === 0) {
     return (
       <SoftBox textAlign="center" py={4}>
-        <Icon sx={{ fontSize: 36, color: "#d9caa6", mb: 1 }}>bar_chart</Icon>
-        <SoftTypography variant="caption" color="text">Chưa có dữ liệu doanh thu</SoftTypography>
+        <Icon sx={{ fontSize: 36, color: "#d9caa6", mb: 1, display: "block", mx: "auto" }}>bar_chart</Icon>
+        <SoftTypography variant="caption" color="text" display="block">Chưa có dữ liệu doanh thu</SoftTypography>
       </SoftBox>
     );
   }

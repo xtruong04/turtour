@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import Alert from "@mui/material/Alert";
 import Card from "@mui/material/Card";
 import Dialog from "@mui/material/Dialog";
+import Icon from "@mui/material/Icon";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -141,6 +142,7 @@ function Tours() {
   const [updatingStatusId, setUpdatingStatusId] = useState(null);
   const [rejecting, setRejecting] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [archivingTourId, setArchivingTourId] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [companyFilter, setCompanyFilter] = useState("");
@@ -255,11 +257,13 @@ function Tours() {
     setRejecting(null);
   };
 
-  const handleArchive = (tourId) => {
-    if (!window.confirm("Huỷ/lưu trữ tour này? Hành động này không thể hoàn tác.")) {
-      return;
-    }
-    runStatusAction(tourId, () => apiService.archiveTour(tourId));
+  const handleArchive = (tourId) => setArchivingTourId(tourId);
+
+  const handleConfirmArchive = () => {
+    if (!archivingTourId) return;
+    const id = archivingTourId;
+    setArchivingTourId(null);
+    runStatusAction(id, () => apiService.archiveTour(id));
   };
 
   const hasActiveFilters = Boolean(searchTerm || companyFilter || statusFilter || dateFrom || dateTo);
@@ -537,6 +541,53 @@ function Tours() {
           <SoftButton variant="outlined" color="dark" onClick={() => setRejecting(null)}>Hủy</SoftButton>
           <SoftButton variant="gradient" color="error" onClick={submitReject} disabled={updatingStatusId === rejecting}>
             Từ chối tour
+          </SoftButton>
+        </DialogActions>
+      </Dialog>
+
+      {/* ── Archive confirm dialog ── */}
+      <Dialog
+        open={Boolean(archivingTourId)}
+        onClose={() => setArchivingTourId(null)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: "16px", p: 1 } }}
+      >
+        <DialogContent sx={{ textAlign: "center", pt: 3, pb: 1 }}>
+          <SoftBox
+            sx={{
+              width: 60, height: 60, borderRadius: "16px",
+              background: "linear-gradient(135deg, #fff7ed, #ffedd5)",
+              border: "1px solid #fed7aa",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              mx: "auto", mb: 2,
+            }}
+          >
+            <Icon sx={{ color: "#ea580c", fontSize: "1.8rem !important" }}>inventory_2</Icon>
+          </SoftBox>
+          <SoftTypography variant="h6" fontWeight="bold" sx={{ mb: 0.75, color: "#1a1a2e" }}>
+            Huỷ / lưu trữ tour?
+          </SoftTypography>
+          <SoftTypography variant="button" color="text" sx={{ display: "block", mb: 1.5 }}>
+            Tour sẽ bị ẩn khỏi danh sách công khai và không thể đăng ký thêm.
+          </SoftTypography>
+          <SoftBox
+            sx={{
+              background: "#fefce8", border: "1px solid #fef08a",
+              borderRadius: "10px", px: 2, py: 1.25, textAlign: "left",
+            }}
+          >
+            <SoftTypography variant="caption" sx={{ color: "#713f12", lineHeight: 1.5 }}>
+              Hành động này <strong>không thể hoàn tác</strong>. Tour sẽ chuyển sang trạng thái Lưu trữ.
+            </SoftTypography>
+          </SoftBox>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
+          <SoftButton variant="outlined" color="dark" fullWidth onClick={() => setArchivingTourId(null)}>
+            Hủy
+          </SoftButton>
+          <SoftButton variant="gradient" color="warning" fullWidth onClick={handleConfirmArchive}>
+            Xác nhận lưu trữ
           </SoftButton>
         </DialogActions>
       </Dialog>

@@ -54,6 +54,25 @@ namespace TurTour.Controllers
                 .Take(10)
                 .ToListAsync();
 
+            // Đăng ký theo tháng: 12 tháng gần nhất (tính từ đầu tháng hiện tại trừ 11 tháng).
+            var now = DateTime.UtcNow;
+            var windowStart = new DateTime(now.Year, now.Month, 1).AddMonths(-11);
+            var regsByMonthRaw = await _context.Registrations
+                .Where(r => r.RegistrationDate >= windowStart)
+                .GroupBy(r => new { r.RegistrationDate.Year, r.RegistrationDate.Month })
+                .Select(g => new { year = g.Key.Year, month = g.Key.Month, count = g.Count() })
+                .ToListAsync();
+
+            // Điền đủ 12 tháng, tháng chưa có đăng ký thì count = 0.
+            var registrationsByMonth = Enumerable.Range(0, 12)
+                .Select(i =>
+                {
+                    var d = windowStart.AddMonths(i);
+                    var found = regsByMonthRaw.FirstOrDefault(r => r.year == d.Year && r.month == d.Month);
+                    return new { month = $"{d.Year:0000}-{d.Month:00}", count = found?.count ?? 0 };
+                })
+                .ToList();
+
             return Ok(new
             {
                 totalTours,
@@ -62,7 +81,8 @@ namespace TurTour.Controllers
                 completedRegistrations,
                 completionRate,
                 totalRevenue,
-                topCompanies
+                topCompanies,
+                registrationsByMonth
             });
         }
 
@@ -228,11 +248,28 @@ namespace TurTour.Controllers
                 .OrderByDescending(x => x.revenue)
                 .ToList();
 
+            var reportWindowStart = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1).AddMonths(-11);
+            var regsByMonthRaw2 = registrations
+                .Where(r => r.RegistrationDate >= reportWindowStart)
+                .GroupBy(r => new { r.RegistrationDate.Year, r.RegistrationDate.Month })
+                .Select(g => new { year = g.Key.Year, month = g.Key.Month, count = g.Count() })
+                .ToList();
+
+            var registrationsByMonth = Enumerable.Range(0, 12)
+                .Select(i =>
+                {
+                    var d = reportWindowStart.AddMonths(i);
+                    var found = regsByMonthRaw2.FirstOrDefault(r => r.year == d.Year && r.month == d.Month);
+                    return new { month = $"{d.Year:0000}-{d.Month:00}", count = found?.count ?? 0 };
+                })
+                .ToList();
+
             return new
             {
                 toursReport,
                 revenueByMonth,
-                revenueByCompany
+                revenueByCompany,
+                registrationsByMonth
             };
         }
     }

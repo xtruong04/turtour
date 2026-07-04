@@ -260,6 +260,41 @@ function TourRegistrations() {
     setActionMessage(message);
   };
 
+  const handleExportCsv = () => {
+    const headers = ["STT", "Họ tên", "Email", "Số điện thoại", "Ngày đăng ký", "Trạng thái", "Thanh toán", "Ngày thanh toán", "Ghi chú"];
+
+    const rows = registrations.map((reg, idx) => {
+      const isPaid = reg.payment?.paymentStatus === "Paid" || ["Paid", "CheckedIn", "Completed"].includes(reg.status);
+      const phone = reg.raw?.student?.phoneNumber || "";
+      const regDate = reg.registrationDate ? new Date(reg.registrationDate).toLocaleDateString("vi-VN") : "";
+      const paidDate = reg.payment?.paidAt ? new Date(reg.payment.paidAt).toLocaleDateString("vi-VN") : "";
+      const note = reg.rejectionReason ? `Từ chối: ${reg.rejectionReason}` : (reg.notes || "");
+      return [
+        idx + 1,
+        reg.studentName,
+        reg.studentEmail,
+        phone,
+        regDate,
+        statusLabel[reg.status] || reg.status,
+        isPaid ? "Đã thanh toán" : "Chưa thanh toán",
+        paidDate,
+        note,
+      ].map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`).join(",");
+    });
+
+    const csvContent = "﻿" + [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const safeName = (tour?.title || "tour").replace(/[^a-z0-9]/gi, "-").toLowerCase();
+    a.href = url;
+    a.download = `dang-ky-${safeName}-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -271,9 +306,19 @@ function TourRegistrations() {
                 <SoftTypography variant="h5" fontWeight="bold">Quản lý đăng ký</SoftTypography>
                 <SoftTypography variant="button" color="text">{tour?.title || "Đang tải..."}</SoftTypography>
               </div>
-              <SoftButton component={Link} to={`${base}/tours/${id}`} variant="outlined" color="dark">
-                Quay lại tour
-              </SoftButton>
+              <SoftBox display="flex" gap={1}>
+                <SoftButton
+                  variant="outlined"
+                  color="success"
+                  disabled={registrations.length === 0}
+                  onClick={handleExportCsv}
+                >
+                  Xuất CSV
+                </SoftButton>
+                <SoftButton component={Link} to={`${base}/tours/${id}`} variant="outlined" color="dark">
+                  Quay lại tour
+                </SoftButton>
+              </SoftBox>
             </SoftBox>
 
             {loading ? <PageLoader label="Đang tải dữ liệu đăng ký..." /> : null}
@@ -427,7 +472,7 @@ function TourRegistrations() {
                   ) : (
                     <Grid container spacing={2} mt={1}>
                       {feedbackData.feedbacks.map((fb) => (
-                        <Grid item xs={12} md={6} key={fb.id}>
+                        <Grid item xs={12} md={6} key={fb.id ?? fb.createdAt}>
                           <SoftBox p={2} sx={{ border: "1px solid #d9caa6", borderRadius: "12px" }}>
                             <SoftBox display="flex" justifyContent="space-between">
                               <SoftTypography variant="button" fontWeight="bold">{fb.studentName}</SoftTypography>

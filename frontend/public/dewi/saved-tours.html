@@ -143,6 +143,7 @@
         <ul class="dropdown-menu dropdown-menu-end auth-profile-menu">
           <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person"></i>Hồ sơ của tôi</a></li>
           <li><a class="dropdown-item" href="my-tours.html"><i class="bi bi-calendar-check"></i>Tour của tôi</a></li>
+          <li><a class="dropdown-item" href="my-reviews.html"><i class="bi bi-star"></i>Đánh giá của tôi</a></li>
           <li><a class="dropdown-item active" href="saved-tours.html"><i class="bi bi-heart"></i>Tour đã lưu</a></li>
           <li><a class="dropdown-item" href="notifications.html"><i class="bi bi-bell"></i>Thông báo</a></li>
           <li><hr class="dropdown-divider"></li>
@@ -370,26 +371,48 @@
             grid.innerHTML = list.map(renderSavedCard).join('');
             grid.style.display = '';
 
-            // Unsave handlers
+            // Unsave handlers — inline confirm replaces window.confirm
             grid.querySelectorAll('[data-unsave-id]').forEach(function (btn) {
               btn.addEventListener('click', function () {
-                var tourId = btn.getAttribute('data-unsave-id');
-                var tourTitle = btn.getAttribute('data-tour-title');
-                if (!window.confirm('Bỏ lưu tour "' + tourTitle + '"?')) return;
-                btn.disabled = true;
-                fetch(API_BASE + '/tours/' + tourId + '/interest', {
-                  method: 'DELETE',
-                  headers: authHeaders()
-                })
-                  .then(function (res) {
-                    if (!res.ok) throw new Error('HTTP ' + res.status);
-                    showToast('Đã bỏ lưu tour.', 'success');
-                    loadSavedTours();
+                if (btn.dataset.confirming) {
+                  // Second click: confirmed
+                  delete btn.dataset.confirming;
+                  btn.disabled = true;
+                  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang xóa...';
+                  var tourId = btn.getAttribute('data-unsave-id');
+                  fetch(API_BASE + '/tours/' + tourId + '/interest', {
+                    method: 'DELETE',
+                    headers: authHeaders()
                   })
-                  .catch(function () {
-                    btn.disabled = false;
-                    showToast('Thao tác thất bại, thử lại sau.', 'error');
-                  });
+                    .then(function (res) {
+                      if (!res.ok) throw new Error('HTTP ' + res.status);
+                      showToast('Đã bỏ lưu tour.', 'success');
+                      loadSavedTours();
+                    })
+                    .catch(function () {
+                      btn.disabled = false;
+                      btn.innerHTML = '<i class="bi bi-heart-fill"></i> Bỏ lưu';
+                      showToast('Thao tác thất bại, thử lại sau.', 'error');
+                    });
+                } else {
+                  // First click: ask to confirm
+                  var originalHtml = btn.innerHTML;
+                  btn.dataset.confirming = '1';
+                  btn.style.background = '#e84545';
+                  btn.style.color = '#fff';
+                  btn.style.borderColor = '#e84545';
+                  btn.innerHTML = '<i class="bi bi-question-circle"></i> Xác nhận bỏ lưu?';
+                  var timer = setTimeout(function () {
+                    if (btn.dataset.confirming) {
+                      delete btn.dataset.confirming;
+                      btn.style.background = '';
+                      btn.style.color = '';
+                      btn.style.borderColor = '';
+                      btn.innerHTML = originalHtml;
+                    }
+                  }, 3000);
+                  btn._confirmTimer = timer;
+                }
               });
             });
           })

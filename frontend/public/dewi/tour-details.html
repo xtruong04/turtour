@@ -28,7 +28,44 @@
   <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
 
+  <!-- Leaflet map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
+    #tour-map { height: 260px; width: 100%; border-radius: 12px; border: 1px solid #dee2e6; margin-top: 12px; display: none; }
+  </style>
+
+  <style>
+    /* ── Reviews section ── */
+    .reviews-section { margin-top: 48px; }
+    .reviews-header {
+      display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+      margin-bottom: 20px; padding-bottom: 14px; border-bottom: 2px solid #f0f1f3;
+    }
+    .reviews-header h3 { font-family: 'Raleway', sans-serif; font-size: 1.15rem; font-weight: 800; color: #1a1a2e; margin: 0; }
+    .reviews-avg {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #fff8ec; border: 1px solid #ffe5a0; border-radius: 20px;
+      padding: 4px 12px; font-size: 0.82rem; font-weight: 700; color: #92600a;
+    }
+    .reviews-avg .stars { color: #f59e0b; letter-spacing: -1px; }
+    .reviews-count { font-size: 0.8rem; color: #868e96; }
+
+    .review-card {
+      background: #fff; border: 1px solid #f0f1f3; border-radius: 14px;
+      padding: 16px 18px; margin-bottom: 14px;
+    }
+    .review-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 6px; }
+    .review-author { font-size: 0.85rem; font-weight: 700; color: #1a1a2e; }
+    .review-date { font-size: 0.74rem; color: #adb5bd; white-space: nowrap; }
+    .review-stars { color: #f59e0b; font-size: 0.95rem; letter-spacing: -1px; margin-bottom: 6px; }
+    .review-comment { font-size: 0.84rem; color: #495057; line-height: 1.55; }
+    .review-photos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .review-photos img {
+      width: 70px; height: 70px; object-fit: cover; border-radius: 8px;
+      border: 1px solid #e9ecef; cursor: pointer;
+    }
+    .reviews-empty { color: #adb5bd; font-size: 0.85rem; padding: 20px 0; text-align: center; }
+
     /* Premium details page styling */
     .tour-details-section {
       padding: 140px 0 60px 0;
@@ -260,7 +297,7 @@
           <li><a href="index.html#services">Cách hoạt động</a></li>
           <li><a href="index.html#portfolio" class="active">Tour</a></li>
           <li><a href="index.html#team">Đối tác</a></li>
-          <li><a href="team.html">Đội ngũ</a></li>
+          <li><a href="index.html#staff">Đội ngũ</a></li>
           <li><a href="index.html#contact">Liên hệ</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -292,6 +329,7 @@
         <ul class="dropdown-menu dropdown-menu-end auth-profile-menu">
           <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person"></i>Hồ sơ của tôi</a></li>
           <li id="auth-mytours-item" style="display:none;"><a class="dropdown-item" href="my-tours.html"><i class="bi bi-calendar-check"></i>Tour của tôi</a></li>
+          <li id="auth-myreviews-item" style="display:none;"><a class="dropdown-item" href="my-reviews.html"><i class="bi bi-star"></i>Đánh giá của tôi</a></li>
           <li id="auth-savedtours-item" style="display:none;"><a class="dropdown-item" href="saved-tours.html"><i class="bi bi-heart"></i>Tour đã lưu</a></li>
           <li><a class="dropdown-item" href="notifications.html"><i class="bi bi-bell"></i>Thông báo</a></li>
           <li id="auth-dashboard-item" style="display:none;"><a class="dropdown-item" href="/admin/dashboard" target="_top"><i class="bi bi-speedometer2"></i>Trang quản trị</a></li>
@@ -420,6 +458,19 @@
                 <!-- Dynamic timeline items -->
               </div>
             </div>
+
+            <!-- Reviews -->
+            <div class="reviews-section" id="tour-reviews-section" style="display:none;">
+              <div class="reviews-header">
+                <h3><i class="bi bi-star-half text-warning me-2"></i>Đánh giá từ sinh viên</h3>
+                <span class="reviews-avg" id="reviews-avg-badge" style="display:none;">
+                  <span class="stars" id="reviews-avg-stars"></span>
+                  <span id="reviews-avg-score"></span>
+                </span>
+                <span class="reviews-count" id="reviews-count"></span>
+              </div>
+              <div id="tour-reviews-list"></div>
+            </div>
           </div>
 
           <!-- Tour Sidebar -->
@@ -451,9 +502,10 @@
                   <strong>Nhận đăng ký</strong>
                   <span id="tour-booking-window">—</span>
                 </li>
-                <li>
+                <li style="flex-direction:column; align-items:flex-start;">
                   <strong>Địa điểm</strong>
                   <span id="tour-location">—</span>
+                  <div id="tour-map"></div>
                 </li>
                 <li>
                   <strong>Số chỗ trống</strong>
@@ -512,7 +564,7 @@
             <li><i class="bi bi-chevron-right"></i> <a href="index.html#about">Giới thiệu</a></li>
             <li><i class="bi bi-chevron-right"></i> <a href="index.html#portfolio">Danh sách tour</a></li>
             <li><i class="bi bi-chevron-right"></i> <a href="index.html#team">Đối tác</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="team.html">Đội ngũ</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#staff">Đội ngũ</a></li>
             <li><i class="bi bi-chevron-right"></i> <a href="index.html#contact">Liên hệ</a></li>
           </ul>
         </div>
@@ -540,6 +592,7 @@
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
   <!-- Vendor JS Files -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
@@ -579,6 +632,7 @@
       var profileName = document.getElementById('auth-profile-name');
       var dashboardItem = document.getElementById('auth-dashboard-item');
       var myToursItem = document.getElementById('auth-mytours-item');
+      var myReviewsItem = document.getElementById('auth-myreviews-item');
       var savedToursItem = document.getElementById('auth-savedtours-item');
       var logoutBtn = document.getElementById('auth-logout-btn');
 
@@ -597,6 +651,7 @@
         }
         if (roles.includes('Student')) {
           myToursItem.style.display = 'block';
+          if (myReviewsItem) myReviewsItem.style.display = 'block';
           if (savedToursItem) savedToursItem.style.display = 'block';
         }
       }
@@ -730,7 +785,7 @@
               navigator.clipboard.writeText(pageUrl).then(function () {
                 showToast('Đã sao chép liên kết tour!', 'success');
               }).catch(function () {
-                window.prompt('Sao chép liên kết:', pageUrl);
+                showToast('Không tự động sao chép được. Liên kết: ' + pageUrl, 'info', { duration: 8000 });
               });
             }
           };
@@ -740,6 +795,8 @@
           document.getElementById('tour-code').textContent = code;
           document.getElementById('tour-company-name').textContent = company;
           document.getElementById('tour-location').textContent = loc;
+          if (loc && loc !== '—') { initTourMap(loc); }
+          loadTourReviews(tourId);
           document.getElementById('tour-dates').textContent = fmtDateTime(tour.startDate) + ' — ' + fmtDateTime(tour.endDate);
           document.getElementById('tour-booking-window').textContent = fmtDateTime(tour.bookingOpenAt) + ' — ' + fmtDateTime(tour.bookingCloseAt);
           document.getElementById('tour-slots').textContent = slotsText;
@@ -975,6 +1032,99 @@
 
       window.loadTourDetail = loadTourDetail;
       if (tourId) loadTourDetail();
+
+      var _mapInstance = null;
+
+      function nominatimSearch(query) {
+        return fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(query) + '&format=json&limit=1', {
+          headers: { 'User-Agent': 'TurTour/1.0' }
+        }).then(function (r) { return r.json(); });
+      }
+
+      // Thử từng mức: đầy đủ → bỏ phần tên POI → chỉ quận/tỉnh
+      function geocodeWithFallback(address, callback) {
+        var suffix = /việt nam/i.test(address) ? '' : ', Việt Nam';
+        var parts = address.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        var idx = 0;
+        function tryNext() {
+          if (idx >= parts.length) { callback(null); return; }
+          var query = parts.slice(idx).join(', ') + suffix;
+          idx++;
+          nominatimSearch(query).then(function (data) {
+            if (data && data.length) {
+              callback({ lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) });
+            } else {
+              tryNext();
+            }
+          }).catch(function () { tryNext(); });
+        }
+        tryNext();
+      }
+
+      function initTourMap(address) {
+        var mapEl = document.getElementById('tour-map');
+        if (!mapEl || typeof L === 'undefined') return;
+
+        geocodeWithFallback(address, function (coords) {
+          if (!coords) return;
+          mapEl.style.display = 'block';
+          // Delay init so browser can reflow layout and Leaflet can read container dimensions.
+          setTimeout(function () {
+            if (_mapInstance) { _mapInstance.remove(); _mapInstance = null; }
+            _mapInstance = L.map(mapEl, { scrollWheelZoom: false }).setView([coords.lat, coords.lng], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(_mapInstance);
+            L.marker([coords.lat, coords.lng]).addTo(_mapInstance).bindPopup(address).openPopup();
+          }, 100);
+        });
+      }
+
+      function loadTourReviews(id) {
+        fetch(window.TURTOUR_API_BASE + '/feedbacks/tour/' + id + '/public')
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (data) {
+            if (!data) return;
+            var section = document.getElementById('tour-reviews-section');
+            var list = document.getElementById('tour-reviews-list');
+            var avgBadge = document.getElementById('reviews-avg-badge');
+            var avgStars = document.getElementById('reviews-avg-stars');
+            var avgScore = document.getElementById('reviews-avg-score');
+            var countEl = document.getElementById('reviews-count');
+            if (!section || !list) return;
+
+            section.style.display = 'block';
+            countEl.textContent = data.total > 0 ? data.total + ' đánh giá' : '';
+
+            if (data.total > 0) {
+              avgBadge.style.display = 'inline-flex';
+              var filled = Math.round(data.averageRating);
+              avgStars.textContent = '★'.repeat(filled) + '☆'.repeat(5 - filled);
+              avgScore.textContent = Number(data.averageRating).toFixed(1) + '/5';
+            }
+
+            if (!data.feedbacks || data.feedbacks.length === 0) {
+              list.innerHTML = '<p class="reviews-empty"><i class="bi bi-chat-square-text me-2"></i>Chưa có đánh giá nào cho tour này.</p>';
+              return;
+            }
+
+            list.innerHTML = data.feedbacks.map(function (fb) {
+              var stars = '★'.repeat(fb.rating) + '☆'.repeat(5 - fb.rating);
+              var date = fb.createdAt ? new Date(fb.createdAt).toLocaleDateString('vi-VN') : '';
+              var photos = (fb.photoUrls && fb.photoUrls.length)
+                ? '<div class="review-photos">' + fb.photoUrls.map(function (u) {
+                    return '<img src="' + u + '" alt="ảnh đánh giá" loading="lazy" onclick="window.open(\'' + u + '\',\'_blank\')">';
+                  }).join('') + '</div>' : '';
+              return '<div class="review-card">'
+                + '<div class="review-top"><span class="review-author">' + (fb.studentName || 'Sinh viên') + '</span><span class="review-date">' + date + '</span></div>'
+                + '<div class="review-stars">' + stars + '</div>'
+                + (fb.comment ? '<p class="review-comment">' + fb.comment + '</p>' : '')
+                + photos
+                + '</div>';
+            }).join('');
+          })
+          .catch(function () {});
+      }
 
       // Tour bị đổi trạng thái (từ admin/tab khác) — tự tải lại trang để cập nhật ngay,
       // không cần người dùng tự bấm F5.
