@@ -3,16 +3,19 @@ using MailKit.Security;
 using MimeKit;
 using MimeKit.Utils;
 using QRCoder;
+using Resend;
 
 namespace TurTour.Services
 {
     public class EmailService
     {
         private readonly IConfiguration _configuration;
+        private readonly IResend _resend;
 
-        public EmailService(IConfiguration configuration)
+        public EmailService(IConfiguration configuration, IResend resend)
         {
             _configuration = configuration;
+            _resend = resend;
         }
 
         private static byte[] GenerateQrPng(string text)
@@ -23,10 +26,6 @@ namespace TurTour.Services
             return pngQrCode.GetGraphic(20);
         }
 
-        // Khung email dùng chung cho mọi mail hệ thống — bố cục bảng (table) thay vì flex/grid vì
-        // Outlook desktop render bằng engine Word, không hỗ trợ CSS hiện đại; toàn bộ style inline
-        // vì Gmail/một số client strip thẻ <style>. Màu #e84545 là accent chính của TurTour (đồng bộ
-        // với public/dewi/assets/css/main.css).
         private static string BuildEmailShell(string title, string bodyHtml, string footerNote)
         {
             return $@"
@@ -59,23 +58,56 @@ namespace TurTour.Services
             </table>";
         }
 
-        public async Task SendEmailConfirmationAsync(string toEmail, string fullName, string confirmUrl)
+        private bool UseResend => !string.IsNullOrWhiteSpace(_configuration["Resend:ApiKey"]);
+
+        private string FromAddress => _configuration["Smtp:FromName"] is { } name && !string.IsNullOrWhiteSpace(name)
+            ? $"{name} <{_configuration["Resend:FromEmail"] ?? _configuration["Smtp:FromEmail"] ?? "noreply@turtour.app"}>"
+            : _configuration["Resend:FromEmail"] ?? _configuration["Smtp:FromEmail"] ?? "noreply@turtour.app";
+
+        private async Task SendViaResendAsync(string toEmail, string subject, string htmlBody)
+        {
+            var message = new EmailMessage
+            {
+                From = FromAddress,
+                Subject = subject,
+                HtmlBody = htmlBody,
+            };
+            message.To.Add(toEmail);
+            await _resend.EmailSendAsync(message);
+        }
+
+        private async Task SendViaSmtpAsync(string toEmail, string toName, string subject, string htmlBody)
         {
             var host = _configuration["Smtp:Host"];
-            if (string.IsNullOrWhiteSpace(host) || string.IsNullOrWhiteSpace(toEmail))
-            {
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(host)) return;
 
-            var port = int.TryParse(_configuration["Smtp:Port"], out var parsedPort) ? parsedPort : 587;
-            var useSsl = !bool.TryParse(_configuration["Smtp:UseSsl"], out var parsedSsl) || parsedSsl;
+            var port = int.TryParse(_configuration["Smtp:Port"], out var p) ? p : 587;
+            var useSsl = !bool.TryParse(_configuration["Smtp:UseSsl"], out var ssl) || ssl;
             var fromEmail = _configuration["Smtp:FromEmail"] ?? host;
             var fromName = _configuration["Smtp:FromName"] ?? "TurTour";
 
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(fromName, fromEmail));
-            message.To.Add(new MailboxAddress(fullName, toEmail));
-            message.Subject = "Xác thực email tài khoản TurTour";
+            var mime = new MimeMessage();
+            mime.From.Add(new MailboxAddress(fromName, fromEmail));
+            mime.To.Add(new MailboxAddress(toName, toEmail));
+            mime.Subject = subject;
+            mime.Body = new BodyBuilder { HtmlBody = htmlBody }.ToMessageBody();
+
+            using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(12));
+            using var client = new SmtpClient();
+            await client.ConnectAsync(host, port, useSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto, cts.Token);
+
+            var username = _configuration["Smtp:Username"];
+            var password = _configuration["Smtp:Password"];
+            if (!string.IsNullOrWhiteSpace(username))
+                await client.AuthenticateAsync(username, password ?? string.Empty, cts.Token);
+
+            await client.SendAsync(mime, cancellationToken: cts.Token);
+            await client.DisconnectAsync(true, cts.Token);
+        }
+
+        public async Task SendEmailConfirmationAsync(string toEmail, string fullName, string confirmUrl)
+        {
+            if (string.IsNullOrWhiteSpace(toEmail)) return;
 
             var body = $@"
                 <p style=""margin:0 0 16px 0;font-size:15px;line-height:1.6;color:#495057;"">
@@ -98,55 +130,21 @@ namespace TurTour.Services
                 </p>
                 <p style=""margin:0;font-size:13px;line-height:1.6;word-break:break-all;""><a href=""{confirmUrl}"" style=""color:#e84545;"">{confirmUrl}</a></p>";
 
-            var builder = new BodyBuilder
-            {
-                HtmlBody = BuildEmailShell(
-                    "Xác thực email của bạn",
-                    body,
-                    "Liên kết có hiệu lực trong 24 giờ. Nếu bạn không thực hiện yêu cầu đăng ký này, hãy bỏ qua email này.")
-            };
+            var html = BuildEmailShell("Xác thực email của bạn", body,
+                "Liên kết có hiệu lực trong 24 giờ. Nếu bạn không thực hiện yêu cầu đăng ký này, hãy bỏ qua email này.");
 
-            message.Body = builder.ToMessageBody();
-
-            using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(12));
-            using var client = new SmtpClient();
-            await client.ConnectAsync(host, port, useSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto, cts.Token);
-
-            var username = _configuration["Smtp:Username"];
-            var password = _configuration["Smtp:Password"];
-            if (!string.IsNullOrWhiteSpace(username))
-            {
-                await client.AuthenticateAsync(username, password ?? string.Empty, cts.Token);
-            }
-
-            await client.SendAsync(message, cancellationToken: cts.Token);
-            await client.DisconnectAsync(true, cts.Token);
+            if (UseResend)
+                await SendViaResendAsync(toEmail, "Xác thực email tài khoản TurTour", html);
+            else
+                await SendViaSmtpAsync(toEmail, fullName, "Xác thực email tài khoản TurTour", html);
         }
 
         public async Task SendCheckInQrEmailAsync(string toEmail, string studentName, string tourTitle, string qrCodeText)
         {
-            var host = _configuration["Smtp:Host"];
-            if (string.IsNullOrWhiteSpace(host) || string.IsNullOrWhiteSpace(toEmail))
-            {
-                // Chưa cấu hình SMTP hoặc không có email người nhận — bỏ qua, không chặn luồng xác nhận thanh toán.
-                return;
-            }
-
-            var port = int.TryParse(_configuration["Smtp:Port"], out var parsedPort) ? parsedPort : 587;
-            var useSsl = !bool.TryParse(_configuration["Smtp:UseSsl"], out var parsedSsl) || parsedSsl;
-            var fromEmail = _configuration["Smtp:FromEmail"] ?? host;
-            var fromName = _configuration["Smtp:FromName"] ?? "TurTour";
+            if (string.IsNullOrWhiteSpace(toEmail)) return;
 
             var qrBytes = GenerateQrPng(qrCodeText);
-
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(fromName, fromEmail));
-            message.To.Add(new MailboxAddress(studentName, toEmail));
-            message.Subject = $"Mã check-in cho tour \"{tourTitle}\"";
-
-            var builder = new BodyBuilder();
-            var image = builder.LinkedResources.Add("qrcode.png", qrBytes, new ContentType("image", "png"));
-            image.ContentId = MimeUtils.GenerateMessageId();
+            var qrBase64 = Convert.ToBase64String(qrBytes);
 
             var body = $@"
                 <p style=""margin:0 0 16px 0;font-size:15px;line-height:1.6;color:#495057;"">
@@ -158,7 +156,7 @@ namespace TurTour.Services
                 <table role=""presentation"" cellpadding=""0"" cellspacing=""0"" style=""margin:0 0 20px 0;"">
                   <tr>
                     <td style=""padding:16px;background:#f1f3f5;border-radius:12px;"">
-                      <img src=""cid:{image.ContentId}"" alt=""Mã check-in"" width=""200"" height=""200"" style=""display:block;width:200px;height:200px;border-radius:8px;background:#ffffff;"" />
+                      <img src=""data:image/png;base64,{qrBase64}"" alt=""Mã check-in"" width=""200"" height=""200"" style=""display:block;width:200px;height:200px;border-radius:8px;background:#ffffff;"" />
                     </td>
                   </tr>
                 </table>
@@ -166,26 +164,43 @@ namespace TurTour.Services
                   Mã check-in: <span style=""font-family:monospace;color:#1a1a2e;"">{qrCodeText}</span>
                 </p>";
 
-            builder.HtmlBody = BuildEmailShell(
-                "Thanh toán thành công!",
-                body,
+            var html = BuildEmailShell("Thanh toán thành công!", body,
                 "Vui lòng giữ email này hoặc lưu lại mã QR để xuất trình khi check-in tại sự kiện.");
 
-            message.Body = builder.ToMessageBody();
-
-            using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(12));
-            using var client = new SmtpClient();
-            await client.ConnectAsync(host, port, useSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto, cts.Token);
-
-            var username = _configuration["Smtp:Username"];
-            var password = _configuration["Smtp:Password"];
-            if (!string.IsNullOrWhiteSpace(username))
+            if (UseResend)
+                await SendViaResendAsync(toEmail, $"Mã check-in cho tour \"{tourTitle}\"", html);
+            else
             {
-                await client.AuthenticateAsync(username, password ?? string.Empty, cts.Token);
-            }
+                // SMTP: dùng inline attachment cho QR thay vì base64 embed
+                var host = _configuration["Smtp:Host"];
+                if (string.IsNullOrWhiteSpace(host)) return;
 
-            await client.SendAsync(message, cancellationToken: cts.Token);
-            await client.DisconnectAsync(true, cts.Token);
+                var port = int.TryParse(_configuration["Smtp:Port"], out var p) ? p : 587;
+                var useSsl = !bool.TryParse(_configuration["Smtp:UseSsl"], out var ssl) || ssl;
+                var fromEmail = _configuration["Smtp:FromEmail"] ?? host;
+                var fromName = _configuration["Smtp:FromName"] ?? "TurTour";
+
+                var mime = new MimeMessage();
+                mime.From.Add(new MailboxAddress(fromName, fromEmail));
+                mime.To.Add(new MailboxAddress(studentName, toEmail));
+                mime.Subject = $"Mã check-in cho tour \"{tourTitle}\"";
+
+                var builder = new BodyBuilder();
+                var image = builder.LinkedResources.Add("qrcode.png", qrBytes, new ContentType("image", "png"));
+                image.ContentId = MimeUtils.GenerateMessageId();
+                builder.HtmlBody = html.Replace($"data:image/png;base64,{qrBase64}", $"cid:{image.ContentId}");
+                mime.Body = builder.ToMessageBody();
+
+                using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(12));
+                using var client = new SmtpClient();
+                await client.ConnectAsync(host, port, useSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto, cts.Token);
+                var username = _configuration["Smtp:Username"];
+                var password = _configuration["Smtp:Password"];
+                if (!string.IsNullOrWhiteSpace(username))
+                    await client.AuthenticateAsync(username, password ?? string.Empty, cts.Token);
+                await client.SendAsync(mime, cancellationToken: cts.Token);
+                await client.DisconnectAsync(true, cts.Token);
+            }
         }
     }
 }
