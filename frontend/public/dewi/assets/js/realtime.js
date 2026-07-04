@@ -6,7 +6,7 @@
     try {
       var session = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY));
       return (session && session.token) || '';
-    } catch (e) {
+    } catch {
       return '';
     }
   }
