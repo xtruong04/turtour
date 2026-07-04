@@ -18,13 +18,15 @@ namespace TurTour.Controllers
         private readonly JwtService _jwtService;
         private readonly EmailService _emailService;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(ApplicationDbContext context, JwtService jwtService, EmailService emailService, IConfiguration configuration)
+        public AuthController(ApplicationDbContext context, JwtService jwtService, EmailService emailService, IConfiguration configuration, ILogger<AuthController> logger)
         {
             _context = context;
             _jwtService = jwtService;
             _emailService = emailService;
             _configuration = configuration;
+            _logger = logger;
         }
 
         private async Task<bool> IsEmailInUseAsync(string email)
@@ -51,15 +53,17 @@ namespace TurTour.Controllers
             var frontendBaseUrl = _configuration["Frontend:BaseUrl"]?.TrimEnd('/') ?? "http://localhost:5173";
             var confirmUrl = $"{frontendBaseUrl}/auth/confirm-email?token={token}";
 
-            // Fire-and-forget: không block response — email gửi nền, thất bại thì bỏ qua.
+            // Fire-and-forget: không block response — email gửi nền.
             _ = Task.Run(async () =>
             {
                 try
                 {
-                    using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(15));
                     await _emailService.SendEmailConfirmationAsync(toEmail, fullName, confirmUrl);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Gửi email xác thực thất bại tới {Email}", toEmail);
+                }
             });
         }
 
