@@ -250,6 +250,7 @@ namespace TurTour
 
             app.MapControllers();
             app.MapHub<AppHub>("/hubs/app");
+            app.MapGet("/api/health", () => Results.Ok(new { status = "ok" }));
 
             await app.RunAsync();
         }

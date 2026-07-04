@@ -31,7 +31,7 @@
     var session = null;
     try {
       session = JSON.parse(localStorage.getItem('turtour.admin.session'));
-    } catch (e) {}
+    } catch { /* ignore */ }
 
     if (!session || !session.token) return;
 
