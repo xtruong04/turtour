@@ -108,18 +108,19 @@ namespace TurTour.Services
 
             message.Body = builder.ToMessageBody();
 
+            using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(12));
             using var client = new SmtpClient();
-            await client.ConnectAsync(host, port, useSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto);
+            await client.ConnectAsync(host, port, useSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto, cts.Token);
 
             var username = _configuration["Smtp:Username"];
             var password = _configuration["Smtp:Password"];
             if (!string.IsNullOrWhiteSpace(username))
             {
-                await client.AuthenticateAsync(username, password ?? string.Empty);
+                await client.AuthenticateAsync(username, password ?? string.Empty, cts.Token);
             }
 
-            await client.SendAsync(message);
-            await client.DisconnectAsync(true);
+            await client.SendAsync(message, cancellationToken: cts.Token);
+            await client.DisconnectAsync(true, cts.Token);
         }
 
         public async Task SendCheckInQrEmailAsync(string toEmail, string studentName, string tourTitle, string qrCodeText)
@@ -172,18 +173,19 @@ namespace TurTour.Services
 
             message.Body = builder.ToMessageBody();
 
+            using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(12));
             using var client = new SmtpClient();
-            await client.ConnectAsync(host, port, useSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto);
+            await client.ConnectAsync(host, port, useSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto, cts.Token);
 
             var username = _configuration["Smtp:Username"];
             var password = _configuration["Smtp:Password"];
             if (!string.IsNullOrWhiteSpace(username))
             {
-                await client.AuthenticateAsync(username, password ?? string.Empty);
+                await client.AuthenticateAsync(username, password ?? string.Empty, cts.Token);
             }
 
-            await client.SendAsync(message);
-            await client.DisconnectAsync(true);
+            await client.SendAsync(message, cancellationToken: cts.Token);
+            await client.DisconnectAsync(true, cts.Token);
         }
     }
 }

@@ -46,19 +46,21 @@ namespace TurTour.Controllers
 
         // Gửi email xác thực — không chặn luồng đăng ký nếu gửi email thất bại (chỉ ghi log ngầm
         // qua việc EmailService tự bỏ qua khi chưa cấu hình SMTP).
-        private async Task SendConfirmationEmailAsync(string toEmail, string fullName, string token)
+        private void FireConfirmationEmail(string toEmail, string fullName, string token)
         {
             var frontendBaseUrl = _configuration["Frontend:BaseUrl"]?.TrimEnd('/') ?? "http://localhost:5173";
             var confirmUrl = $"{frontendBaseUrl}/auth/confirm-email?token={token}";
 
-            try
+            // Fire-and-forget: không block response — email gửi nền, thất bại thì bỏ qua.
+            _ = Task.Run(async () =>
             {
-                await _emailService.SendEmailConfirmationAsync(toEmail, fullName, confirmUrl);
-            }
-            catch
-            {
-                // Gửi email thất bại không nên chặn đăng ký — user vẫn có thể bấm "Gửi lại" sau.
-            }
+                try
+                {
+                    using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(15));
+                    await _emailService.SendEmailConfirmationAsync(toEmail, fullName, confirmUrl);
+                }
+                catch { }
+            });
         }
 
         [HttpPost("register")]
@@ -104,7 +106,7 @@ namespace TurTour.Controllers
             });
 
             await _context.SaveChangesAsync();
-            await SendConfirmationEmailAsync(user.Email, user.FullName, confirmationToken);
+            FireConfirmationEmail(user.Email, user.FullName, confirmationToken);
 
             return Ok(new
             {
@@ -438,7 +440,7 @@ namespace TurTour.Controllers
             _context.Companies.Add(company);
 
             await _context.SaveChangesAsync();
-            await SendConfirmationEmailAsync(user.Email, company.Name ?? user.FullName, confirmationToken);
+            FireConfirmationEmail(user.Email, company.Name ?? user.FullName, confirmationToken);
 
             return Ok(new
             {
@@ -498,7 +500,7 @@ namespace TurTour.Controllers
             _context.Organizators.Add(organizator);
 
             await _context.SaveChangesAsync();
-            await SendConfirmationEmailAsync(user.Email, organizator.Name ?? user.FullName, confirmationToken);
+            FireConfirmationEmail(user.Email, organizator.Name ?? user.FullName, confirmationToken);
 
             return Ok(new
             {
@@ -551,7 +553,7 @@ namespace TurTour.Controllers
 
             var token = AssignEmailConfirmationToken(user);
             await _context.SaveChangesAsync();
-            await SendConfirmationEmailAsync(user.Email, user.FullName, token);
+            FireConfirmationEmail(user.Email, user.FullName, token);
 
             return Ok(new { message = "Nếu email tồn tại trong hệ thống, link xác thực mới đã được gửi." });
         }
