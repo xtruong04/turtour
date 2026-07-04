@@ -1,14 +1,18 @@
 namespace TurTour.Models.Enums
 {
-    // Trục hiển thị/bán tour — Published và Expired được TÍNH TỰ ĐỘNG từ ApprovalStatus +
-    // StartDate (xem ToursController.ComputeEffectivePublishStatus), không lưu cứng xuống DB
-    // cho 2 giá trị này. Chỉ Hidden (mới tạo/bị từ chối) và Archived (huỷ/lưu trữ — terminal,
-    // không quay lại được) là giá trị admin/company chủ động đặt.
+    // Trục hiển thị/bán tour:
+    //   Hidden    (0) — chưa duyệt hoặc bị ẩn thủ công.
+    //   Published (1) — đăng ký đang mở; LƯU vào DB.
+    //   Expired   (2) — giữ lại để tương thích, hiếm dùng.
+    //   Archived  (3) — ẩn vĩnh viễn (bị huỷ HOẶC đã hoàn thành); LƯU vào DB bởi TourLifecycleService.
+    //   OnGoing   (4) — booking đóng, tour đang diễn ra; LƯU vào DB bởi TourLifecycleService.
+    // ComputeEffectivePublishStatus tính lại runtime dựa trên DB + thời gian thực tế.
     public enum PublishStatus
     {
         Hidden,
         Published,
         Expired,
-        Archived
+        Archived,
+        OnGoing
     }
 }

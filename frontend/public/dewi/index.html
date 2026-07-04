@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
@@ -66,11 +66,12 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="#hero" class="active">Trang chủ</a></li>
+          <li><a href="#portfolio">Tour</a></li>
           <li><a href="#about">Giới thiệu</a></li>
           <li><a href="#services">Cách hoạt động</a></li>
-          <li><a href="#portfolio">Tour</a></li>
           <li><a href="#team">Đối tác</a></li>
-          <li><a href="team.html">Đội ngũ</a></li>
+          <li><a href="#staff">Đội ngũ</a></li>
+          <li><a href="#reviews">Đánh giá</a></li>
           <li><a href="#contact">Liên hệ</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -102,6 +103,7 @@
         <ul class="dropdown-menu dropdown-menu-end auth-profile-menu">
           <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person"></i>Hồ sơ của tôi</a></li>
           <li id="auth-mytours-item" style="display:none;"><a class="dropdown-item" href="my-tours.html"><i class="bi bi-calendar-check"></i>Tour của tôi</a></li>
+          <li id="auth-myreviews-item" style="display:none;"><a class="dropdown-item" href="my-reviews.html"><i class="bi bi-star"></i>Đánh giá của tôi</a></li>
           <li id="auth-savedtours-item" style="display:none;"><a class="dropdown-item" href="saved-tours.html"><i class="bi bi-heart"></i>Tour đã lưu</a></li>
           <li><a class="dropdown-item" href="notifications.html"><i class="bi bi-bell"></i>Thông báo</a></li>
           <li id="auth-dashboard-item" style="display:none;"><a class="dropdown-item" href="/admin/dashboard" target="_top"><i class="bi bi-speedometer2"></i>Trang quản trị</a></li>
@@ -130,6 +132,942 @@
       </div>
 
     </section><!-- /Hero Section -->
+
+    <!-- Tours Section -->
+    <section id="portfolio" class="portfolio section">
+
+      <style>
+        /* ── Tour card styles ── */
+        .tour-card {
+          background: #fff;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 4px 20px rgba(0,0,0,.08);
+          transition: transform .3s ease, box-shadow .3s ease;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+        .tour-card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 12px 32px rgba(0,0,0,.14);
+        }
+        .tour-card .tc-thumb {
+          position: relative;
+          height: 210px;
+          overflow: hidden;
+          background: #f0f4f8;
+        }
+        .tour-card .tc-thumb img {
+          width: 100%; height: 100%;
+          object-fit: cover;
+          transition: transform .4s ease;
+        }
+        .tour-card:hover .tc-thumb img { transform: scale(1.06); }
+        .tour-card .tc-thumb .tc-status {
+          position: absolute;
+          top: 12px; right: 12px;
+          padding: 5px 12px;
+          border-radius: 20px;
+          font-size: .72rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: .04em;
+          color: #fff;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+          text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        }
+        /* Bảng màu theo chuẩn Bootstrap (primary/success/warning/danger/secondary) — dùng
+           publishStatus (Published/OnGoing/Expired/Archived) thay cho status cũ. */
+        .tc-status.hidden    { background: #A18F7A; }
+        .tc-status.published { background: #198754; }
+        .tc-status.ongoing   { background: #0d6efd; }
+        .tc-status.expired   { background: #ffc107; color: #212529; text-shadow: none; }
+        .tc-status.archived  { background: #6c757d; }
+        .tour-card .tc-body {
+          padding: 20px;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .tour-card .tc-title {
+          font-size: 1rem;
+          font-weight: 700;
+          color: #1a1a2e;
+          margin: 0;
+          display: -webkit-box;
+          line-clamp: 2;          /* Thuộc tính chuẩn */
+          -webkit-line-clamp: 2;  /* Hỗ trợ trình duyệt hiện tại */
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        .tour-card .tc-company {
+          font-size: .8rem;
+          color: #e84545;
+          font-weight: 600;
+        }
+        .tour-card .tc-meta {
+          font-size: .8rem;
+          color: #666;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .tour-card .tc-meta i { color: #aaa; flex-shrink: 0; }
+        .tour-card .tc-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-top: 1px solid #f0f0f0;
+          padding: 14px 20px;
+          margin-top: auto;
+        }
+        .tour-card .tc-price {
+          font-size: 1.05rem;
+          font-weight: 800;
+          color: #e84545;
+        }
+        .tour-card .tc-price.free { color: #4caf50; }
+        .tour-card .tc-slots {
+          font-size: .75rem;
+          color: #888;
+        }
+        .tc-placeholder {
+          width: 100%; height: 100%;
+          display: flex; align-items: center; justify-content: center;
+          background: linear-gradient(135deg,#e8f4fd,#d1ecf1);
+          color: #5bc0de;
+          font-size: 3rem;
+        }
+        #tours-loading, #tours-error, #tours-empty {
+          text-align: center;
+          padding: 48px 20px;
+          color: #888;
+        }
+        .tours-grid { --bs-gutter-y: 1.5rem; }
+        .btn-detail, .btn-register {
+          flex: 1;
+        }
+        .btn-detail {
+          background-color: #fff;
+          color: #e84545;
+          border: 1.5px solid #e84545;
+          padding: 10px 16px;
+          border-radius: 6px;
+          font-weight: 600;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.1s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          text-decoration: none;
+        }
+        .btn-detail:hover {
+          background-color: #fdf2f2;
+          color: #d33c3c;
+          border-color: #d33c3c;
+        }
+        .btn-detail:active {
+          transform: translateY(1px);
+        }
+        .btn-register {
+          background-color: #e84545;
+          color: #fff;
+          border: none;
+          padding: 10px 16px;
+          border-radius: 6px;
+          font-weight: 600;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: background-color 0.2s, transform 0.1s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+        }
+        .btn-register:hover {
+          background-color: #d33c3c;
+          color: #fff;
+          transform: translateY(-1px);
+        }
+        .btn-register:active {
+          transform: translateY(1px);
+        }
+        .btn-register:disabled {
+          background-color: #b0b8c4;
+          color: #fff;
+          cursor: not-allowed;
+          transform: none !important;
+        }
+        @keyframes tt-shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
+        .sk{display:block;background:linear-gradient(90deg,#ebebeb 25%,#f5f5f5 50%,#ebebeb 75%);background-size:600px 100%;animation:tt-shimmer 1.4s infinite linear;border-radius:4px;}
+
+        /* ── Tour filter card ── */
+        .tf-card {
+          background:#fff; border-radius:16px;
+          box-shadow:0 4px 28px rgba(0,0,0,.09), 0 1px 5px rgba(0,0,0,.04);
+          padding:22px 24px 20px; margin-bottom:0;
+        }
+
+        /* Search */
+        .tour-search-wrap { position:relative; }
+        .tour-search-wrap .bi-search { position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#c0c0c0; font-size:.95rem; pointer-events:none; z-index:1; }
+        #tour-filter-search {
+          padding-left:44px; border-radius:10px;
+          border:1.5px solid #e8e8e8; font-size:.9rem;
+          background:#f8f9fa; height:46px;
+          transition:border-color .2s, background .2s, box-shadow .2s;
+        }
+        #tour-filter-search:focus { border-color:#e84545; box-shadow:0 0 0 3px rgba(232,69,69,.1); background:#fff; outline:none; }
+
+        /* Tabs row */
+        .tf-tabs-row { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+        .tour-tabs { display:flex; gap:6px; flex-wrap:wrap; flex:1; }
+        .tour-tab-pill {
+          padding:6px 16px; border-radius:8px;
+          border:1.5px solid #e8e8e8; background:#f8f9fa; color:#666;
+          font-size:.8rem; font-weight:600; cursor:pointer;
+          transition:all .18s; white-space:nowrap; line-height:1.5;
+        }
+        .tour-tab-pill:hover { border-color:#e84545; color:#e84545; background:#fff5f5; }
+        .tour-tab-pill.active { background:#e84545; border-color:#e84545; color:#fff; box-shadow:0 2px 8px rgba(232,69,69,.28); }
+        .tour-tab-pill[data-status="ongoing"].active { background:#0d6efd; border-color:#0d6efd; box-shadow:0 2px 8px rgba(13,110,253,.28); }
+        .tour-tab-pill[data-status="expired"].active { background:#6c757d; border-color:#6c757d; box-shadow:none; }
+
+        /* Clear button */
+        .tf-clear-btn {
+          white-space:nowrap; flex-shrink:0;
+          background:#fff; border:1.5px solid #e8e8e8;
+          border-radius:8px; padding:6px 14px;
+          font-size:.8rem; font-weight:600; color:#aaa;
+          cursor:pointer; transition:all .18s;
+          display:inline-flex; align-items:center; gap:5px; line-height:1.5;
+        }
+        .tf-clear-btn:hover { border-color:#e84545; color:#e84545; background:#fff5f5; }
+
+        /* Divider inside card */
+        .tf-divider { border:none; border-top:1px solid #f2f2f2; margin:18px 0; }
+
+        /* Field labels */
+        .tf-field-label {
+          font-size:.7rem; font-weight:700; color:#b0b0b0;
+          text-transform:uppercase; letter-spacing:.07em;
+          display:flex; align-items:center; justify-content:space-between;
+          margin-bottom:8px;
+        }
+        .tf-price-val { font-size:.82rem; font-weight:700; color:#e84545; text-transform:none; letter-spacing:0; }
+
+        /* Company select */
+        #tour-filter-company {
+          border-radius:8px; border:1.5px solid #e8e8e8;
+          font-size:.85rem; height:40px; background:#f8f9fa;
+          color:#333; width:100%; padding:0 10px;
+          transition:border-color .2s, box-shadow .2s;
+          appearance:auto;
+        }
+        #tour-filter-company:focus { border-color:#e84545; box-shadow:0 0 0 3px rgba(232,69,69,.1); outline:none; background:#fff; }
+
+        /* Price slider */
+        .price-track-wrap { position:relative; height:6px; background:#ebebeb; border-radius:3px; margin:10px 0 14px; }
+        .price-track-fill { position:absolute; top:0; height:100%; background:linear-gradient(90deg,#e84545,#ff7b7b); border-radius:3px; pointer-events:none; }
+        .price-thumbs { position:absolute; inset:0; top:-7px; pointer-events:none; }
+        .price-thumbs input[type="range"] {
+          -webkit-appearance:none; appearance:none;
+          position:absolute; width:100%;
+          top:0; height:20px; margin:0;
+          background:transparent; pointer-events:none;
+        }
+        .price-thumbs input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance:none;
+          width:20px; height:20px; border-radius:50%;
+          background:#e84545; cursor:pointer; pointer-events:all;
+          border:3px solid #fff;
+          box-shadow:0 1px 8px rgba(232,69,69,.4);
+          transition:transform .15s, box-shadow .15s;
+        }
+        .price-thumbs input[type="range"]::-webkit-slider-thumb:hover { transform:scale(1.2); box-shadow:0 2px 14px rgba(232,69,69,.5); }
+        .price-thumbs input[type="range"]::-moz-range-thumb {
+          width:20px; height:20px; border-radius:50%;
+          background:#e84545; cursor:pointer; pointer-events:all;
+          border:3px solid #fff; box-shadow:0 1px 8px rgba(232,69,69,.4);
+        }
+
+        /* Stats chips */
+        .tour-stats-bar { display:flex; gap:8px; flex-wrap:wrap; }
+        .tour-stat-chip { display:inline-flex; align-items:center; gap:5px; padding:5px 14px; border-radius:8px; font-size:.78rem; font-weight:600; border:1px solid transparent; }
+        .tour-stat-chip.total        { background:#f4f5f7; color:#6c757d; border-color:#e4e5e7; }
+        .tour-stat-chip.open         { background:#d1e7dd; color:#0a5c36; border-color:#b0d9c8; }
+        .tour-stat-chip.ongoing-chip { background:#cfe2ff; color:#084298; border-color:#b1ccf5; }
+
+        /* Featured first card */
+        .col-featured .tc-thumb { height:300px; }
+        .col-featured .tc-title { font-size:1.15rem; }
+
+        /* Mobile horizontal cards */
+        @media (max-width:575.98px) {
+          .tour-card { flex-direction:row; min-height:140px; }
+          .tour-card .tc-thumb { width:110px; min-width:110px; height:auto; flex-shrink:0; }
+          .tour-card .tc-thumb img { position:absolute; inset:0; width:100%; height:100%; }
+          .tour-card .tc-body { padding:12px; font-size:.82rem; }
+          .tour-card .tc-title { font-size:.9rem; }
+          .tour-card .tc-footer { flex-direction:column; align-items:flex-start; gap:3px; padding:10px 12px; }
+          .col-featured .tour-card { flex-direction:column; }
+          .col-featured .tc-thumb { width:100%; min-width:unset; height:200px; }
+        }
+      </style>
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Tour</h2>
+        <p>DANH SÁCH TOUR THAM QUAN</p>
+      </div><!-- End Section Title -->
+
+      <div class="container">
+
+        <!-- Tour filter card -->
+        <div id="tours-filter-bar" style="display:none;" data-aos="fade-up">
+          <div class="tf-card">
+            <!-- Search -->
+            <div class="tour-search-wrap mb-4">
+              <i class="bi bi-search"></i>
+              <input type="text" id="tour-filter-search" class="form-control" placeholder="Tìm theo tên tour, địa điểm, doanh nghiệp...">
+            </div>
+            <!-- Tabs + Clear -->
+            <div class="tf-tabs-row">
+              <div class="tour-tabs">
+                <button type="button" class="tour-tab-pill active" data-status="">Tất cả</button>
+                <button type="button" class="tour-tab-pill" data-status="published">🟢 Mở đăng ký</button>
+                <button type="button" class="tour-tab-pill" data-status="ongoing">🔵 Đang diễn ra</button>
+                <button type="button" class="tour-tab-pill" data-status="expired">⚫ Đã đóng</button>
+              </div>
+              <button type="button" id="tour-filter-clear" class="tf-clear-btn">
+                <i class="bi bi-x-lg"></i>Xóa lọc
+              </button>
+            </div>
+            <hr class="tf-divider">
+            <!-- Company + Price -->
+            <div class="row gx-4 gy-3 align-items-start">
+              <div class="col-md-4">
+                <div class="tf-field-label"><span><i class="bi bi-building me-1"></i>Doanh nghiệp</span></div>
+                <select id="tour-filter-company">
+                  <option value="">Tất cả doanh nghiệp</option>
+                </select>
+              </div>
+              <div class="col-md-8">
+                <div class="tf-field-label">
+                  <span><i class="bi bi-cash-coin me-1"></i>Khoảng phí</span>
+                  <span class="tf-price-val" id="price-range-display">0 ₫ — Tất cả</span>
+                </div>
+                <div class="price-track-wrap">
+                  <div id="price-track-fill" class="price-track-fill" style="left:0%;width:100%;"></div>
+                  <div class="price-thumbs">
+                    <input type="range" id="price-min-slider" min="0" max="10000000" value="0" step="50000">
+                    <input type="range" id="price-max-slider" min="0" max="10000000" value="10000000" step="50000">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Stats chips -->
+          <div class="tour-stats-bar mt-3 mb-4">
+            <span class="tour-stat-chip total"><i class="bi bi-collection-fill"></i><span id="stat-total">0</span> tour tìm thấy</span>
+            <span class="tour-stat-chip open"><i class="bi bi-calendar-check-fill"></i><span id="stat-open">0</span> mở đăng ký</span>
+            <span class="tour-stat-chip ongoing-chip"><i class="bi bi-play-circle-fill"></i><span id="stat-ongoing">0</span> đang diễn ra</span>
+          </div>
+        </div>
+
+        <!-- Loading state: skeleton cards -->
+        <div id="tours-loading" data-aos="fade-up" style="text-align:unset;padding:0;color:inherit;">
+          <div class="row gy-4 tours-grid">
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:88%;"></div><div class="sk" style="height:13px;width:50%;"></div><div class="sk" style="height:13px;width:66%;"></div><div class="sk" style="height:13px;width:57%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:80px;"></div><div class="sk" style="height:13px;width:70px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:75%;"></div><div class="sk" style="height:13px;width:58%;"></div><div class="sk" style="height:13px;width:72%;"></div><div class="sk" style="height:13px;width:48%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:90px;"></div><div class="sk" style="height:13px;width:75px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:82%;"></div><div class="sk" style="height:13px;width:45%;"></div><div class="sk" style="height:13px;width:60%;"></div><div class="sk" style="height:13px;width:54%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:85px;"></div><div class="sk" style="height:13px;width:68px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:91%;"></div><div class="sk" style="height:13px;width:54%;"></div><div class="sk" style="height:13px;width:68%;"></div><div class="sk" style="height:13px;width:62%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:78px;"></div><div class="sk" style="height:13px;width:72px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:78%;"></div><div class="sk" style="height:13px;width:47%;"></div><div class="sk" style="height:13px;width:63%;"></div><div class="sk" style="height:13px;width:55%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:88px;"></div><div class="sk" style="height:13px;width:65px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:85%;"></div><div class="sk" style="height:13px;width:53%;"></div><div class="sk" style="height:13px;width:70%;"></div><div class="sk" style="height:13px;width:59%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:82px;"></div><div class="sk" style="height:13px;width:74px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:72%;"></div><div class="sk" style="height:13px;width:60%;"></div><div class="sk" style="height:13px;width:55%;"></div><div class="sk" style="height:13px;width:50%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:76px;"></div><div class="sk" style="height:13px;width:66px;"></div></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:80%;"></div><div class="sk" style="height:13px;width:56%;"></div><div class="sk" style="height:13px;width:64%;"></div><div class="sk" style="height:13px;width:52%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:84px;"></div><div class="sk" style="height:13px;width:69px;"></div></div></div></div>
+          </div>
+        </div>
+
+        <!-- Error state -->
+        <div id="tours-error" style="display:none;" data-aos="fade-up">
+          <i class="bi bi-exclamation-triangle" style="font-size:2.5rem;color:#e84545;"></i>
+          <p id="tours-error-msg" class="mt-2">Không thể tải danh sách tour.</p>
+          <button type="button" class="btn btn-outline-danger btn-sm mt-1" onclick="window.loadTours && window.loadTours()">
+            <i class="bi bi-arrow-clockwise me-1"></i>Thử lại
+          </button>
+        </div>
+
+        <!-- Empty state -->
+        <div id="tours-empty" style="display:none;" data-aos="fade-up">
+          <i class="bi bi-calendar-x" style="font-size:2.5rem;"></i>
+          <p class="mt-2">Chưa có tour nào được đăng.</p>
+        </div>
+
+        <!-- Tour cards grid -->
+        <div id="tours-grid" class="row gy-4 gx-4 tours-grid" style="display:none;" data-aos="fade-up" data-aos-delay="100">
+        </div><!-- End Tours Grid -->
+
+        <!-- Load more -->
+        <div id="tours-load-more-wrapper" style="display:none; text-align:center; margin-top:36px;">
+          <button type="button" id="tours-load-more-btn" class="btn btn-outline-danger px-5 py-2" onclick="window.loadMoreTours && window.loadMoreTours()">
+            <i class="bi bi-chevron-down me-1"></i>Xem thêm
+          </button>
+        </div>
+
+      </div>
+
+    </section><!-- /Tours Section -->
+
+    <script>
+    (function () {
+      var API_BASE = window.TURTOUR_API_BASE;
+      var API = API_BASE + '/tours';
+
+      function getSession() {
+        try {
+          return JSON.parse(localStorage.getItem('turtour.admin.session'));
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function authHeaders() {
+        var session = getSession();
+        return session && session.token ? { Authorization: 'Bearer ' + session.token } : {};
+      }
+
+      function fmt(dateStr) {
+        if (!dateStr) return '—';
+        var d = new Date(dateStr);
+        return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      }
+
+      function fmtDateTime(dateStr) {
+        if (!dateStr) return '—';
+        var d = new Date(dateStr);
+        return d.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      }
+
+      // 4 giai đoạn của cửa sổ nhận đăng ký — tách biệt khỏi publishStatus (chỉ quyết định
+      // tour có hiển thị hay không, không quyết định đăng ký được hay không).
+      function getBookingPhase(tour) {
+        var now = new Date();
+        var start = tour.startDate ? new Date(tour.startDate) : null;
+        var end = tour.endDate ? new Date(tour.endDate) : null;
+        if (start && end && now >= start && now <= end) return 'ongoing';
+
+        var openAt = tour.bookingOpenAt ? new Date(tour.bookingOpenAt) : null;
+        if (openAt && now < openAt) return 'before-open';
+
+        var closeAt = tour.bookingCloseAt ? new Date(tour.bookingCloseAt) : null;
+        if (closeAt && now > closeAt) return 'after-close';
+
+        return 'open';
+      }
+
+      function statusLabel(s) {
+        if (!s) return '';
+        switch (s.toLowerCase()) {
+          case 'published': return 'Mở đăng ký';
+          case 'ongoing':   return 'Đang diễn ra';
+          case 'expired':   return 'Đã đóng';
+          case 'archived':  return 'Đã hủy/Lưu trữ';
+          case 'hidden':    return 'Chờ duyệt';
+          default: return s;
+        }
+      }
+
+      function thumbnail(tour) {
+        var imgs = tour.tourImages || [];
+        var thumb = imgs.find(function(i){ return i.isthumbnail || i.isThumbnail || i.Isthumbnail; });
+        return (thumb || imgs[0] || {}).imageUrl || '';
+      }
+
+      function priceText(fee) {
+        if (!fee || fee === 0) return { text: 'Miễn phí', free: true };
+        return { text: Number(fee).toLocaleString('vi-VN') + ' ₫', free: false };
+      }
+
+      function slots(tour) {
+        var current = tour.currentParticipants || 0;
+        var max = tour.maxParticipants || 0;
+        return (max - current) + '/' + max + ' chỗ trống';
+      }
+
+      window.toggleInterest = function (tourId, btn) {
+        var session = getSession();
+
+        if (!session || !session.token) {
+          showToast('Bạn cần đăng nhập bằng tài khoản Sinh viên để đánh dấu quan tâm tour.', 'info', {
+            actionLabel: 'Đăng nhập ngay',
+            actionHref: '/auth/sign-in'
+          });
+          return;
+        }
+
+        var roles = session.roles || [];
+        if (roles.indexOf('Student') === -1) {
+          showToast('Chỉ tài khoản Sinh viên mới có thể đánh dấu quan tâm tour.', 'error');
+          return;
+        }
+
+        var isInterested = btn.getAttribute('data-interested') === 'true';
+        btn.disabled = true;
+
+        fetch(API + '/' + tourId + '/interest', {
+          method: isInterested ? 'DELETE' : 'POST',
+          headers: authHeaders()
+        })
+          .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function (data) {
+            var nowInterested = !!data.interested;
+            btn.setAttribute('data-interested', nowInterested);
+            btn.innerHTML = '<i class="bi ' + (nowInterested ? 'bi-heart-fill' : 'bi-heart') + '"></i> '
+              + (nowInterested ? 'Đã quan tâm' : 'Quan tâm');
+            btn.disabled = false;
+
+            var tourInList = allTours.find(function (t) { return t.id === tourId; });
+            if (tourInList) tourInList.isInterested = nowInterested;
+
+            showToast(nowInterested
+              ? 'Đã đánh dấu quan tâm, bạn sẽ được báo khi tour mở đăng ký!'
+              : 'Đã bỏ quan tâm.', 'success');
+          })
+          .catch(function () {
+            btn.disabled = false;
+            showToast('Thao tác thất bại, vui lòng thử lại.', 'error');
+          });
+      };
+
+      window.registerTour = function (tourId, btn) {
+        var session = getSession();
+
+        if (!session || !session.token) {
+          showToast('Bạn cần đăng nhập bằng tài khoản Sinh viên để đăng ký tham gia tour.', 'info', {
+            actionLabel: 'Đăng nhập ngay',
+            actionHref: '/auth/sign-in'
+          });
+          return;
+        }
+
+        var roles = session.roles || [];
+        if (!roles.includes('Student')) {
+          showToast('Chỉ tài khoản Sinh viên mới có thể đăng ký tham gia các tour du lịch.', 'error');
+          return;
+        }
+
+        var originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Đang xử lý...';
+
+        fetch(API_BASE + '/registrations', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + session.token
+          },
+          body: JSON.stringify({ tourId: tourId, notes: 'Đăng ký từ trang chủ' })
+        })
+        .then(function(res) {
+          if (res.status === 401) {
+            throw new Error('Hết phiên làm việc. Vui lòng đăng nhập lại.');
+          }
+          return res.json().then(function(data) {
+            if (!res.ok) {
+              throw new Error(data.message || 'Đăng ký thất bại.');
+            }
+            return data;
+          });
+        })
+        .then(function(data) {
+          showToast('Đăng ký tham gia tour thành công! Trạng thái đăng ký của bạn là: ' + (data.status === 'Waitinglisted' ? 'Danh sách chờ (Tour đã đầy)' : 'Chờ duyệt') + '.', 'success');
+          setTimeout(function () { window.location.reload(); }, 1200);
+        })
+        .catch(function(err) {
+          showToast(err.message || 'Không thể đăng ký lúc này.', 'error');
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        });
+      };
+
+      window.shareTour = function (id, title, url) {
+        if (navigator.share) {
+          navigator.share({ title: title, url: url }).catch(function () {});
+        } else {
+          navigator.clipboard.writeText(url).then(function () {
+            showToast('Đã sao chép liên kết tour!', 'success');
+          }).catch(function () {
+            showToast('Không tự động sao chép được. Liên kết: ' + url, 'info', { duration: 8000 });
+          });
+        }
+      };
+
+      function renderCard(tour) {
+        var imgUrl = thumbnail(tour);
+        var status = (tour.publishStatus || '').toLowerCase();
+        var p = priceText(tour.fee);
+        var company = (tour.company && tour.company.name) ? tour.company.name : '';
+        var loc = tour.location || '';
+        var title = tour.tittle || tour.title || '(Chưa đặt tên)';
+
+        var thumbHtml = imgUrl
+          ? '<img src="' + imgUrl + '" alt="' + title + '" loading="lazy" onerror="this.style.display=\'none\'; this.parentNode.querySelector(\'.tc-placeholder\').style.display=\'flex\';">'
+            + '<div class="tc-placeholder" style="display:none; width: 100%; height: 100%; align-items: center; justify-content: center; background: linear-gradient(135deg,#e8f4fd,#d1ecf1); color: #5bc0de; font-size: 3rem;"><i class="bi bi-image"></i></div>'
+          : '<div class="tc-placeholder"><i class="bi bi-image"></i></div>';
+
+        // Published chỉ nghĩa là "xem được" — đăng ký được hay không còn tùy cửa sổ riêng
+        // (bookingOpenAt..bookingCloseAt), và việc tour đang diễn ra (start..end) luôn chặn đăng ký
+        // dù còn trong cửa sổ hay không.
+        var canRegisterStatus = false;
+        var btnText = 'Đăng ký ngay';
+        if (status === 'expired') {
+          btnText = 'Đã đóng';
+        } else if (status === 'archived') {
+          btnText = 'Đã hủy';
+        } else if (status === 'published') {
+          var phase = getBookingPhase(tour);
+          if (phase === 'open') {
+            canRegisterStatus = true;
+          } else if (phase === 'before-open') {
+            btnText = 'Đăng ký mở từ ' + fmtDateTime(tour.bookingOpenAt);
+          } else if (phase === 'ongoing') {
+            btnText = 'Tour đang diễn ra';
+          } else {
+            btnText = 'Đã đóng đăng ký';
+          }
+        }
+
+        // Nếu student đã đăng ký tour này, thay nút bằng badge trạng thái đăng ký.
+        var regStatusLabel = {
+          Pending:       { text: 'Chờ duyệt',        icon: 'bi-hourglass-split',   cls: 'btn-warning text-dark' },
+          Waitinglisted: { text: 'Danh sách chờ',     icon: 'bi-people',            cls: 'btn-secondary' },
+          Approved:      { text: 'Đã được duyệt',     icon: 'bi-check-circle-fill', cls: 'btn-outline-success' },
+          Paid:          { text: 'Đã thanh toán',      icon: 'bi-patch-check-fill',  cls: 'btn-success' },
+          CheckedIn:     { text: 'Đã check-in',        icon: 'bi-qr-code-scan',      cls: 'btn-success' },
+          Completed:     { text: 'Đã hoàn thành',      icon: 'bi-trophy-fill',       cls: 'btn-outline-dark' },
+          Rejected:      { text: 'Đã hủy/từ chối',    icon: 'bi-x-circle',          cls: 'btn-outline-danger' },
+        };
+        var myReg = tour.isRegistered ? (regStatusLabel[tour.myRegistrationStatus] || null) : null;
+
+        var isInterested = !!tour.isInterested;
+        var shareUrl = window.location.origin + window.location.pathname.replace('index.html', '') + 'tour-details.html?id=' + tour.id;
+
+        var registerBtnHtml = myReg
+          ? '<a href="my-tours.html" class="btn-register ' + myReg.cls + '" style="text-decoration:none;font-size:0.82rem;">'
+              + '<i class="bi ' + myReg.icon + '"></i> ' + myReg.text + '</a>'
+          : '<button class="btn-register" onclick="registerTour(\'' + tour.id + '\', this)"'
+              + (canRegisterStatus ? '' : ' disabled') + '>'
+              + '<i class="bi bi-send-fill"></i> ' + btnText + '</button>';
+
+        var btnHtml = '<div class="d-flex gap-2 mt-3">'
+          + '<a href="tour-details.html?id=' + tour.id + '" class="btn-detail"><i class="bi bi-info-circle"></i> Chi tiết</a>'
+          + registerBtnHtml
+          + '</div>'
+          + '<div class="d-flex gap-2 mt-2">'
+          + '<button class="btn btn-sm ' + (isInterested ? 'btn-danger' : 'btn-outline-danger') + ' tc-interest-btn" style="font-size:0.78rem;border-radius:6px;flex:1;" data-interested="' + isInterested + '" onclick="toggleInterest(\'' + tour.id + '\', this)">'
+          + '<i class="bi ' + (isInterested ? 'bi-heart-fill' : 'bi-heart') + '"></i> ' + (isInterested ? 'Đã lưu' : 'Lưu tour')
+          + '</button>'
+          + '<button class="btn btn-sm btn-outline-secondary" style="font-size:0.78rem;border-radius:6px;" onclick="shareTour(\'' + tour.id + '\', \'' + title.replace(/'/g, "\\'") + '\', \'' + shareUrl + '\')">'
+          + '<i class="bi bi-share"></i>'
+          + '</button>'
+          + '</div>';
+
+        return '<div class="tour-card">'
+            + '<div class="tc-thumb">'
+              + thumbHtml
+              + '<span class="tc-status ' + status + '">' + statusLabel(tour.publishStatus) + '</span>'
+            + '</div>'
+            + '<div class="tc-body">'
+              + '<h4 class="tc-title">' + title + '</h4>'
+              + (company ? '<div class="tc-company"><i class="bi bi-building me-1"></i>' + company + '</div>' : '')
+              + (loc ? '<div class="tc-meta"><i class="bi bi-geo-alt"></i><span>' + loc + '</span></div>' : '')
+              + '<div class="tc-meta"><i class="bi bi-calendar3"></i><span>' + fmtDateTime(tour.startDate) + ' — ' + fmtDateTime(tour.endDate) + '</span></div>'
+              + btnHtml
+            + '</div>'
+            + '<div class="tc-footer">'
+              + '<span class="tc-price' + (p.free ? ' free' : '') + '">' + p.text + '</span>'
+              + '<span class="tc-slots"><i class="bi bi-people me-1"></i>' + slots(tour) + '</span>'
+            + '</div>'
+          + '</div>';
+      }
+
+      var allTours = [];
+      var currentFiltered = [];
+      var TOURS_PER_PAGE = 6;
+      var visibleCount = TOURS_PER_PAGE;
+      var activeTab = '';
+      var priceSliderMax = 10000000;
+
+      function fmtFee(n) {
+        if (n === 0) return '0 ₫';
+        return Number(n).toLocaleString('vi-VN') + ' ₫';
+      }
+
+      function updatePriceTrack() {
+        var minSlider = document.getElementById('price-min-slider');
+        var maxSlider = document.getElementById('price-max-slider');
+        var fill = document.getElementById('price-track-fill');
+        var label = document.getElementById('price-range-display');
+        if (!minSlider || !maxSlider) return;
+        var lo = parseInt(minSlider.value);
+        var hi = parseInt(maxSlider.value);
+        var sliderMax = parseInt(minSlider.max) || priceSliderMax;
+        fill.style.left = (lo / sliderMax * 100) + '%';
+        fill.style.width = ((hi - lo) / sliderMax * 100) + '%';
+        var loLabel = lo === 0 ? 'Miễn phí' : fmtFee(lo);
+        var hiLabel = hi >= sliderMax ? 'Tất cả' : fmtFee(hi);
+        label.textContent = loLabel + ' — ' + hiLabel;
+      }
+
+      function setPriceSliderMax(max) {
+        var rounded = Math.ceil(max / 500000) * 500000 || 10000000;
+        priceSliderMax = rounded;
+        var minSlider = document.getElementById('price-min-slider');
+        var maxSlider = document.getElementById('price-max-slider');
+        minSlider.max = rounded;
+        maxSlider.max = rounded;
+        minSlider.value = 0;
+        maxSlider.value = rounded;
+        minSlider.step = Math.max(50000, Math.round(rounded / 200 / 50000) * 50000);
+        maxSlider.step = minSlider.step;
+        updatePriceTrack();
+      }
+
+      function populateCompanyFilter() {
+        var sel = document.getElementById('tour-filter-company');
+        var prev = sel.value;
+        while (sel.options.length > 1) sel.remove(1);
+        var names = [];
+        allTours.forEach(function (t) {
+          var n = t.company && t.company.name;
+          if (n && names.indexOf(n) === -1) names.push(n);
+        });
+        names.sort().forEach(function (n) {
+          var opt = document.createElement('option');
+          opt.value = n; opt.textContent = n;
+          sel.appendChild(opt);
+        });
+        sel.value = names.indexOf(prev) !== -1 ? prev : '';
+      }
+
+      function renderVisible() {
+        var grid = document.getElementById('tours-grid');
+        var emptyEl = document.getElementById('tours-empty');
+        var wrapper = document.getElementById('tours-load-more-wrapper');
+        var btn = document.getElementById('tours-load-more-btn');
+
+        if (currentFiltered.length === 0) {
+          grid.innerHTML = '';
+          grid.style.display = 'none';
+          emptyEl.style.display = 'block';
+          wrapper.style.display = 'none';
+          return;
+        }
+
+        emptyEl.style.display = 'none';
+        var slice = currentFiltered.slice(0, visibleCount);
+        grid.innerHTML = slice.map(function (tour, idx) {
+          var isFirst = idx === 0 && currentFiltered.length > 1;
+          var colClass = isFirst ? 'col-xl-8 col-md-12 col-featured' : 'col-xl-4 col-md-6';
+          return '<div class="' + colClass + '">' + renderCard(tour) + '</div>';
+        }).join('');
+        grid.style.display = '';
+
+        var remaining = currentFiltered.length - visibleCount;
+        if (remaining > 0) {
+          btn.innerHTML = '<i class="bi bi-chevron-down me-1"></i>Xem thêm (' + remaining + ' tour)';
+          wrapper.style.display = 'block';
+        } else {
+          wrapper.style.display = 'none';
+        }
+      }
+
+      window.loadMoreTours = function () {
+        visibleCount += TOURS_PER_PAGE;
+        renderVisible();
+      };
+
+      function updateStats() {
+        var total = currentFiltered.length;
+        var open = currentFiltered.filter(function (t) { return (t.publishStatus || '').toLowerCase() === 'published'; }).length;
+        var ongoing = currentFiltered.filter(function (t) { return (t.publishStatus || '').toLowerCase() === 'ongoing'; }).length;
+        var elTotal = document.getElementById('stat-total');
+        var elOpen = document.getElementById('stat-open');
+        var elOngoing = document.getElementById('stat-ongoing');
+        if (elTotal) elTotal.textContent = total;
+        if (elOpen) elOpen.textContent = open;
+        if (elOngoing) elOngoing.textContent = ongoing;
+      }
+
+      function applyFilters() {
+        var term = (document.getElementById('tour-filter-search').value || '').trim().toLowerCase();
+        var companyVal = document.getElementById('tour-filter-company').value;
+        var minSlider = document.getElementById('price-min-slider');
+        var maxSlider = document.getElementById('price-max-slider');
+        var feeMin = minSlider ? parseInt(minSlider.value) : 0;
+        var feeMax = maxSlider ? parseInt(maxSlider.value) : priceSliderMax;
+        var isMaxed = feeMax >= priceSliderMax;
+
+        var statusOrder = { published: 0, ongoing: 1, expired: 2, hidden: 3, archived: 4 };
+
+        currentFiltered = allTours.filter(function (tour) {
+          if (term) {
+            var title = (tour.tittle || tour.title || '').toLowerCase();
+            var company = (tour.company && tour.company.name ? tour.company.name : '').toLowerCase();
+            var loc = (tour.location || '').toLowerCase();
+            if (title.indexOf(term) === -1 && company.indexOf(term) === -1 && loc.indexOf(term) === -1) return false;
+          }
+          if (activeTab && (tour.publishStatus || '').toLowerCase() !== activeTab) return false;
+          if (companyVal && (!tour.company || tour.company.name !== companyVal)) return false;
+          var fee = tour.fee || 0;
+          if (fee < feeMin) return false;
+          if (!isMaxed && fee > feeMax) return false;
+          return true;
+        }).sort(function (a, b) {
+          var sa = statusOrder[(a.publishStatus || '').toLowerCase()] ?? 9;
+          var sb = statusOrder[(b.publishStatus || '').toLowerCase()] ?? 9;
+          if (sa !== sb) return sa - sb;
+          // Trong cùng nhóm "published": đóng đăng ký sớm nhất lên đầu (urgent first)
+          if (sa === 0) {
+            var ca = a.bookingCloseAt ? new Date(a.bookingCloseAt).getTime() : Infinity;
+            var cb = b.bookingCloseAt ? new Date(b.bookingCloseAt).getTime() : Infinity;
+            return ca - cb;
+          }
+          // Nhóm khác: ngày bắt đầu gần nhất lên đầu
+          var da = a.startDate ? new Date(a.startDate).getTime() : 0;
+          var db = b.startDate ? new Date(b.startDate).getTime() : 0;
+          return db - da;
+        });
+
+        visibleCount = TOURS_PER_PAGE;
+        updateStats();
+        renderVisible();
+      }
+
+      document.getElementById('tour-filter-search').addEventListener('input', applyFilters);
+      document.getElementById('tour-filter-company').addEventListener('change', applyFilters);
+      document.getElementById('tour-filter-clear').addEventListener('click', function () {
+        document.getElementById('tour-filter-search').value = '';
+        document.getElementById('tour-filter-company').value = '';
+        document.querySelectorAll('.tour-tab-pill').forEach(function (p) { p.classList.remove('active'); });
+        var allPill = document.querySelector('.tour-tab-pill[data-status=""]');
+        if (allPill) allPill.classList.add('active');
+        activeTab = '';
+        setPriceSliderMax(priceSliderMax);
+        applyFilters();
+      });
+
+      (function () {
+        var minSlider = document.getElementById('price-min-slider');
+        var maxSlider = document.getElementById('price-max-slider');
+        minSlider.addEventListener('input', function () {
+          if (parseInt(minSlider.value) > parseInt(maxSlider.value)) minSlider.value = maxSlider.value;
+          updatePriceTrack();
+          applyFilters();
+        });
+        maxSlider.addEventListener('input', function () {
+          if (parseInt(maxSlider.value) < parseInt(minSlider.value)) maxSlider.value = minSlider.value;
+          updatePriceTrack();
+          applyFilters();
+        });
+      })();
+
+      document.querySelectorAll('.tour-tab-pill').forEach(function (pill) {
+        pill.addEventListener('click', function () {
+          document.querySelectorAll('.tour-tab-pill').forEach(function (p) { p.classList.remove('active'); });
+          pill.classList.add('active');
+          activeTab = pill.getAttribute('data-status') || '';
+          applyFilters();
+        });
+      });
+
+      function friendlyError(err) {
+        var msg = (err && err.message) || '';
+        if (!msg || msg === 'Failed to fetch' || err.name === 'TypeError') return 'Không thể kết nối đến máy chủ — kiểm tra kết nối mạng hoặc thử lại sau.';
+        if (msg.indexOf('HTTP 401') !== -1) return 'Phiên đăng nhập đã hết hạn — vui lòng đăng nhập lại.';
+        if (msg.indexOf('HTTP 403') !== -1) return 'Không có quyền truy cập nội dung này.';
+        if (msg.indexOf('HTTP 404') !== -1) return 'Không tìm thấy dữ liệu (404).';
+        if (msg.indexOf('HTTP 5') !== -1) return 'Lỗi phía máy chủ — vui lòng thử lại sau.';
+        return msg;
+      }
+
+      function loadTours() {
+        document.getElementById('tours-loading').style.display = '';
+        document.getElementById('tours-error').style.display = 'none';
+        document.getElementById('tours-empty').style.display = 'none';
+        document.getElementById('tours-grid').style.display = 'none';
+        document.getElementById('tours-filter-bar').style.display = 'none';
+        document.getElementById('tours-load-more-wrapper').style.display = 'none';
+        allTours = [];
+        currentFiltered = [];
+        visibleCount = TOURS_PER_PAGE;
+        activeTab = '';
+
+        fetch(API, { headers: authHeaders() })
+          .then(function(res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function(tours) {
+            document.getElementById('tours-loading').style.display = 'none';
+            var visibleTours = (Array.isArray(tours) ? tours : []).filter(function (t) {
+              return (t.publishStatus || '').toLowerCase() !== 'archived';
+            });
+            if (visibleTours.length === 0) {
+              document.getElementById('tours-empty').style.display = 'block';
+              return;
+            }
+            allTours = visibleTours;
+            document.getElementById('tours-filter-bar').style.display = '';
+            // reset controls
+            document.querySelectorAll('.tour-tab-pill').forEach(function (p) { p.classList.remove('active'); });
+            var allPill = document.querySelector('.tour-tab-pill[data-status=""]');
+            if (allPill) allPill.classList.add('active');
+            document.getElementById('tour-filter-search').value = '';
+            document.getElementById('tour-filter-company').value = '';
+            populateCompanyFilter();
+            var maxFee = Math.max.apply(null, allTours.map(function (t) { return t.fee || 0; }));
+            setPriceSliderMax(maxFee || 10000000);
+            applyFilters();
+          })
+          .catch(function(err) {
+            document.getElementById('tours-loading').style.display = 'none';
+            document.getElementById('tours-error').style.display = 'block';
+            document.getElementById('tours-error-msg').textContent = friendlyError(err);
+          });
+      }
+
+      window.loadTours = loadTours;
+      loadTours();
+
+      // Tour bị đổi trạng thái (mở/đóng đăng ký...) từ admin — cập nhật ngay trên trang,
+      // không cần F5.
+      if (window.TurTourRealtime) {
+        window.TurTourRealtime.onTourUpdated(function (payload) {
+          if (!payload) return;
+          if ((payload.publishStatus || '').toLowerCase() === 'archived') {
+            allTours = allTours.filter(function (t) { return t.id !== payload.tourId; });
+            applyFilters();
+            return;
+          }
+          var tour = allTours.find(function (t) { return t.id === payload.tourId; });
+          if (tour) {
+            tour.publishStatus = payload.publishStatus;
+            applyFilters();
+          }
+        });
+      }
+    })();
+    </script>
+
 
     <!-- About Section -->
     <section id="about" class="about section">
@@ -285,739 +1223,6 @@
 
     </section><!-- /Services Section -->
 
-    <!-- Tours Section -->
-    <section id="portfolio" class="portfolio section">
-
-      <style>
-        /* ── Tour card styles ── */
-        .tour-card {
-          background: #fff;
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 4px 20px rgba(0,0,0,.08);
-          transition: transform .3s ease, box-shadow .3s ease;
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-        }
-        .tour-card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 12px 32px rgba(0,0,0,.14);
-        }
-        .tour-card .tc-thumb {
-          position: relative;
-          height: 210px;
-          overflow: hidden;
-          background: #f0f4f8;
-        }
-        .tour-card .tc-thumb img {
-          width: 100%; height: 100%;
-          object-fit: cover;
-          transition: transform .4s ease;
-        }
-        .tour-card:hover .tc-thumb img { transform: scale(1.06); }
-        .tour-card .tc-thumb .tc-status {
-          position: absolute;
-          top: 12px; right: 12px;
-          padding: 5px 12px;
-          border-radius: 20px;
-          font-size: .72rem;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: .04em;
-          color: #fff;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-          text-shadow: 0 1px 1px rgba(0,0,0,0.2);
-        }
-        /* Bảng màu theo chuẩn Bootstrap (primary/success/warning/danger/secondary) — dùng
-           publishStatus (Published/Expired/Archived) thay cho status cũ (Upcoming/Open/...). */
-        .tc-status.hidden    { background: #A18F7A; }
-        .tc-status.published { background: #198754; }
-        .tc-status.expired   { background: #ffc107; color: #212529; text-shadow: none; }
-        .tc-status.archived  { background: #6c757d; }
-        .tour-card .tc-body {
-          padding: 20px;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-        .tour-card .tc-title {
-          font-size: 1rem;
-          font-weight: 700;
-          color: #1a1a2e;
-          margin: 0;
-          display: -webkit-box;
-          line-clamp: 2;          /* Thuộc tính chuẩn */
-          -webkit-line-clamp: 2;  /* Hỗ trợ trình duyệt hiện tại */
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        .tour-card .tc-company {
-          font-size: .8rem;
-          color: #e84545;
-          font-weight: 600;
-        }
-        .tour-card .tc-meta {
-          font-size: .8rem;
-          color: #666;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-        .tour-card .tc-meta i { color: #aaa; flex-shrink: 0; }
-        .tour-card .tc-footer {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-top: 1px solid #f0f0f0;
-          padding: 14px 20px;
-          margin-top: auto;
-        }
-        .tour-card .tc-price {
-          font-size: 1.05rem;
-          font-weight: 800;
-          color: #e84545;
-        }
-        .tour-card .tc-price.free { color: #4caf50; }
-        .tour-card .tc-slots {
-          font-size: .75rem;
-          color: #888;
-        }
-        .tc-placeholder {
-          width: 100%; height: 100%;
-          display: flex; align-items: center; justify-content: center;
-          background: linear-gradient(135deg,#e8f4fd,#d1ecf1);
-          color: #5bc0de;
-          font-size: 3rem;
-        }
-        #tours-loading, #tours-error, #tours-empty {
-          text-align: center;
-          padding: 48px 20px;
-          color: #888;
-        }
-        .tours-grid { --bs-gutter-y: 1.5rem; }
-        .btn-detail, .btn-register {
-          flex: 1;
-        }
-        .btn-detail {
-          background-color: #fff;
-          color: #e84545;
-          border: 1.5px solid #e84545;
-          padding: 10px 16px;
-          border-radius: 6px;
-          font-weight: 600;
-          font-size: 0.85rem;
-          cursor: pointer;
-          transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.1s;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-          text-decoration: none;
-        }
-        .btn-detail:hover {
-          background-color: #fdf2f2;
-          color: #d33c3c;
-          border-color: #d33c3c;
-        }
-        .btn-detail:active {
-          transform: translateY(1px);
-        }
-        .btn-register {
-          background-color: #e84545;
-          color: #fff;
-          border: none;
-          padding: 10px 16px;
-          border-radius: 6px;
-          font-weight: 600;
-          font-size: 0.85rem;
-          cursor: pointer;
-          transition: background-color 0.2s, transform 0.1s;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-        }
-        .btn-register:hover {
-          background-color: #d33c3c;
-          color: #fff;
-          transform: translateY(-1px);
-        }
-        .btn-register:active {
-          transform: translateY(1px);
-        }
-        .btn-register:disabled {
-          background-color: #b0b8c4;
-          color: #fff;
-          cursor: not-allowed;
-          transform: none !important;
-        }
-        @keyframes tt-shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
-        .sk{display:block;background:linear-gradient(90deg,#ebebeb 25%,#f5f5f5 50%,#ebebeb 75%);background-size:600px 100%;animation:tt-shimmer 1.4s infinite linear;border-radius:4px;}
-      </style>
-
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Tour</h2>
-        <p>DANH SÁCH TOUR THAM QUAN</p>
-      </div><!-- End Section Title -->
-
-      <div class="container">
-
-        <!-- Search / filter bar -->
-        <div class="row gy-2 align-items-end mb-2" id="tours-filter-bar" style="display:none;" data-aos="fade-up">
-          <div class="col-md-4">
-            <input type="text" id="tour-filter-search" class="form-control" placeholder="Tìm theo tên tour, địa điểm, doanh nghiệp...">
-          </div>
-          <div class="col-md-3 col-6">
-            <select id="tour-filter-status" class="form-select">
-              <option value="">Tất cả trạng thái</option>
-              <option value="published">Mở đăng ký</option>
-              <option value="expired">Đã đóng</option>
-            </select>
-          </div>
-          <div class="col-md-3 col-6">
-            <select id="tour-filter-company" class="form-select">
-              <option value="">Tất cả doanh nghiệp</option>
-            </select>
-          </div>
-          <div class="col-md-2">
-            <button type="button" id="tour-filter-clear" class="btn btn-outline-secondary w-100">Xóa lọc</button>
-          </div>
-          <!-- Advanced filters: row 2 -->
-          <div class="col-md-3 col-sm-6">
-            <select id="tour-filter-location" class="form-select">
-              <option value="">Tất cả địa điểm</option>
-            </select>
-          </div>
-          <div class="col-md-2 col-6">
-            <input type="number" id="tour-filter-fee-min" class="form-control" placeholder="Phí từ (đ)" min="0">
-          </div>
-          <div class="col-md-2 col-6">
-            <input type="number" id="tour-filter-fee-max" class="form-control" placeholder="Phí đến (đ)" min="0">
-          </div>
-          <div class="col-md-2 col-sm-6">
-            <div id="tour-filter-free-wrap" class="form-check mt-1">
-              <input class="form-check-input" type="checkbox" id="tour-filter-free">
-              <label class="form-check-label" for="tour-filter-free" style="font-size:0.88rem;">Miễn phí</label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Loading state: skeleton cards -->
-        <div id="tours-loading" data-aos="fade-up" style="text-align:unset;padding:0;color:inherit;">
-          <div class="row gy-4 tours-grid">
-            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:88%;"></div><div class="sk" style="height:13px;width:50%;"></div><div class="sk" style="height:13px;width:66%;"></div><div class="sk" style="height:13px;width:57%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:80px;"></div><div class="sk" style="height:13px;width:70px;"></div></div></div></div>
-            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:75%;"></div><div class="sk" style="height:13px;width:58%;"></div><div class="sk" style="height:13px;width:72%;"></div><div class="sk" style="height:13px;width:48%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:90px;"></div><div class="sk" style="height:13px;width:75px;"></div></div></div></div>
-            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:82%;"></div><div class="sk" style="height:13px;width:45%;"></div><div class="sk" style="height:13px;width:60%;"></div><div class="sk" style="height:13px;width:54%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:85px;"></div><div class="sk" style="height:13px;width:68px;"></div></div></div></div>
-            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:91%;"></div><div class="sk" style="height:13px;width:54%;"></div><div class="sk" style="height:13px;width:68%;"></div><div class="sk" style="height:13px;width:62%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:78px;"></div><div class="sk" style="height:13px;width:72px;"></div></div></div></div>
-            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:78%;"></div><div class="sk" style="height:13px;width:47%;"></div><div class="sk" style="height:13px;width:63%;"></div><div class="sk" style="height:13px;width:55%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:88px;"></div><div class="sk" style="height:13px;width:65px;"></div></div></div></div>
-            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:85%;"></div><div class="sk" style="height:13px;width:53%;"></div><div class="sk" style="height:13px;width:70%;"></div><div class="sk" style="height:13px;width:59%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:82px;"></div><div class="sk" style="height:13px;width:74px;"></div></div></div></div>
-            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:72%;"></div><div class="sk" style="height:13px;width:60%;"></div><div class="sk" style="height:13px;width:55%;"></div><div class="sk" style="height:13px;width:50%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:76px;"></div><div class="sk" style="height:13px;width:66px;"></div></div></div></div>
-            <div class="col-xl-4 col-md-6"><div class="tour-card"><div class="sk" style="height:210px;border-radius:0;"></div><div class="tc-body"><div class="sk" style="height:20px;width:80%;"></div><div class="sk" style="height:13px;width:56%;"></div><div class="sk" style="height:13px;width:64%;"></div><div class="sk" style="height:13px;width:52%;"></div><div class="d-flex gap-2 mt-3"><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div><div class="sk" style="height:38px;flex:1;border-radius:6px;"></div></div></div><div class="tc-footer"><div class="sk" style="height:16px;width:84px;"></div><div class="sk" style="height:13px;width:69px;"></div></div></div></div>
-          </div>
-        </div>
-
-        <!-- Error state -->
-        <div id="tours-error" style="display:none;" data-aos="fade-up">
-          <i class="bi bi-exclamation-triangle" style="font-size:2.5rem;color:#e84545;"></i>
-          <p id="tours-error-msg" class="mt-2">Không thể tải danh sách tour.</p>
-          <button type="button" class="btn btn-outline-danger btn-sm mt-1" onclick="window.loadTours && window.loadTours()">
-            <i class="bi bi-arrow-clockwise me-1"></i>Thử lại
-          </button>
-        </div>
-
-        <!-- Empty state -->
-        <div id="tours-empty" style="display:none;" data-aos="fade-up">
-          <i class="bi bi-calendar-x" style="font-size:2.5rem;"></i>
-          <p class="mt-2">Chưa có tour nào được đăng.</p>
-        </div>
-
-        <!-- Tour cards grid -->
-        <div id="tours-grid" class="row gy-4 tours-grid" style="display:none;" data-aos="fade-up" data-aos-delay="100">
-        </div><!-- End Tours Grid -->
-
-        <!-- Load more -->
-        <div id="tours-load-more-wrapper" style="display:none; text-align:center; margin-top:36px;">
-          <button type="button" id="tours-load-more-btn" class="btn btn-outline-danger px-5 py-2" onclick="window.loadMoreTours && window.loadMoreTours()">
-            <i class="bi bi-chevron-down me-1"></i>Xem thêm
-          </button>
-        </div>
-
-      </div>
-
-    </section><!-- /Tours Section -->
-
-    <script>
-    (function () {
-      var API_BASE = window.TURTOUR_API_BASE;
-      var API = API_BASE + '/tours';
-
-      function getSession() {
-        try {
-          return JSON.parse(localStorage.getItem('turtour.admin.session'));
-        } catch (e) {
-          return null;
-        }
-      }
-
-      function authHeaders() {
-        var session = getSession();
-        return session && session.token ? { Authorization: 'Bearer ' + session.token } : {};
-      }
-
-      function fmt(dateStr) {
-        if (!dateStr) return '—';
-        var d = new Date(dateStr);
-        return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
-      }
-
-      function fmtDateTime(dateStr) {
-        if (!dateStr) return '—';
-        var d = new Date(dateStr);
-        return d.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-      }
-
-      // 4 giai đoạn của cửa sổ nhận đăng ký — tách biệt khỏi publishStatus (chỉ quyết định
-      // tour có hiển thị hay không, không quyết định đăng ký được hay không).
-      function getBookingPhase(tour) {
-        var now = new Date();
-        var start = tour.startDate ? new Date(tour.startDate) : null;
-        var end = tour.endDate ? new Date(tour.endDate) : null;
-        if (start && end && now >= start && now <= end) return 'ongoing';
-
-        var openAt = tour.bookingOpenAt ? new Date(tour.bookingOpenAt) : null;
-        if (openAt && now < openAt) return 'before-open';
-
-        var closeAt = tour.bookingCloseAt ? new Date(tour.bookingCloseAt) : null;
-        if (closeAt && now > closeAt) return 'after-close';
-
-        return 'open';
-      }
-
-      function statusLabel(s) {
-        if (!s) return '';
-        switch (s.toLowerCase()) {
-          case 'published': return 'Mở đăng ký';
-          case 'expired':   return 'Đã đóng';
-          case 'archived':  return 'Đã hủy/Lưu trữ';
-          case 'hidden':    return 'Chờ duyệt';
-          default: return s;
-        }
-      }
-
-      function thumbnail(tour) {
-        var imgs = tour.tourImages || [];
-        var thumb = imgs.find(function(i){ return i.isthumbnail || i.isThumbnail || i.Isthumbnail; });
-        return (thumb || imgs[0] || {}).imageUrl || '';
-      }
-
-      function priceText(fee) {
-        if (!fee || fee === 0) return { text: 'Miễn phí', free: true };
-        return { text: Number(fee).toLocaleString('vi-VN') + ' ₫', free: false };
-      }
-
-      function slots(tour) {
-        var current = tour.currentParticipants || 0;
-        var max = tour.maxParticipants || 0;
-        return (max - current) + '/' + max + ' chỗ trống';
-      }
-
-      window.toggleInterest = function (tourId, btn) {
-        var session = getSession();
-
-        if (!session || !session.token) {
-          showToast('Bạn cần đăng nhập bằng tài khoản Sinh viên để đánh dấu quan tâm tour.', 'info', {
-            actionLabel: 'Đăng nhập ngay',
-            actionHref: '/auth/sign-in'
-          });
-          return;
-        }
-
-        var roles = session.roles || [];
-        if (roles.indexOf('Student') === -1) {
-          showToast('Chỉ tài khoản Sinh viên mới có thể đánh dấu quan tâm tour.', 'error');
-          return;
-        }
-
-        var isInterested = btn.getAttribute('data-interested') === 'true';
-        btn.disabled = true;
-
-        fetch(API + '/' + tourId + '/interest', {
-          method: isInterested ? 'DELETE' : 'POST',
-          headers: authHeaders()
-        })
-          .then(function (res) {
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            return res.json();
-          })
-          .then(function (data) {
-            var nowInterested = !!data.interested;
-            btn.setAttribute('data-interested', nowInterested);
-            btn.innerHTML = '<i class="bi ' + (nowInterested ? 'bi-heart-fill' : 'bi-heart') + '"></i> '
-              + (nowInterested ? 'Đã quan tâm' : 'Quan tâm');
-            btn.disabled = false;
-
-            var tourInList = allTours.find(function (t) { return t.id === tourId; });
-            if (tourInList) tourInList.isInterested = nowInterested;
-
-            showToast(nowInterested
-              ? 'Đã đánh dấu quan tâm, bạn sẽ được báo khi tour mở đăng ký!'
-              : 'Đã bỏ quan tâm.', 'success');
-          })
-          .catch(function () {
-            btn.disabled = false;
-            showToast('Thao tác thất bại, vui lòng thử lại.', 'error');
-          });
-      };
-
-      window.registerTour = function (tourId, btn) {
-        var session = getSession();
-
-        if (!session || !session.token) {
-          showToast('Bạn cần đăng nhập bằng tài khoản Sinh viên để đăng ký tham gia tour.', 'info', {
-            actionLabel: 'Đăng nhập ngay',
-            actionHref: '/auth/sign-in'
-          });
-          return;
-        }
-
-        var roles = session.roles || [];
-        if (!roles.includes('Student')) {
-          showToast('Chỉ tài khoản Sinh viên mới có thể đăng ký tham gia các tour du lịch.', 'error');
-          return;
-        }
-
-        var originalText = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Đang xử lý...';
-
-        fetch(API_BASE + '/registrations', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + session.token
-          },
-          body: JSON.stringify({ tourId: tourId, notes: 'Đăng ký từ trang chủ' })
-        })
-        .then(function(res) {
-          if (res.status === 401) {
-            throw new Error('Hết phiên làm việc. Vui lòng đăng nhập lại.');
-          }
-          return res.json().then(function(data) {
-            if (!res.ok) {
-              throw new Error(data.message || 'Đăng ký thất bại.');
-            }
-            return data;
-          });
-        })
-        .then(function(data) {
-          showToast('Đăng ký tham gia tour thành công! Trạng thái đăng ký của bạn là: ' + (data.status === 'Waitinglisted' ? 'Danh sách chờ (Tour đã đầy)' : 'Chờ duyệt') + '.', 'success');
-          setTimeout(function () { window.location.reload(); }, 1200);
-        })
-        .catch(function(err) {
-          showToast(err.message || 'Không thể đăng ký lúc này.', 'error');
-          btn.disabled = false;
-          btn.innerHTML = originalText;
-        });
-      };
-
-      window.shareTour = function (id, title, url) {
-        if (navigator.share) {
-          navigator.share({ title: title, url: url }).catch(function () {});
-        } else {
-          navigator.clipboard.writeText(url).then(function () {
-            showToast('Đã sao chép liên kết tour!', 'success');
-          }).catch(function () {
-            window.prompt('Sao chép liên kết:', url);
-          });
-        }
-      };
-
-      function renderCard(tour) {
-        var imgUrl = thumbnail(tour);
-        var status = (tour.publishStatus || '').toLowerCase();
-        var p = priceText(tour.fee);
-        var company = (tour.company && tour.company.name) ? tour.company.name : '';
-        var loc = tour.location || '';
-        var title = tour.tittle || tour.title || '(Chưa đặt tên)';
-
-        var thumbHtml = imgUrl
-          ? '<img src="' + imgUrl + '" alt="' + title + '" loading="lazy" onerror="this.style.display=\'none\'; this.parentNode.querySelector(\'.tc-placeholder\').style.display=\'flex\';">'
-            + '<div class="tc-placeholder" style="display:none; width: 100%; height: 100%; align-items: center; justify-content: center; background: linear-gradient(135deg,#e8f4fd,#d1ecf1); color: #5bc0de; font-size: 3rem;"><i class="bi bi-image"></i></div>'
-          : '<div class="tc-placeholder"><i class="bi bi-image"></i></div>';
-
-        // Published chỉ nghĩa là "xem được" — đăng ký được hay không còn tùy cửa sổ riêng
-        // (bookingOpenAt..bookingCloseAt), và việc tour đang diễn ra (start..end) luôn chặn đăng ký
-        // dù còn trong cửa sổ hay không.
-        var canRegisterStatus = false;
-        var btnText = 'Đăng ký ngay';
-        if (status === 'expired') {
-          btnText = 'Đã đóng';
-        } else if (status === 'archived') {
-          btnText = 'Đã hủy';
-        } else if (status === 'published') {
-          var phase = getBookingPhase(tour);
-          if (phase === 'open') {
-            canRegisterStatus = true;
-          } else if (phase === 'before-open') {
-            btnText = 'Đăng ký mở từ ' + fmtDateTime(tour.bookingOpenAt);
-          } else if (phase === 'ongoing') {
-            btnText = 'Tour đang diễn ra';
-          } else {
-            btnText = 'Đã đóng đăng ký';
-          }
-        }
-
-        // Nếu student đã đăng ký tour này, thay nút bằng badge trạng thái đăng ký.
-        var regStatusLabel = {
-          Pending:       { text: 'Chờ duyệt',        icon: 'bi-hourglass-split',   cls: 'btn-warning text-dark' },
-          Waitinglisted: { text: 'Danh sách chờ',     icon: 'bi-people',            cls: 'btn-secondary' },
-          Approved:      { text: 'Đã được duyệt',     icon: 'bi-check-circle-fill', cls: 'btn-outline-success' },
-          Paid:          { text: 'Đã thanh toán',      icon: 'bi-patch-check-fill',  cls: 'btn-success' },
-          CheckedIn:     { text: 'Đã check-in',        icon: 'bi-qr-code-scan',      cls: 'btn-success' },
-          Completed:     { text: 'Đã hoàn thành',      icon: 'bi-trophy-fill',       cls: 'btn-outline-dark' },
-          Rejected:      { text: 'Đã hủy/từ chối',    icon: 'bi-x-circle',          cls: 'btn-outline-danger' },
-        };
-        var myReg = tour.isRegistered ? (regStatusLabel[tour.myRegistrationStatus] || null) : null;
-
-        var isInterested = !!tour.isInterested;
-        var shareUrl = window.location.origin + window.location.pathname.replace('index.html', '') + 'tour-details.html?id=' + tour.id;
-
-        var registerBtnHtml = myReg
-          ? '<a href="my-tours.html" class="btn-register ' + myReg.cls + '" style="text-decoration:none;font-size:0.82rem;">'
-              + '<i class="bi ' + myReg.icon + '"></i> ' + myReg.text + '</a>'
-          : '<button class="btn-register" onclick="registerTour(\'' + tour.id + '\', this)"'
-              + (canRegisterStatus ? '' : ' disabled') + '>'
-              + '<i class="bi bi-send-fill"></i> ' + btnText + '</button>';
-
-        var btnHtml = '<div class="d-flex gap-2 mt-3">'
-          + '<a href="tour-details.html?id=' + tour.id + '" class="btn-detail"><i class="bi bi-info-circle"></i> Chi tiết</a>'
-          + registerBtnHtml
-          + '</div>'
-          + '<div class="d-flex gap-2 mt-2">'
-          + '<button class="btn btn-sm ' + (isInterested ? 'btn-danger' : 'btn-outline-danger') + ' tc-interest-btn" style="font-size:0.78rem;border-radius:6px;flex:1;" data-interested="' + isInterested + '" onclick="toggleInterest(\'' + tour.id + '\', this)">'
-          + '<i class="bi ' + (isInterested ? 'bi-heart-fill' : 'bi-heart') + '"></i> ' + (isInterested ? 'Đã lưu' : 'Lưu tour')
-          + '</button>'
-          + '<button class="btn btn-sm btn-outline-secondary" style="font-size:0.78rem;border-radius:6px;" onclick="shareTour(\'' + tour.id + '\', \'' + title.replace(/'/g, "\\'") + '\', \'' + shareUrl + '\')">'
-          + '<i class="bi bi-share"></i>'
-          + '</button>'
-          + '</div>';
-
-        return '<div class="col-xl-4 col-md-6">'
-          + '<div class="tour-card">'
-            + '<div class="tc-thumb">'
-              + thumbHtml
-              + '<span class="tc-status ' + status + '">' + statusLabel(tour.publishStatus) + '</span>'
-            + '</div>'
-            + '<div class="tc-body">'
-              + '<h4 class="tc-title">' + title + '</h4>'
-              + (company ? '<div class="tc-company"><i class="bi bi-building me-1"></i>' + company + '</div>' : '')
-              + (loc ? '<div class="tc-meta"><i class="bi bi-geo-alt"></i><span>' + loc + '</span></div>' : '')
-              + '<div class="tc-meta"><i class="bi bi-calendar3"></i><span>' + fmtDateTime(tour.startDate) + ' — ' + fmtDateTime(tour.endDate) + '</span></div>'
-              + btnHtml
-            + '</div>'
-            + '<div class="tc-footer">'
-              + '<span class="tc-price' + (p.free ? ' free' : '') + '">' + p.text + '</span>'
-              + '<span class="tc-slots"><i class="bi bi-people me-1"></i>' + slots(tour) + '</span>'
-            + '</div>'
-          + '</div>'
-        + '</div>';
-      }
-
-      var allTours = [];
-      var currentFiltered = [];
-      var TOURS_PER_PAGE = 6;
-      var visibleCount = TOURS_PER_PAGE;
-
-      function renderVisible() {
-        var grid = document.getElementById('tours-grid');
-        var emptyEl = document.getElementById('tours-empty');
-        var wrapper = document.getElementById('tours-load-more-wrapper');
-        var btn = document.getElementById('tours-load-more-btn');
-
-        if (currentFiltered.length === 0) {
-          grid.innerHTML = '';
-          grid.style.display = 'none';
-          emptyEl.style.display = 'block';
-          wrapper.style.display = 'none';
-          return;
-        }
-
-        emptyEl.style.display = 'none';
-        grid.innerHTML = currentFiltered.slice(0, visibleCount).map(renderCard).join('');
-        grid.style.display = '';
-
-        var remaining = currentFiltered.length - visibleCount;
-        if (remaining > 0) {
-          btn.innerHTML = '<i class="bi bi-chevron-down me-1"></i>Xem thêm (' + remaining + ' tour)';
-          wrapper.style.display = 'block';
-        } else {
-          wrapper.style.display = 'none';
-        }
-      }
-
-      window.loadMoreTours = function () {
-        visibleCount += TOURS_PER_PAGE;
-        renderVisible();
-      };
-
-      function applyFilters() {
-        var term = (document.getElementById('tour-filter-search').value || '').trim().toLowerCase();
-        var statusVal = document.getElementById('tour-filter-status').value;
-        var companyVal = document.getElementById('tour-filter-company').value;
-        var locationVal = document.getElementById('tour-filter-location').value;
-        var feeMin = Number(document.getElementById('tour-filter-fee-min').value) || 0;
-        var feeMax = Number(document.getElementById('tour-filter-fee-max').value) || 0;
-        var freeOnly = document.getElementById('tour-filter-free').checked;
-
-        currentFiltered = allTours.filter(function (tour) {
-          if (term) {
-            var title = (tour.tittle || tour.title || '').toLowerCase();
-            var company = (tour.company && tour.company.name ? tour.company.name : '').toLowerCase();
-            var loc = (tour.location || '').toLowerCase();
-            if (title.indexOf(term) === -1 && company.indexOf(term) === -1 && loc.indexOf(term) === -1) return false;
-          }
-          if (statusVal && (tour.publishStatus || '').toLowerCase() !== statusVal) return false;
-          if (companyVal && (!tour.company || tour.company.name !== companyVal)) return false;
-          if (locationVal && (tour.location || '') !== locationVal) return false;
-          var fee = tour.fee || 0;
-          if (freeOnly && fee !== 0) return false;
-          if (feeMin > 0 && fee < feeMin) return false;
-          if (feeMax > 0 && fee > feeMax) return false;
-          return true;
-        });
-
-        visibleCount = TOURS_PER_PAGE;
-        renderVisible();
-      }
-
-      function populateCompanyFilter() {
-        var companyEl = document.getElementById('tour-filter-company');
-        var locationEl = document.getElementById('tour-filter-location');
-        var names = [];
-        var locs = [];
-        allTours.forEach(function (tour) {
-          var name = tour.company && tour.company.name;
-          if (name && names.indexOf(name) === -1) names.push(name);
-          var loc = tour.location;
-          if (loc && locs.indexOf(loc) === -1) locs.push(loc);
-        });
-        names.sort();
-        names.forEach(function (name) {
-          var opt = document.createElement('option');
-          opt.value = name;
-          opt.textContent = name;
-          companyEl.appendChild(opt);
-        });
-        locs.sort();
-        locs.forEach(function (loc) {
-          var opt = document.createElement('option');
-          opt.value = loc;
-          opt.textContent = loc;
-          locationEl.appendChild(opt);
-        });
-      }
-
-      document.getElementById('tour-filter-search').addEventListener('input', applyFilters);
-      document.getElementById('tour-filter-status').addEventListener('change', applyFilters);
-      document.getElementById('tour-filter-company').addEventListener('change', applyFilters);
-      document.getElementById('tour-filter-location').addEventListener('change', applyFilters);
-      document.getElementById('tour-filter-fee-min').addEventListener('input', applyFilters);
-      document.getElementById('tour-filter-fee-max').addEventListener('input', applyFilters);
-      document.getElementById('tour-filter-free').addEventListener('change', function () {
-        if (this.checked) {
-          document.getElementById('tour-filter-fee-min').value = '';
-          document.getElementById('tour-filter-fee-max').value = '';
-        }
-        applyFilters();
-      });
-      document.getElementById('tour-filter-clear').addEventListener('click', function () {
-        document.getElementById('tour-filter-search').value = '';
-        document.getElementById('tour-filter-status').value = '';
-        document.getElementById('tour-filter-company').value = '';
-        document.getElementById('tour-filter-location').value = '';
-        document.getElementById('tour-filter-fee-min').value = '';
-        document.getElementById('tour-filter-fee-max').value = '';
-        document.getElementById('tour-filter-free').checked = false;
-        applyFilters();
-      });
-
-      function friendlyError(err) {
-        var msg = (err && err.message) || '';
-        if (!msg || msg === 'Failed to fetch' || err.name === 'TypeError') return 'Không thể kết nối đến máy chủ — kiểm tra kết nối mạng hoặc thử lại sau.';
-        if (msg.indexOf('HTTP 401') !== -1) return 'Phiên đăng nhập đã hết hạn — vui lòng đăng nhập lại.';
-        if (msg.indexOf('HTTP 403') !== -1) return 'Không có quyền truy cập nội dung này.';
-        if (msg.indexOf('HTTP 404') !== -1) return 'Không tìm thấy dữ liệu (404).';
-        if (msg.indexOf('HTTP 5') !== -1) return 'Lỗi phía máy chủ — vui lòng thử lại sau.';
-        return msg;
-      }
-
-      function loadTours() {
-        document.getElementById('tours-loading').style.display = '';
-        document.getElementById('tours-error').style.display = 'none';
-        document.getElementById('tours-empty').style.display = 'none';
-        document.getElementById('tours-grid').style.display = 'none';
-        document.getElementById('tours-filter-bar').style.display = 'none';
-        document.getElementById('tours-load-more-wrapper').style.display = 'none';
-        allTours = [];
-        currentFiltered = [];
-        visibleCount = TOURS_PER_PAGE;
-        var companyEl = document.getElementById('tour-filter-company');
-        while (companyEl.options.length > 1) companyEl.remove(1);
-        var locationEl = document.getElementById('tour-filter-location');
-        while (locationEl.options.length > 1) locationEl.remove(1);
-
-        fetch(API, { headers: authHeaders() })
-          .then(function(res) {
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            return res.json();
-          })
-          .then(function(tours) {
-            document.getElementById('tours-loading').style.display = 'none';
-            // Tour đã hủy/lưu trữ không hiển thị ở trang public — chỉ admin/đối tác quản lý mới cần thấy.
-            var visibleTours = (Array.isArray(tours) ? tours : []).filter(function (t) {
-              return (t.publishStatus || '').toLowerCase() !== 'archived';
-            });
-            if (visibleTours.length === 0) {
-              document.getElementById('tours-empty').style.display = 'block';
-              return;
-            }
-            allTours = visibleTours;
-            document.getElementById('tours-filter-bar').style.display = '';
-            populateCompanyFilter();
-            applyFilters();
-          })
-          .catch(function(err) {
-            document.getElementById('tours-loading').style.display = 'none';
-            document.getElementById('tours-error').style.display = 'block';
-            document.getElementById('tours-error-msg').textContent = friendlyError(err);
-          });
-      }
-
-      window.loadTours = loadTours;
-      loadTours();
-
-      // Tour bị đổi trạng thái (mở/đóng đăng ký...) từ admin — cập nhật ngay trên trang,
-      // không cần F5.
-      if (window.TurTourRealtime) {
-        window.TurTourRealtime.onTourUpdated(function (payload) {
-          if (!payload) return;
-          if ((payload.publishStatus || '').toLowerCase() === 'archived') {
-            allTours = allTours.filter(function (t) { return t.id !== payload.tourId; });
-            applyFilters();
-            return;
-          }
-          var tour = allTours.find(function (t) { return t.id === payload.tourId; });
-          if (tour) {
-            tour.publishStatus = payload.publishStatus;
-            applyFilters();
-          }
-        });
-      }
-    })();
-    </script>
 
     <!-- Partners Section -->
     <section id="team" class="team section light-background">
@@ -1223,6 +1428,329 @@
 
     </section><!-- /Partners Section -->
 
+    <!-- Staff Section -->
+    <section id="staff" class="staff section">
+
+      <style>
+        .staff.section { padding: 80px 0; background: #fff; }
+        .staff-intro { max-width: 680px; margin: 0 auto 48px; text-align: center; color: #666; font-size: 0.95rem; }
+        .anon-member {
+          background: #f4f6fb; border-radius: 16px; padding: 30px 20px;
+          text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+          border: 1px solid #f1f3f5; transition: transform .25s, box-shadow .25s; height: 100%;
+        }
+        .anon-member:hover { transform: translateY(-6px); box-shadow: 0 12px 28px rgba(0,0,0,0.1); }
+        .anon-avatar {
+          width: 100px; height: 100px; margin: 0 auto 16px; border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          background: linear-gradient(135deg, #e8f4fd, #d1ecf1);
+          color: #5bc0de; font-size: 3rem;
+        }
+        .anon-member h4 { font-size: 1rem; font-weight: 700; color: #1a1a2e; margin: 0 0 4px; }
+        .anon-member .role {
+          display: inline-block; font-size: 0.78rem; font-weight: 600; color: #e84545;
+          background: #fdf2f2; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px;
+        }
+        .anon-member p.desc { font-size: 0.84rem; color: #888; margin: 0; }
+      </style>
+
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Our Team</h2>
+        <p>ĐỘI NGŨ THỰC HIỆN ĐỒ ÁN TURTOUR</p>
+      </div>
+
+      <div class="container">
+        <p class="staff-intro" data-aos="fade-up">TurTour là đồ án tốt nghiệp được xây dựng và phát triển bởi nhóm sinh viên thực hiện. Vì lý do bảo mật thông tin cá nhân, ảnh đại diện của các thành viên được hiển thị ở dạng ẩn danh.</p>
+        <div class="row gy-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="col-lg-3 col-md-6">
+            <div class="anon-member">
+              <div class="anon-avatar"><i class="bi bi-person-fill"></i></div>
+              <h4>Thành viên 1</h4><span class="role">Trưởng nhóm</span>
+              <p class="desc">Quản lý tiến độ &amp; kiến trúc hệ thống</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="anon-member">
+              <div class="anon-avatar"><i class="bi bi-person-fill"></i></div>
+              <h4>Thành viên 2</h4><span class="role">Backend Developer</span>
+              <p class="desc">Xây dựng API &amp; cơ sở dữ liệu</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="anon-member">
+              <div class="anon-avatar"><i class="bi bi-person-fill"></i></div>
+              <h4>Thành viên 3</h4><span class="role">Frontend Developer</span>
+              <p class="desc">Xây dựng giao diện người dùng</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="anon-member">
+              <div class="anon-avatar"><i class="bi bi-person-fill"></i></div>
+              <h4>Thành viên 4</h4><span class="role">Tester / QA</span>
+              <p class="desc">Kiểm thử &amp; đảm bảo chất lượng</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section><!-- /Staff Section -->
+
+    <!-- Reviews Section -->
+    <section id="reviews" class="reviews-all section">
+
+      <style>
+        .reviews-all { background: #ffffff; padding: 80px 0; }
+
+        .ra-header { text-align: center; margin-bottom: 48px; }
+        .ra-header h2 { font-family: 'Raleway', sans-serif; font-size: 2rem; font-weight: 800; color: #1a1a2e; margin-bottom: 8px; }
+        .ra-header p { color: #868e96; font-size: 0.95rem; }
+        .ra-header .ra-avg-chip {
+          display: inline-flex; align-items: center; gap: 8px;
+          background: #fff; border: 1.5px solid #f0c040; border-radius: 32px;
+          padding: 8px 20px; font-size: 0.88rem; font-weight: 700; color: #1a1a2e;
+          box-shadow: 0 2px 12px rgba(245,158,11,0.12); margin-top: 16px;
+        }
+        .ra-avg-chip .ra-score { font-size: 1.35rem; font-weight: 800; color: #d97706; }
+        .ra-avg-chip .ra-stars { color: #f59e0b; font-size: 1rem; letter-spacing: 1px; }
+
+        .ra-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+        }
+        @media (max-width: 991px) { .ra-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 575px)  { .ra-grid { grid-template-columns: 1fr; } }
+
+        .ra-card {
+          background: #fff; border-radius: 18px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.05);
+          padding: 22px 22px 18px; display: flex; flex-direction: column; gap: 12px;
+          transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .ra-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.1); transform: translateY(-3px); }
+
+        .ra-card-top { display: flex; align-items: flex-start; gap: 13px; }
+        .ra-avatar {
+          width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+          background: linear-gradient(135deg,#e84545,#ff9a9a);
+          display: flex; align-items: center; justify-content: center;
+          color: #fff; font-size: 1.05rem; font-weight: 800;
+        }
+        .ra-meta { flex: 1; min-width: 0; }
+        .ra-name { font-size: 0.9rem; font-weight: 700; color: #1a1a2e; }
+        .ra-tour {
+          font-size: 0.75rem; color: #e84545; font-weight: 600;
+          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+          display: block; margin-top: 2px;
+        }
+        .ra-stars { color: #f59e0b; font-size: 0.9rem; letter-spacing: 1px; margin-top: 3px; }
+        .ra-comment {
+          font-size: 0.84rem; color: #495057; line-height: 1.6;
+          display: -webkit-box;line-clamp: 4; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .ra-photos { display: flex; gap: 6px; flex-wrap: wrap; }
+        .ra-photos img {
+          width: 56px; height: 56px; object-fit: cover; border-radius: 8px;
+          border: 1px solid #e9ecef; cursor: pointer; transition: transform 0.18s;
+        }
+        .ra-photos img:hover { transform: scale(1.08); }
+        .ra-date { font-size: 0.73rem; color: #adb5bd; margin-top: auto; }
+
+        .ra-tour-link {
+          display: inline-flex; align-items: center; gap: 5px;
+          font-size: 0.78rem; font-weight: 600; color: #1a1a2e;
+          text-decoration: none; padding: 4px 11px; border-radius: 8px;
+          border: 1.5px solid #e9ecef; background: #f8f9fa;
+          transition: border-color 0.18s, background 0.18s; align-self: flex-start;
+        }
+        .ra-tour-link:hover { border-color: #adb5bd; background: #f0f1f3; }
+
+        .ra-loading { text-align: center; padding: 60px 0; }
+        .ra-empty  { text-align: center; padding: 60px 0; color: #adb5bd; font-size: 0.95rem; }
+        .ra-show-more { text-align: center; margin-top: 32px; }
+        .ra-show-more button {
+          padding: 11px 30px; border-radius: 24px;
+          border: 2px solid #1a1a2e; background: transparent;
+          font-weight: 700; font-size: 0.88rem; color: #1a1a2e; cursor: pointer;
+          transition: background 0.2s, color 0.2s;
+        }
+        .ra-show-more button:hover { background: #1a1a2e; color: #fff; }
+
+        /* lightbox reuse */
+        .ra-lb-overlay {
+          position: fixed; inset: 0; z-index: 9999;
+          background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center;
+          opacity: 0; pointer-events: none; transition: opacity 0.2s;
+        }
+        .ra-lb-overlay.open { opacity: 1; pointer-events: auto; }
+        .ra-lb-overlay img { max-width: 90vw; max-height: 88vh; border-radius: 10px; object-fit: contain; }
+        .ra-lb-close {
+          position: absolute; top: 18px; right: 22px;
+          background: rgba(255,255,255,0.15); border: none; color: #fff;
+          width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem;
+          display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .ra-lb-close:hover { background: rgba(255,255,255,0.25); }
+      </style>
+
+      <!-- Lightbox -->
+      <div class="ra-lb-overlay" id="raLbOverlay">
+        <button class="ra-lb-close" id="raLbClose">&#x2715;</button>
+        <img id="raLbImg" src="" alt="ảnh phóng to">
+      </div>
+
+      <div class="container">
+        <!-- Header -->
+        <div class="ra-header" data-aos="fade-up">
+          <h2>Sinh viên nói gì về TurTour</h2>
+          <p>Những chia sẻ thực tế từ các sinh viên đã tham gia tour</p>
+          <div id="ra-avg-chip" class="ra-avg-chip" style="display:none;">
+            <span class="ra-score" id="ra-score">0</span>
+            <span class="ra-stars" id="ra-stars"></span>
+            <span id="ra-total-label"></span>
+          </div>
+        </div>
+
+        <!-- Grid -->
+        <div id="ra-loading" class="ra-loading">
+          <div class="spinner-border text-warning" role="status" style="width:2.4rem;height:2.4rem;"></div>
+          <p class="mt-3 text-muted" style="font-size:0.88rem;">Đang tải đánh giá...</p>
+        </div>
+        <div id="ra-empty" class="ra-empty" style="display:none;">
+          <i class="bi bi-star" style="font-size:2.5rem; opacity:0.3;"></i>
+          <p class="mt-3">Chưa có đánh giá nào.</p>
+        </div>
+        <div id="ra-grid" class="ra-grid" style="display:none;"></div>
+        <div id="ra-show-more" class="ra-show-more" style="display:none;">
+          <button id="ra-show-more-btn">Xem thêm đánh giá</button>
+        </div>
+      </div>
+
+      <script>
+      (function () {
+        var API_BASE = window.TURTOUR_API_BASE;
+        var PAGE_SIZE = 9;
+        var allReviews = [];
+        var shown = 0;
+
+        var loadingEl   = document.getElementById('ra-loading');
+        var emptyEl     = document.getElementById('ra-empty');
+        var gridEl      = document.getElementById('ra-grid');
+        var showMoreWrap = document.getElementById('ra-show-more');
+        var showMoreBtn  = document.getElementById('ra-show-more-btn');
+        var avgChip      = document.getElementById('ra-avg-chip');
+
+        // Lightbox
+        var lbOverlay = document.getElementById('raLbOverlay');
+        var lbImg = document.getElementById('raLbImg');
+        document.getElementById('raLbClose').addEventListener('click', function () { lbOverlay.classList.remove('open'); });
+        lbOverlay.addEventListener('click', function (e) { if (e.target === lbOverlay) lbOverlay.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') lbOverlay.classList.remove('open'); });
+
+        function starsHtml(r) {
+          var f = Math.max(0, Math.min(5, Math.round(r)));
+          return '<span style="color:#f59e0b;">' + '★'.repeat(f) + '</span>'
+               + '<span style="color:#dee2e6;">' + '☆'.repeat(5 - f) + '</span>';
+        }
+
+        function fmtDate(iso) {
+          return new Date(iso).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+
+        function initial(name) {
+          if (!name) return '?';
+          var parts = name.trim().split(' ');
+          return parts[parts.length - 1].charAt(0).toUpperCase();
+        }
+
+        function renderCards(items) {
+          var frag = document.createDocumentFragment();
+          items.forEach(function (r) {
+            var card = document.createElement('div');
+            card.className = 'ra-card';
+            card.setAttribute('data-aos', 'fade-up');
+
+            var photos = (r.photoUrls && r.photoUrls.length)
+              ? '<div class="ra-photos">' + r.photoUrls.slice(0, 3).map(function (u) {
+                  return '<img src="' + u + '" alt="ảnh" loading="lazy" data-lb="' + u + '">';
+                }).join('') + '</div>'
+              : '';
+
+            var tourLink = r.tourId
+              ? '<a href="tour-details.html?id=' + r.tourId + '" class="ra-tour-link"><i class="bi bi-eye"></i> Xem tour</a>'
+              : '';
+
+            card.innerHTML =
+              '<div class="ra-card-top">'
+                + '<div class="ra-avatar">' + initial(r.studentName) + '</div>'
+                + '<div class="ra-meta">'
+                  + '<div class="ra-name">' + (r.studentName || 'Sinh viên') + '</div>'
+                  + (r.tourTitle ? '<span class="ra-tour">' + r.tourTitle + '</span>' : '')
+                  + '<div class="ra-stars">' + starsHtml(r.rating) + '</div>'
+                + '</div>'
+              + '</div>'
+              + (r.comment ? '<p class="ra-comment">' + r.comment + '</p>' : '')
+              + photos
+              + '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">'
+                + '<span class="ra-date"><i class="bi bi-calendar3 me-1"></i>' + fmtDate(r.createdAt) + '</span>'
+                + tourLink
+              + '</div>';
+
+            frag.appendChild(card);
+          });
+          gridEl.appendChild(frag);
+
+          // Bind lightbox
+          gridEl.querySelectorAll('[data-lb]').forEach(function (img) {
+            img.addEventListener('click', function () {
+              lbImg.src = img.getAttribute('data-lb');
+              lbOverlay.classList.add('open');
+            });
+          });
+
+          if (typeof AOS !== 'undefined') AOS.refresh();
+        }
+
+        function showMore() {
+          var next = allReviews.slice(shown, shown + PAGE_SIZE);
+          renderCards(next);
+          shown += next.length;
+          showMoreWrap.style.display = shown < allReviews.length ? 'block' : 'none';
+        }
+
+        showMoreBtn.addEventListener('click', showMore);
+
+        fetch(API_BASE + '/feedbacks/all/public')
+          .then(function (res) { return res.ok ? res.json() : Promise.reject(res.status); })
+          .then(function (data) {
+            loadingEl.style.display = 'none';
+            allReviews = data.feedbacks || [];
+
+            if (allReviews.length === 0) {
+              emptyEl.style.display = 'block';
+              return;
+            }
+
+            // Avg chip
+            if (data.averageRating && data.total) {
+              document.getElementById('ra-score').textContent = (+data.averageRating).toFixed(1);
+              document.getElementById('ra-stars').innerHTML = starsHtml(Math.round(data.averageRating));
+              document.getElementById('ra-total-label').textContent = data.total + ' đánh giá';
+              avgChip.style.display = 'inline-flex';
+            }
+
+            gridEl.style.display = 'grid';
+            showMore();
+          })
+          .catch(function () {
+            loadingEl.style.display = 'none';
+            emptyEl.style.display = 'block';
+          });
+      })();
+      </script>
+
+    </section><!-- /Reviews Section -->
+
     <!-- Contact Section -->
     <section id="contact" class="contact section">
 
@@ -1369,7 +1897,7 @@
             <li><i class="bi bi-chevron-right"></i> <a href="index.html#about">Giới thiệu</a></li>
             <li><i class="bi bi-chevron-right"></i> <a href="index.html#portfolio">Danh sách tour</a></li>
             <li><i class="bi bi-chevron-right"></i> <a href="index.html#team">Đối tác</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="team.html">Đội ngũ</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="index.html#staff">Đội ngũ</a></li>
             <li><i class="bi bi-chevron-right"></i> <a href="index.html#contact">Liên hệ</a></li>
           </ul>
         </div>
@@ -1476,6 +2004,7 @@
       var profileName = document.getElementById('auth-profile-name');
       var dashboardItem = document.getElementById('auth-dashboard-item');
       var myToursItem = document.getElementById('auth-mytours-item');
+      var myReviewsItem = document.getElementById('auth-myreviews-item');
       var savedToursItem = document.getElementById('auth-savedtours-item');
       var logoutBtn = document.getElementById('auth-logout-btn');
 
@@ -1499,6 +2028,7 @@
         }
         if (roles.includes('Student')) {
           myToursItem.style.display = 'block';
+          if (myReviewsItem) myReviewsItem.style.display = 'block';
           if (savedToursItem) savedToursItem.style.display = 'block';
         }
       } else {

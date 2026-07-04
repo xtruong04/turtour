@@ -36,6 +36,7 @@ import TourDescriptionEditor from "components/TourDescriptionEditor";
 import TourThumbnailField from "components/TourThumbnailField";
 import PageLoader from "components/PageLoader";
 import NeoDropdown from "components/NeoDropdown";
+import AddressPicker from "components/AddressPicker";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -366,7 +367,14 @@ function TourEdit() {
                       Mô tả sẽ hiển thị đầy đủ ở trang chi tiết tour với định dạng và hình ảnh đã chèn.
                     </SoftTypography>
                   </Grid>
-                  <Grid item xs={12} md={6}><SoftTypography variant="caption" fontWeight="bold">Địa điểm *</SoftTypography><SoftInput placeholder="VD: Quận 1, TP.HCM" value={form.location} onChange={(event) => handleChange("location", event.target.value)} /></Grid>
+                  <Grid item xs={12}>
+                    <SoftTypography variant="caption" fontWeight="bold">Địa điểm *</SoftTypography>
+                    <AddressPicker
+                      value={form.location}
+                      onChange={(v) => handleChange("location", v)}
+                      showDetail
+                    />
+                  </Grid>
                   <Grid item xs={12} md={6}>
                     <SoftTypography variant="caption" fontWeight="bold">Doanh nghiệp *</SoftTypography>
                     <NeoDropdown

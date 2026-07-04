@@ -131,6 +131,7 @@ function Reports() {
 
   const revenueByMonth = report?.revenueByMonth || [];
   const revenueByCompany = report?.revenueByCompany || [];
+  const registrationsByMonth = report?.registrationsByMonth || [];
 
   const monthChart = {
     labels: revenueByMonth.length > 0 ? revenueByMonth.map((m) => formatMonthLabel(m.month)) : ["Chưa có dữ liệu"],
@@ -145,6 +146,14 @@ function Reports() {
     datasets: {
       label: "Doanh thu",
       data: revenueByCompany.length > 0 ? revenueByCompany.map((c) => c.revenue) : [0],
+    },
+  };
+
+  const registrationsChart = {
+    labels: registrationsByMonth.length > 0 ? registrationsByMonth.map((m) => formatMonthLabel(m.month)) : ["Chưa có dữ liệu"],
+    datasets: {
+      label: "Đăng ký",
+      data: registrationsByMonth.length > 0 ? registrationsByMonth.map((m) => m.count) : [0],
     },
   };
 
@@ -242,6 +251,14 @@ function Reports() {
                   title="Doanh thu theo doanh nghiệp"
                   description="Tổng tiền đã thu theo từng doanh nghiệp"
                   chart={companyChart}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <ReportsBarChart
+                  color="dark"
+                  title="Đăng ký theo tháng"
+                  description="Số lượt đăng ký tour trong 12 tháng gần nhất"
+                  chart={registrationsChart}
                 />
               </Grid>
             </Grid>

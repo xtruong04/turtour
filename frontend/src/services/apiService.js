@@ -305,7 +305,7 @@ function normalizeFeedback(feedback) {
     rating: Number(feedback.rating ?? 0),
     comment: feedback.comment || '',
     createdAt: feedback.createdAt,
-    studentName: feedback.student?.fullName || feedback.student?.name || 'Sinh viên',
+    studentName: feedback.student?.fullName || feedback.student?.name || feedback.studentName || 'Sinh viên',
     raw: feedback,
   };
 }
@@ -570,7 +570,7 @@ export const apiService = {
   },
 
   async getFeedbacksByTour(tourId) {
-    const data = await request(`/feedbacks/tour/${tourId}`, { method: 'GET' });
+    const data = await request(`/feedbacks/tour/${tourId}/public`, { method: 'GET' });
     return {
       averageRating: Number(data?.averageRating ?? 0),
       total: Number(data?.total ?? 0),

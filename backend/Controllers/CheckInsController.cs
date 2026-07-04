@@ -54,6 +54,39 @@ namespace TurTour.Controllers
             return Ok(checkIn);
         }
 
+        // Sinh viên xem mã QR check-in của đăng ký mình — chỉ khi partner đã tạo mã.
+        [HttpGet("my/{registrationId:guid}")]
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> GetMyQr(Guid registrationId)
+        {
+            var userId = CurrentUserHelper.GetUserId(User);
+            if (userId == null) return Unauthorized();
+
+            var registration = await _context.Registrations
+                .FirstOrDefaultAsync(r => r.Id == registrationId && r.StudentId == userId);
+            if (registration == null) return NotFound(new { message = "Registration not found." });
+
+            if (registration.Status != RegistrationStatus.Approved &&
+                registration.Status != RegistrationStatus.Paid &&
+                registration.Status != RegistrationStatus.CheckedIn)
+            {
+                return BadRequest(new { message = "Mã QR chưa khả dụng cho trạng thái đăng ký này." });
+            }
+
+            var checkIn = await _context.CheckIns.FirstOrDefaultAsync(c => c.RegistrationId == registrationId);
+            if (checkIn == null)
+            {
+                return NotFound(new { message = "Mã check-in chưa được tạo. Vui lòng liên hệ ban tổ chức tour." });
+            }
+
+            return Ok(new
+            {
+                qrCode = checkIn.QrCode,
+                isCheckedIn = checkIn.IsCheckedIn,
+                checkedInAt = checkIn.CheckedInAt
+            });
+        }
+
         [HttpPost("scan")]
         [Authorize(Roles = "Admin,Organizator,Company")]
         public async Task<IActionResult> Scan(ScanQrRequest request)

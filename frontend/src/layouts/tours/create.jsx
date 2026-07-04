@@ -36,6 +36,7 @@ import SoftButton from "components/SoftButton";
 import TourDescriptionEditor from "components/TourDescriptionEditor";
 import TourThumbnailField from "components/TourThumbnailField";
 import NeoDropdown from "components/NeoDropdown";
+import AddressPicker from "components/AddressPicker";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -158,7 +159,8 @@ function TourCreate() {
   const session = apiService.getAuthSession();
   const roles = session?.roles || [];
   const isAdmin = roles.includes("Admin");
-  const isCompanyUser = roles.includes("Company");
+  const isCompanyUser = roles.includes("Company") && !roles.includes("Organizator");
+  const isOrganizator = roles.includes("Organizator");
 
   const [companies, setCompanies] = useState([]);
 
@@ -298,11 +300,15 @@ function TourCreate() {
                     Có thể định dạng nội dung, chèn bảng, chèn link và chèn ảnh trực tiếp vào mô tả tour.
                   </SoftTypography>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12}>
                   <SoftTypography variant="caption" fontWeight="bold">Địa điểm *</SoftTypography>
-                  <SoftInput placeholder="VD: Quận 1, TP.HCM" value={form.location} onChange={(e) => handleChange("location", e.target.value)} />
+                  <AddressPicker
+                    value={form.location}
+                    onChange={(v) => handleChange("location", v)}
+                    showDetail
+                  />
                 </Grid>
-                {!isCompanyUser ? (
+                {(isAdmin || isOrganizator) ? (
                   <Grid item xs={12} md={6}>
                     <SoftTypography variant="caption" fontWeight="bold">Doanh nghiệp *</SoftTypography>
                     <NeoDropdown
