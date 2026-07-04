@@ -1,7 +1,6 @@
 
 using Amazon.S3;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Resend;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -95,16 +94,11 @@ namespace TurTour
                     ForcePathStyle = true
                 }));
             builder.Services.AddScoped<R2StorageService>();
-            builder.Services.AddScoped<EmailService>();
-
-            // Resend (HTTPS email API — thay thế SMTP bị block trên Railway)
-            builder.Services.AddOptions();
-            builder.Services.AddHttpClient<ResendClient>();
-            builder.Services.Configure<ResendClientOptions>(o =>
+            builder.Services.AddSingleton<EmailService>();
+            builder.Services.AddHttpClient("resend", client =>
             {
-                o.ApiToken = builder.Configuration["Resend:ApiKey"] ?? "";
+                client.BaseAddress = new Uri("https://api.resend.com/");
             });
-            builder.Services.AddTransient<IResend, ResendClient>();
 
             //PostgreSQL connection
             builder.Services.AddDbContext<ApplicationDbContext>(options =>

@@ -3,19 +3,19 @@ using MailKit.Security;
 using MimeKit;
 using MimeKit.Utils;
 using QRCoder;
-using Resend;
+using System.Net.Http.Json;
 
 namespace TurTour.Services
 {
     public class EmailService
     {
         private readonly IConfiguration _configuration;
-        private readonly IResend _resend;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public EmailService(IConfiguration configuration, IResend resend)
+        public EmailService(IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             _configuration = configuration;
-            _resend = resend;
+            _httpClientFactory = httpClientFactory;
         }
 
         private static byte[] GenerateQrPng(string text)
@@ -60,20 +60,35 @@ namespace TurTour.Services
 
         private bool UseResend => !string.IsNullOrWhiteSpace(_configuration["Resend:ApiKey"]);
 
-        private string FromAddress => _configuration["Smtp:FromName"] is { } name && !string.IsNullOrWhiteSpace(name)
-            ? $"{name} <{_configuration["Resend:FromEmail"] ?? _configuration["Smtp:FromEmail"] ?? "noreply@turtour.app"}>"
-            : _configuration["Resend:FromEmail"] ?? _configuration["Smtp:FromEmail"] ?? "noreply@turtour.app";
+        private string FromAddress
+        {
+            get
+            {
+                var fromEmail = _configuration["Resend:FromEmail"]
+                    ?? _configuration["Smtp:FromEmail"]
+                    ?? "onboarding@resend.dev";
+                var fromName = _configuration["Smtp:FromName"] ?? "TurTour";
+                return $"{fromName} <{fromEmail}>";
+            }
+        }
 
         private async Task SendViaResendAsync(string toEmail, string subject, string htmlBody)
         {
-            var message = new EmailMessage
+            var apiKey = _configuration["Resend:ApiKey"]!;
+            var client = _httpClientFactory.CreateClient("resend");
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+
+            var payload = new
             {
-                From = FromAddress,
-                Subject = subject,
-                HtmlBody = htmlBody,
+                from = FromAddress,
+                to = new[] { toEmail },
+                subject,
+                html = htmlBody,
             };
-            message.To.Add(toEmail);
-            await _resend.EmailSendAsync(message);
+
+            var response = await client.PostAsJsonAsync("emails", payload);
+            response.EnsureSuccessStatusCode();
         }
 
         private async Task SendViaSmtpAsync(string toEmail, string toName, string subject, string htmlBody)
@@ -93,16 +108,16 @@ namespace TurTour.Services
             mime.Body = new BodyBuilder { HtmlBody = htmlBody }.ToMessageBody();
 
             using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(12));
-            using var client = new SmtpClient();
-            await client.ConnectAsync(host, port, useSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto, cts.Token);
+            using var smtpClient = new SmtpClient();
+            await smtpClient.ConnectAsync(host, port, useSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto, cts.Token);
 
             var username = _configuration["Smtp:Username"];
             var password = _configuration["Smtp:Password"];
             if (!string.IsNullOrWhiteSpace(username))
-                await client.AuthenticateAsync(username, password ?? string.Empty, cts.Token);
+                await smtpClient.AuthenticateAsync(username, password ?? string.Empty, cts.Token);
 
-            await client.SendAsync(mime, cancellationToken: cts.Token);
-            await client.DisconnectAsync(true, cts.Token);
+            await smtpClient.SendAsync(mime, cancellationToken: cts.Token);
+            await smtpClient.DisconnectAsync(true, cts.Token);
         }
 
         public async Task SendEmailConfirmationAsync(string toEmail, string fullName, string confirmUrl)
@@ -170,37 +185,7 @@ namespace TurTour.Services
             if (UseResend)
                 await SendViaResendAsync(toEmail, $"Mã check-in cho tour \"{tourTitle}\"", html);
             else
-            {
-                // SMTP: dùng inline attachment cho QR thay vì base64 embed
-                var host = _configuration["Smtp:Host"];
-                if (string.IsNullOrWhiteSpace(host)) return;
-
-                var port = int.TryParse(_configuration["Smtp:Port"], out var p) ? p : 587;
-                var useSsl = !bool.TryParse(_configuration["Smtp:UseSsl"], out var ssl) || ssl;
-                var fromEmail = _configuration["Smtp:FromEmail"] ?? host;
-                var fromName = _configuration["Smtp:FromName"] ?? "TurTour";
-
-                var mime = new MimeMessage();
-                mime.From.Add(new MailboxAddress(fromName, fromEmail));
-                mime.To.Add(new MailboxAddress(studentName, toEmail));
-                mime.Subject = $"Mã check-in cho tour \"{tourTitle}\"";
-
-                var builder = new BodyBuilder();
-                var image = builder.LinkedResources.Add("qrcode.png", qrBytes, new ContentType("image", "png"));
-                image.ContentId = MimeUtils.GenerateMessageId();
-                builder.HtmlBody = html.Replace($"data:image/png;base64,{qrBase64}", $"cid:{image.ContentId}");
-                mime.Body = builder.ToMessageBody();
-
-                using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(12));
-                using var client = new SmtpClient();
-                await client.ConnectAsync(host, port, useSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto, cts.Token);
-                var username = _configuration["Smtp:Username"];
-                var password = _configuration["Smtp:Password"];
-                if (!string.IsNullOrWhiteSpace(username))
-                    await client.AuthenticateAsync(username, password ?? string.Empty, cts.Token);
-                await client.SendAsync(mime, cancellationToken: cts.Token);
-                await client.DisconnectAsync(true, cts.Token);
-            }
+                await SendViaSmtpAsync(toEmail, studentName, $"Mã check-in cho tour \"{tourTitle}\"", html);
         }
     }
 }
