@@ -5,6 +5,7 @@ import Alert from "@mui/material/Alert";
 import Card from "@mui/material/Card";
 import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
+import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -35,16 +36,14 @@ import SoftButton from "components/SoftButton";
 import TourDescriptionEditor from "components/TourDescriptionEditor";
 import TourThumbnailField from "components/TourThumbnailField";
 import PageLoader from "components/PageLoader";
-import NeoDropdown from "components/NeoDropdown";
-import AddressPicker from "components/AddressPicker";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
 import apiService from "../../services/apiService";
-import { hideSplash } from "utils/splash";
-import useTourBasePath from "../../hooks/useTourBasePath";
+
+const statusOptions = ["Upcoming", "Open", "Closed", "Cancelled", "Completed"];
 
 function extractPlainText(html) {
   return html
@@ -92,18 +91,6 @@ function getValidationMessage(form, schedules) {
 
   if (new Date(form.endDate) < new Date(form.startDate)) {
     return "Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.";
-  }
-
-  if (!form.bookingOpenAt || !form.bookingCloseAt) {
-    return "Vui lòng chọn thời gian mở và đóng đăng ký.";
-  }
-
-  if (new Date(form.bookingCloseAt) <= new Date(form.bookingOpenAt)) {
-    return "Thời gian đóng đăng ký phải lớn hơn thời gian mở đăng ký.";
-  }
-
-  if (new Date(form.bookingCloseAt) > new Date(form.startDate)) {
-    return "Thời gian đóng đăng ký phải trước hoặc bằng ngày khởi hành.";
   }
 
   if (Number(form.capacity) <= 0) {
@@ -154,7 +141,6 @@ function formatDateTimeLocal(value) {
 function TourEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const base = useTourBasePath();
 
   const [form, setForm] = useState({
     code: "",
@@ -164,10 +150,9 @@ function TourEdit() {
     location: "",
     startDate: "",
     endDate: "",
-    bookingOpenAt: "",
-    bookingCloseAt: "",
     capacity: "",
     price: "",
+    status: "Upcoming",
     requirement: "",
     companyId: "",
   });
@@ -175,8 +160,7 @@ function TourEdit() {
   const [schedules, setSchedules] = useState([]);
   const [removedScheduleIds, setRemovedScheduleIds] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isArchived, setIsArchived] = useState(false);
-  const [statusInfo, setStatusInfo] = useState({ approvalStatus: "", publishStatus: "" });
+  const [isLockedAsCompleted, setIsLockedAsCompleted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -188,14 +172,11 @@ function TourEdit() {
       form.location.trim() &&
       form.startDate &&
       form.endDate &&
-      form.bookingOpenAt &&
-      form.bookingCloseAt &&
       form.capacity &&
       form.price &&
-      form.companyId &&
-      !isArchived
+      form.companyId
     );
-  }, [form, isArchived]);
+  }, [form]);
 
   useEffect(() => {
     async function fetchData() {
@@ -215,19 +196,16 @@ function TourEdit() {
           location: tour.location || "",
           startDate: formatDateTimeLocal(tour.startDate),
           endDate: formatDateTimeLocal(tour.endDate),
-          bookingOpenAt: formatDateTimeLocal(tour.bookingOpenAt),
-          bookingCloseAt: formatDateTimeLocal(tour.bookingCloseAt),
           capacity: String(tour.capacity || ""),
           price: String(tour.price || ""),
+          status: tour.raw?.status || "Upcoming",
           requirement: tour.requirement || "",
           companyId: tour.companyId || safeCompanies[0]?.id || "",
         });
 
-        setIsArchived(tour.raw?.publishStatus === "Archived");
-        setStatusInfo({
-          approvalStatus: tour.raw?.approvalStatus || "",
-          publishStatus: tour.raw?.publishStatus || "",
-        });
+        setIsLockedAsCompleted(
+          tour.raw?.status === "Completed" && Boolean(tour.endDate) && new Date(tour.endDate) < new Date()
+        );
 
         const sortedSchedules = [...(tour.schedules || [])].sort(
           (a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)
@@ -247,7 +225,6 @@ function TourEdit() {
         setErrorMessage(error?.message || "Không tải được thông tin tour.");
       } finally {
         setLoading(false);
-        hideSplash();
       }
     }
 
@@ -323,7 +300,7 @@ function TourEdit() {
         }
       }
 
-      navigate(`${base}/tours/${id}`, { replace: true });
+      navigate(`/admin/tours/${id}`, { replace: true });
     } catch (error) {
       setErrorMessage(error?.message || "Tour đã được cập nhật nhưng đồng bộ lịch trình thất bại.");
     } finally {
@@ -342,7 +319,7 @@ function TourEdit() {
                 <SoftTypography variant="h5" fontWeight="bold">Sửa Tour</SoftTypography>
                 <SoftTypography variant="button" color="text">Cập nhật thông tin tour đã tạo.</SoftTypography>
               </div>
-              <SoftButton component={Link} to={`${base}/tours`} variant="outlined" color="dark">Quay lại danh sách</SoftButton>
+              <SoftButton component={Link} to="/admin/tours" variant="outlined" color="dark">Quay lại danh sách</SoftButton>
             </SoftBox>
 
             {loading ? (
@@ -367,45 +344,32 @@ function TourEdit() {
                       Mô tả sẽ hiển thị đầy đủ ở trang chi tiết tour với định dạng và hình ảnh đã chèn.
                     </SoftTypography>
                   </Grid>
-                  <Grid item xs={12}>
-                    <SoftTypography variant="caption" fontWeight="bold">Địa điểm *</SoftTypography>
-                    <AddressPicker
-                      value={form.location}
-                      onChange={(v) => handleChange("location", v)}
-                      showDetail
-                    />
-                  </Grid>
+                  <Grid item xs={12} md={6}><SoftTypography variant="caption" fontWeight="bold">Địa điểm *</SoftTypography><SoftInput placeholder="VD: Quận 1, TP.HCM" value={form.location} onChange={(event) => handleChange("location", event.target.value)} /></Grid>
                   <Grid item xs={12} md={6}>
                     <SoftTypography variant="caption" fontWeight="bold">Doanh nghiệp *</SoftTypography>
-                    <NeoDropdown
-                      value={form.companyId}
-                      placeholder="-- Chọn doanh nghiệp --"
-                      options={companies.map((company) => ({ value: company.id, label: company.name }))}
-                      onChange={(value) => handleChange("companyId", value)}
-                    />
+                    <TextField select fullWidth size="small" value={form.companyId} onChange={(event) => handleChange("companyId", event.target.value)}>
+                      {companies.map((company) => <MenuItem key={company.id} value={company.id}>{company.name}</MenuItem>)}
+                    </TextField>
                   </Grid>
                   <Grid item xs={12} md={6}><SoftTypography variant="caption" fontWeight="bold">Ngày bắt đầu *</SoftTypography><SoftInput type="datetime-local" value={form.startDate} onChange={(event) => handleChange("startDate", event.target.value)} /></Grid>
                   <Grid item xs={12} md={6}><SoftTypography variant="caption" fontWeight="bold">Ngày kết thúc *</SoftTypography><SoftInput type="datetime-local" value={form.endDate} onChange={(event) => handleChange("endDate", event.target.value)} /></Grid>
-                  <Grid item xs={12} md={6}><SoftTypography variant="caption" fontWeight="bold">Mở đăng ký từ *</SoftTypography><SoftInput type="datetime-local" value={form.bookingOpenAt} onChange={(event) => handleChange("bookingOpenAt", event.target.value)} /></Grid>
-                  <Grid item xs={12} md={6}>
-                    <SoftTypography variant="caption" fontWeight="bold">Đóng đăng ký lúc *</SoftTypography>
-                    <SoftInput type="datetime-local" value={form.bookingCloseAt} onChange={(event) => handleChange("bookingCloseAt", event.target.value)} />
-                    <SoftTypography variant="caption" color="text" display="block" mt={0.5}>
-                      Phải trước hoặc bằng ngày khởi hành.
-                    </SoftTypography>
-                  </Grid>
                   <Grid item xs={12} md={4}><SoftTypography variant="caption" fontWeight="bold">Sức chứa *</SoftTypography><SoftInput type="number" min="1" value={form.capacity} onChange={(event) => handleChange("capacity", event.target.value)} /></Grid>
                   <Grid item xs={12} md={4}><SoftTypography variant="caption" fontWeight="bold">Chi phí *</SoftTypography><SoftInput type="number" min="1" value={form.price} onChange={(event) => handleChange("price", event.target.value)} /></Grid>
                   <Grid item xs={12} md={4}>
                     <SoftTypography variant="caption" fontWeight="bold">Trạng thái</SoftTypography>
-                    <SoftTypography variant="button" color="text" display="block" mt={0.5}>
-                      {statusInfo.approvalStatus === "Pending" || statusInfo.approvalStatus === "Rejected"
-                        ? (statusInfo.approvalStatus === "Pending" ? "Đang chờ duyệt." : "Đã bị từ chối — sửa nội dung và lưu để gửi duyệt lại.")
-                        : `Tự động: ${statusInfo.publishStatus || "—"} (theo ngày khởi hành). Sửa nội dung quan trọng sẽ phải duyệt lại.`}
-                    </SoftTypography>
-                    {isArchived ? (
-                      <SoftTypography variant="caption" color="error" display="block" mt={0.5}>
-                        Tour đã lưu trữ/huỷ, không thể chỉnh sửa.
+                    <TextField
+                      select
+                      fullWidth
+                      size="small"
+                      disabled={isLockedAsCompleted}
+                      value={form.status}
+                      onChange={(event) => handleChange("status", event.target.value)}
+                    >
+                      {statusOptions.map((status) => <MenuItem key={status} value={status}>{status}</MenuItem>)}
+                    </TextField>
+                    {isLockedAsCompleted ? (
+                      <SoftTypography variant="caption" color="text" display="block" mt={0.5}>
+                        Tour đã hoàn thành và qua ngày kết thúc, không thể đổi trạng thái.
                       </SoftTypography>
                     ) : null}
                   </Grid>
@@ -448,7 +412,7 @@ function TourEdit() {
                           key={s.id || `new-${idx}`}
                           mb={2}
                           p={2}
-                          sx={{ border: "1px solid #d9caa6", borderRadius: "0px", background: "#f6efdd", position: "relative" }}
+                          sx={{ border: "1px solid #e9ecef", borderRadius: "12px", background: "#fafbfc", position: "relative" }}
                         >
                           <SoftBox display="flex" justifyContent="space-between" alignItems="center" mb={1.5}>
                             <SoftTypography variant="button" fontWeight="bold" color="dark">
@@ -520,7 +484,7 @@ function TourEdit() {
                 {errorMessage ? <SoftBox mt={2}><Alert severity="error">{errorMessage}</Alert></SoftBox> : null}
 
                 <SoftBox mt={3} display="flex" justifyContent="flex-end" gap={1}>
-                  <SoftButton component={Link} to={`${base}/tours/${id}`} variant="outlined" color="dark">Hủy</SoftButton>
+                  <SoftButton component={Link} to={`/admin/tours/${id}`} variant="outlined" color="dark">Hủy</SoftButton>
                   <SoftButton type="submit" variant="gradient" color="info" disabled={!canSubmit || submitting}>
                     {submitting ? "Đang lưu..." : "Lưu thay đổi"}
                   </SoftButton>

@@ -16,15 +16,11 @@ namespace TurTour.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly JwtService _jwtService;
-        private readonly EmailService _emailService;
-        private readonly IConfiguration _configuration;
 
-        public AuthController(ApplicationDbContext context, JwtService jwtService, EmailService emailService, IConfiguration configuration)
+        public AuthController(ApplicationDbContext context, JwtService jwtService)
         {
             _context = context;
             _jwtService = jwtService;
-            _emailService = emailService;
-            _configuration = configuration;
         }
 
         private async Task<bool> IsEmailInUseAsync(string email)
@@ -32,33 +28,6 @@ namespace TurTour.Controllers
             return await _context.Users.AnyAsync(u => u.Email == email)
                 || await _context.Companies.AnyAsync(c => c.Email == email)
                 || await _context.Organizators.AnyAsync(o => o.Email == email);
-        }
-
-        // Sinh token xác thực email, gán vào user (chưa lưu DB — caller tự SaveChangesAsync).
-        private static string AssignEmailConfirmationToken(User user)
-        {
-            var token = Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
-            user.EmailConfirmed = false;
-            user.EmailConfirmationToken = token;
-            user.EmailConfirmationTokenExpiresAt = DateTime.UtcNow.AddHours(24);
-            return token;
-        }
-
-        // Gửi email xác thực — không chặn luồng đăng ký nếu gửi email thất bại (chỉ ghi log ngầm
-        // qua việc EmailService tự bỏ qua khi chưa cấu hình SMTP).
-        private async Task SendConfirmationEmailAsync(string toEmail, string fullName, string token)
-        {
-            var frontendBaseUrl = _configuration["Frontend:BaseUrl"]?.TrimEnd('/') ?? "http://localhost:5173";
-            var confirmUrl = $"{frontendBaseUrl}/auth/confirm-email?token={token}";
-
-            try
-            {
-                await _emailService.SendEmailConfirmationAsync(toEmail, fullName, confirmUrl);
-            }
-            catch
-            {
-                // Gửi email thất bại không nên chặn đăng ký — user vẫn có thể bấm "Gửi lại" sau.
-            }
         }
 
         [HttpPost("register")]
@@ -93,7 +62,6 @@ namespace TurTour.Controllers
                 PhoneNumber = request.PhoneNumber,
                 IsActive = true
             };
-            var confirmationToken = AssignEmailConfirmationToken(user);
 
             _context.Users.Add(user);
 
@@ -104,11 +72,10 @@ namespace TurTour.Controllers
             });
 
             await _context.SaveChangesAsync();
-            await SendConfirmationEmailAsync(user.Email, user.FullName, confirmationToken);
 
             return Ok(new
             {
-                message = "Đăng ký thành công. Vui lòng kiểm tra email để xác thực tài khoản trước khi đăng nhập."
+                message = "Đăng ký thành công"
             });
         }
 
@@ -142,9 +109,7 @@ namespace TurTour.Controllers
                 Email = request.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
                 PhoneNumber = request.PhoneNumber,
-                IsActive = true,
-                // Tạo admin là tác vụ nội bộ/seed, không qua luồng đăng ký công khai — bỏ qua xác thực email.
-                EmailConfirmed = true
+                IsActive = true
             };
 
             _context.Users.Add(user);
@@ -218,14 +183,6 @@ namespace TurTour.Controllers
                 });
             }
 
-            if (!user.EmailConfirmed)
-            {
-                return BadRequest(new
-                {
-                    message = "Vui lòng xác thực email trước khi đăng nhập. Kiểm tra hộp thư của bạn hoặc bấm \"Gửi lại email xác thực\"."
-                });
-            }
-
             var roles = user.UserRoles
                 .Select(ur => ur.Role!.Name)
                 .ToList();
@@ -268,7 +225,6 @@ namespace TurTour.Controllers
 
             return Ok(new AuthResponse
             {
-                UserId = user.Id,
                 Token = token,
                 FullName = fullName,
                 Email = email,
@@ -322,66 +278,10 @@ namespace TurTour.Controllers
                 fullName = company?.Name ?? organizator?.Name ?? user.FullName,
                 email = company?.Email ?? organizator?.Email ?? user.Email,
                 phoneNumber = company?.Phone ?? organizator?.Phone ?? user.PhoneNumber,
-                avatarUrl = user.AvatarUrl,
                 isActive = user.IsActive,
                 roles,
                 company,
                 organizator
-            });
-        }
-
-        [HttpPut("me")]
-        [Authorize]
-        public async Task<IActionResult> UpdateMe(UpdateProfileRequest request)
-        {
-            var userId = CurrentUserHelper.GetUserId(User);
-            if (userId == null) return Unauthorized();
-
-            var user = await _context.Users
-                .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null) return NotFound();
-
-            var roles = user.UserRoles.Select(ur => ur.Role!.Name).ToList();
-
-            // Cập nhật thông tin cho User và cho Company/Organizator nếu là vai trò đó.
-            user.FullName = request.FullName;
-            user.PhoneNumber = request.PhoneNumber;
-            if (request.AvatarUrl != null) user.AvatarUrl = request.AvatarUrl;
-            user.UpdatedAt = DateTime.UtcNow;
-
-            if (roles.Contains("Company"))
-            {
-                var company = await _context.Companies.FirstOrDefaultAsync(c => c.UserId == userId);
-                if (company != null)
-                {
-                    company.Name = request.FullName;
-                    company.Phone = request.PhoneNumber;
-                    company.UpdatedAt = DateTime.UtcNow;
-                }
-            }
-            else if (roles.Contains("Organizator"))
-            {
-                var organizator = await _context.Organizators.FirstOrDefaultAsync(o => o.UserId == userId);
-                if (organizator != null)
-                {
-                    organizator.Name = request.FullName;
-                    organizator.Phone = request.PhoneNumber;
-                    organizator.UpdatedAt = DateTime.UtcNow;
-                }
-            }
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new
-            {
-                id = user.Id,
-                fullName = user.FullName,
-                email = user.Email,
-                phoneNumber = user.PhoneNumber,
-                avatarUrl = user.AvatarUrl,
-                isActive = user.IsActive,
-                roles
             });
         }
 
@@ -411,7 +311,6 @@ namespace TurTour.Controllers
                 PhoneNumber = request.CompanyPhone,
                 IsActive = true
             };
-            var confirmationToken = AssignEmailConfirmationToken(user);
 
             _context.Users.Add(user);
 
@@ -438,11 +337,12 @@ namespace TurTour.Controllers
             _context.Companies.Add(company);
 
             await _context.SaveChangesAsync();
-            await SendConfirmationEmailAsync(user.Email, company.Name ?? user.FullName, confirmationToken);
 
             return Ok(new
             {
-                message = "Đăng ký thành công. Vui lòng kiểm tra email để xác thực tài khoản trước khi đăng nhập."
+                message = "Đăng ký company thành công",
+                userId = user.Id,
+                companyId = company.Id
             });
         }
 
@@ -472,7 +372,6 @@ namespace TurTour.Controllers
                 PhoneNumber = request.OrganizatorPhone,
                 IsActive = true
             };
-            var confirmationToken = AssignEmailConfirmationToken(user);
 
             _context.Users.Add(user);
 
@@ -498,62 +397,13 @@ namespace TurTour.Controllers
             _context.Organizators.Add(organizator);
 
             await _context.SaveChangesAsync();
-            await SendConfirmationEmailAsync(user.Email, organizator.Name ?? user.FullName, confirmationToken);
 
             return Ok(new
             {
-                message = "Đăng ký thành công. Vui lòng kiểm tra email để xác thực tài khoản trước khi đăng nhập."
+                message = "Đăng ký organizator thành công",
+                userId = user.Id,
+                organizatorId = organizator.Id
             });
-        }
-
-        // Bấm link trong email xác thực sẽ gọi endpoint này (qua trang /auth/confirm-email phía FE).
-        [HttpPost("confirm-email")]
-        public async Task<IActionResult> ConfirmEmail(ConfirmEmailRequest request)
-        {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.EmailConfirmationToken == request.Token);
-
-            if (user == null)
-            {
-                return BadRequest(new { message = "Liên kết xác thực không hợp lệ hoặc đã được sử dụng." });
-            }
-
-            if (user.EmailConfirmationTokenExpiresAt == null || user.EmailConfirmationTokenExpiresAt < DateTime.UtcNow)
-            {
-                return BadRequest(new { message = "Liên kết xác thực đã hết hạn. Vui lòng yêu cầu gửi lại." });
-            }
-
-            user.EmailConfirmed = true;
-            user.EmailConfirmationToken = null;
-            user.EmailConfirmationTokenExpiresAt = null;
-            user.UpdatedAt = DateTime.UtcNow;
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Xác thực email thành công. Bạn có thể đăng nhập ngay bây giờ." });
-        }
-
-        // Gửi lại email xác thực — dùng khi link cũ hết hạn hoặc email gửi thất bại lúc đăng ký.
-        [HttpPost("resend-confirmation")]
-        public async Task<IActionResult> ResendConfirmation(ResendConfirmationRequest request)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            if (user == null)
-            {
-                // Không tiết lộ email có tồn tại hay không — tránh dò email người dùng khác.
-                return Ok(new { message = "Nếu email tồn tại trong hệ thống, link xác thực mới đã được gửi." });
-            }
-
-            if (user.EmailConfirmed)
-            {
-                return Ok(new { message = "Email này đã được xác thực, bạn có thể đăng nhập." });
-            }
-
-            var token = AssignEmailConfirmationToken(user);
-            await _context.SaveChangesAsync();
-            await SendConfirmationEmailAsync(user.Email, user.FullName, token);
-
-            return Ok(new { message = "Nếu email tồn tại trong hệ thống, link xác thực mới đã được gửi." });
         }
     }
 }

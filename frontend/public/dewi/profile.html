@@ -2,299 +2,93 @@
 <html lang="vi">
 
 <head>
-  <script src="assets/js/env-config.js"></script>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Hồ sơ của tôi - TurTour</title>
-  <meta name="description" content="Cập nhật thông tin tài khoản và ảnh đại diện">
+  <meta name="description" content="Thông tin tài khoản và tour đã đăng ký">
+  <meta name="keywords" content="turtour, profile, tour, sinh viên">
 
+  <!-- Favicons -->
   <link href="assets/img/favicon.png" rel="icon">
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Raleway:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+  <!-- Vendor CSS Files -->
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
 
   <style>
-    body.profile-page { background: #f4f6fb; }
-    body.profile-page .header {
-      --background-color: rgba(21, 34, 43, 0.97);
-      box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+    .profile-section {
+      padding: 140px 0 60px 0;
     }
-
-    /* ── Hero banner ── */
-    .profile-hero {
-      background: linear-gradient(135deg, #1a1a2e 0%, #2d2d5e 55%, #e84545 130%);
-      padding: 140px 0 60px;
-      position: relative;
-      overflow: hidden;
+    .profile-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border: 1px solid #f1f3f5;
+      margin-bottom: 30px;
     }
-    .profile-hero::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-      pointer-events: none;
+    .profile-card h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #1a1a2e;
+      border-bottom: 2px solid #e84545;
+      padding-bottom: 12px;
+      margin-bottom: 20px;
     }
-    .profile-hero-inner {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      gap: 28px;
-      flex-wrap: wrap;
-    }
-    .profile-avatar-wrap {
-      position: relative;
-      flex-shrink: 0;
-    }
-    .profile-avatar-img {
-      width: 110px;
-      height: 110px;
+    .profile-avatar {
+      width: 72px;
+      height: 72px;
       border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid rgba(255,255,255,0.25);
       background: linear-gradient(135deg, #e84545, #ff7b7b);
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.4rem;
-      font-weight: 800;
-      color: #fff;
-      overflow: hidden;
+      font-size: 1.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
     }
-    .profile-avatar-img img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
+    .profile-info-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
     }
-    .profile-hero-info { flex: 1; min-width: 200px; }
-    .profile-hero-info h2 {
-      font-size: 1.75rem;
-      font-weight: 800;
-      color: #fff;
-      margin: 0 0 6px;
-      line-height: 1.2;
+    .profile-info-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f3f5;
+      font-size: 0.92rem;
+      color: #495057;
     }
-    .profile-hero-info p {
-      color: rgba(255,255,255,0.7);
-      margin: 0 0 10px;
-      font-size: 0.9rem;
-    }
-    .role-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 12px;
+    .profile-info-list li:last-child { border-bottom: none; }
+    .profile-info-list li strong { color: #212529; font-weight: 600; }
+    .role-badge {
+      display: inline-block;
+      padding: 3px 10px;
       border-radius: 20px;
       font-size: 0.72rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      background: rgba(232,69,69,0.85);
-      color: #fff;
-      margin-right: 6px;
-      margin-bottom: 4px;
-    }
-    .role-chip.admin { background: rgba(99,102,241,0.85); }
-    .role-chip.company { background: rgba(16,185,129,0.85); }
-    .role-chip.organizator { background: rgba(245,158,11,0.85); }
-
-    /* ── Main content ── */
-    .profile-body { padding: 36px 0 60px; }
-
-    /* ── Cards ── */
-    .pcard {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-      border: 1px solid rgba(0,0,0,0.05);
-      overflow: hidden;
-    }
-    .pcard-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 20px 24px 16px;
-      border-bottom: 1px solid #f1f3f5;
-    }
-    .pcard-header-icon {
-      width: 38px; height: 38px;
-      border-radius: 10px;
-      background: rgba(232,69,69,0.1);
-      color: #e84545;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem;
-      flex-shrink: 0;
-    }
-    .pcard-header h4 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #1a1a2e;
-      margin: 0;
-    }
-    .pcard-body { padding: 24px; }
-
-    /* ── Form ── */
-    .form-label-custom {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: #495057;
-      margin-bottom: 5px;
-      display: block;
-    }
-    .form-control-custom {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1.5px solid #e9ecef;
-      border-radius: 10px;
-      font-size: 0.92rem;
-      color: #212529;
-      background: #fff;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      outline: none;
-    }
-    .form-control-custom:focus {
-      border-color: #e84545;
-      box-shadow: 0 0 0 3px rgba(232,69,69,0.1);
-    }
-    .form-control-custom[readonly] {
-      background: #f8f9fa;
-      color: #868e96;
-      cursor: not-allowed;
-    }
-    .form-group-custom { margin-bottom: 18px; }
-    .form-group-custom:last-child { margin-bottom: 0; }
-
-    /* ── Buttons ── */
-    .btn-save {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
       background: #e84545;
       color: #fff;
-      border: none;
-      padding: 11px 22px;
-      border-radius: 10px;
-      font-size: 0.88rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
+      margin-left: 6px;
     }
-    .btn-save:hover { background: #d33c3c; }
-    .btn-save:active { transform: translateY(1px); }
-    .btn-save:disabled { background: #b0b8c4; cursor: not-allowed; transform: none; }
 
-    /* ── Avatar upload area ── */
-    .avatar-preview-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      text-align: center;
-      padding: 10px 0 20px;
+    body.profile-page .header {
+      --background-color: rgba(21, 34, 43, 0.95);
+      box-shadow: 0px 0 18px rgba(0, 0, 0, 0.1);
     }
-    .avatar-preview-large {
-      width: 130px;
-      height: 130px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: linear-gradient(135deg, #e84545, #ff7b7b);
-      border: 3px solid #f1f3f5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.8rem;
-      font-weight: 800;
-      color: #fff;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-    .avatar-preview-large img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
-    }
-    .avatar-upload-zone {
-      border: 2px dashed #dee2e6;
-      border-radius: 12px;
-      padding: 20px 16px;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-    }
-    .avatar-upload-zone:hover {
-      border-color: #e84545;
-      background: rgba(232,69,69,0.03);
-    }
-    .avatar-upload-zone p {
-      font-size: 0.82rem;
-      color: #868e96;
-      margin: 6px 0 0;
-    }
-    #avatar-file-input { display: none; }
-
-    /* ── Guest / error states ── */
-    .state-card {
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-      padding: 56px 32px;
-      text-align: center;
-      max-width: 480px;
-      margin: 0 auto;
-    }
-    .state-icon {
-      width: 72px; height: 72px;
-      border-radius: 20px;
-      background: rgba(232,69,69,0.1);
-      color: #e84545;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2rem;
-      margin: 0 auto 20px;
-    }
-    .state-card h3 { font-size: 1.25rem; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; }
-    .state-card p { color: #868e96; font-size: 0.9rem; margin-bottom: 20px; }
-    .btn-login-state {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 12px 24px; border-radius: 10px;
-      background: #e84545; color: #fff;
-      font-weight: 700; font-size: 0.9rem;
-      text-decoration: none; border: none; cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn-login-state:hover { background: #d33c3c; color: #fff; }
-
-    /* ── Loading skeleton ── */
-    .skeleton {
-      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.4s infinite;
-      border-radius: 8px;
-    }
-    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-
-    @media (max-width: 767px) {
-      .profile-hero { padding-top: 120px; }
-      .profile-avatar-img { width: 84px; height: 84px; font-size: 1.8rem; }
-      .profile-hero-info h2 { font-size: 1.35rem; }
-    }
-    .header-avatar-circle {
-      width: 34px; height: 34px; border-radius: 50%;
-      overflow: hidden; display: flex; align-items: center; justify-content: center;
-      background: linear-gradient(135deg, #e84545, #ff7b7b);
-      border: 2px solid rgba(255,255,255,0.28);
-      color: #fff; font-size: 0.76rem; font-weight: 800;
-      text-transform: uppercase; letter-spacing: -0.01em;
-      flex-shrink: 0; cursor: pointer; user-select: none;
-      transition: border-color 0.2s ease, transform 0.18s ease;
-    }
-    .header-avatar-circle:hover { border-color: rgba(255,255,255,0.55); transform: scale(1.07); }
   </style>
 </head>
 
@@ -302,22 +96,25 @@
 
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
+
       <a href="index.html" class="logo d-flex align-items-center me-auto">
         <h1 class="sitename">TurTour</h1>
       </a>
+
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="index.html#hero">Trang chủ</a></li>
           <li><a href="index.html#about">Giới thiệu</a></li>
-          <li><a href="index.html#services">Cách hoạt động</a></li>
+          <li><a href="index.html#services">Dịch vụ</a></li>
           <li><a href="index.html#portfolio">Tour</a></li>
           <li><a href="index.html#team">Đối tác</a></li>
-          <li><a href="index.html#staff">Đội ngũ</a></li>
           <li><a href="index.html#contact">Liên hệ</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
+
       <a id="auth-guest" class="cta-btn" href="/auth/sign-in" target="_top">Đăng Nhập</a>
+
       <div id="notif-bell" class="notif-bell dropdown" style="display:none;">
         <a href="#" class="notif-bell-toggle" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="bi bi-bell"></i>
@@ -333,456 +130,238 @@
           </div>
         </div>
       </div>
+
       <div id="auth-profile" class="auth-profile dropdown" style="display:none;">
         <a href="#" class="auth-profile-toggle d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="bi bi-person-circle"></i>
           <span id="auth-profile-name" class="auth-profile-name"></span>
         </a>
-        <ul class="dropdown-menu dropdown-menu-end auth-profile-menu">
-          <li><a class="dropdown-item active" href="profile.html"><i class="bi bi-person"></i>Hồ sơ của tôi</a></li>
-          <li id="auth-mytours-item" style="display:none;"><a class="dropdown-item" href="my-tours.html"><i class="bi bi-calendar-check"></i>Tour của tôi</a></li>
-          <li id="auth-myreviews-item" style="display:none;"><a class="dropdown-item" href="my-reviews.html"><i class="bi bi-star"></i>Đánh giá của tôi</a></li>
-          <li id="auth-savedtours-item" style="display:none;"><a class="dropdown-item" href="saved-tours.html"><i class="bi bi-heart"></i>Tour đã lưu</a></li>
-          <li><a class="dropdown-item" href="notifications.html"><i class="bi bi-bell"></i>Thông báo</a></li>
-          <li id="auth-dashboard-item" style="display:none;"><a class="dropdown-item" href="/admin/dashboard" target="_top"><i class="bi bi-speedometer2"></i>Trang quản trị</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><button type="button" class="dropdown-item logout-item" id="auth-logout-btn"><i class="bi bi-box-arrow-right"></i>Đăng xuất</button></li>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item active" href="profile.html">Hồ sơ của tôi</a></li>
+          <li id="auth-mytours-item" style="display:none;"><a class="dropdown-item" href="my-tours.html">Tour của tôi</a></li>
+          <li><a class="dropdown-item" href="notifications.html">Thông báo</a></li>
+          <li id="auth-dashboard-item" style="display:none;"><a class="dropdown-item" href="/admin/dashboard" target="_top">Trang quản trị</a></li>
+          <li><button type="button" class="dropdown-item" id="auth-logout-btn">Đăng xuất</button></li>
         </ul>
       </div>
+
     </div>
   </header>
 
   <main class="main">
+    <section class="profile-section">
+      <div class="container" data-aos="fade-up">
 
-    <!-- Hero banner (shown when logged in) -->
-    <div id="profile-hero" class="profile-hero" style="display:none;">
-      <div class="container">
-        <div class="profile-hero-inner" data-aos="fade-up">
-          <div class="profile-avatar-wrap">
-            <div class="profile-avatar-img" id="hero-avatar">
-              <span id="hero-initial">?</span>
-            </div>
-          </div>
-          <div class="profile-hero-info">
-            <h2 id="hero-name">...</h2>
-            <p id="hero-email">...</p>
-            <div id="hero-roles"></div>
-          </div>
+        <!-- Not logged in -->
+        <div id="profile-guest" style="display:none;" class="text-center py-5">
+          <i class="bi bi-lock text-danger" style="font-size: 3.5rem;"></i>
+          <h3 class="mt-3 font-weight-bold">Bạn cần đăng nhập</h3>
+          <p class="text-muted">Vui lòng đăng nhập để xem hồ sơ của bạn.</p>
+          <a href="/auth/sign-in" target="_top" class="btn btn-outline-danger mt-2">Đến trang đăng nhập</a>
         </div>
-      </div>
-    </div>
 
-    <!-- Loading state -->
-    <div id="profile-loading" style="padding: 200px 0 80px;">
-      <div class="container" style="max-width: 720px;">
-        <div class="skeleton mb-4" style="height: 24px; width: 40%;"></div>
-        <div class="skeleton mb-2" style="height: 16px; width: 60%;"></div>
-        <div class="skeleton" style="height: 16px; width: 50%;"></div>
-      </div>
-    </div>
-
-    <!-- Not logged in -->
-    <div id="profile-guest" style="display:none; padding: 180px 0 80px;">
-      <div class="container">
-        <div class="state-card" data-aos="fade-up">
-          <div class="state-icon"><i class="bi bi-lock"></i></div>
-          <h3>Bạn chưa đăng nhập</h3>
-          <p>Vui lòng đăng nhập để xem và chỉnh sửa hồ sơ của bạn.</p>
-          <a href="/auth/sign-in" target="_top" class="btn-login-state"><i class="bi bi-box-arrow-in-right"></i> Đăng nhập ngay</a>
+        <!-- Loading -->
+        <div id="profile-loading" class="text-center py-5">
+          <div class="spinner-border text-danger mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+          <p class="text-muted">Đang tải hồ sơ...</p>
         </div>
-      </div>
-    </div>
 
-    <!-- Error state -->
-    <div id="profile-error" style="display:none; padding: 180px 0 80px;">
-      <div class="container">
-        <div class="state-card" data-aos="fade-up">
-          <div class="state-icon"><i class="bi bi-exclamation-circle"></i></div>
-          <h3>Không thể tải hồ sơ</h3>
-          <p id="profile-error-msg">Vui lòng thử lại sau.</p>
-          <button type="button" onclick="location.reload()" class="btn-login-state"><i class="bi bi-arrow-clockwise"></i> Thử lại</button>
+        <!-- Error -->
+        <div id="profile-error" style="display:none;" class="text-center py-5">
+          <i class="bi bi-exclamation-octagon text-danger" style="font-size: 3.5rem;"></i>
+          <p id="profile-error-msg" class="text-muted mt-3">Không thể tải hồ sơ.</p>
         </div>
-      </div>
-    </div>
 
-    <!-- Main content (logged in) -->
-    <div id="profile-content" style="display:none;">
-      <div class="profile-body">
-        <div class="container">
-          <div class="row gy-4">
-
-            <!-- Thông tin cá nhân -->
-            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="80">
-              <div class="pcard h-100">
-                <div class="pcard-header">
-                  <div class="pcard-header-icon"><i class="bi bi-person-lines-fill"></i></div>
-                  <div>
-                    <h4>Thông tin cá nhân</h4>
-                  </div>
-                </div>
-                <div class="pcard-body">
-                  <div class="form-group-custom">
-                    <label class="form-label-custom" for="inp-name">Họ và tên</label>
-                    <input type="text" id="inp-name" class="form-control-custom" placeholder="Nhập họ và tên" maxlength="100">
-                  </div>
-                  <div class="form-group-custom">
-                    <label class="form-label-custom" for="inp-email">Email</label>
-                    <input type="email" id="inp-email" class="form-control-custom" readonly>
-                  </div>
-                  <div class="form-group-custom">
-                    <label class="form-label-custom" for="inp-phone">Số điện thoại</label>
-                    <input type="tel" id="inp-phone" class="form-control-custom" placeholder="Nhập số điện thoại">
-                  </div>
-                  <div class="mt-4 d-flex gap-2">
-                    <button type="button" id="btn-save-info" class="btn-save">
-                      <i class="bi bi-check2"></i> Lưu thay đổi
-                    </button>
-                  </div>
+        <!-- Content -->
+        <div id="profile-content" class="row justify-content-center gy-4" style="display:none;">
+          <div class="col-lg-6">
+            <div class="profile-card">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="profile-avatar" id="profile-initial">?</div>
+                <div>
+                  <h4 class="mb-0" id="profile-name" style="font-weight:700;">—</h4>
+                  <span id="profile-roles"></span>
                 </div>
               </div>
+              <ul class="profile-info-list">
+                <li><strong>Email</strong><span id="profile-email">—</span></li>
+                <li><strong>Số điện thoại</strong><span id="profile-phone">—</span></li>
+                <li><strong>Trạng thái</strong><span id="profile-active">—</span></li>
+              </ul>
+              <a href="my-tours.html" class="btn btn-outline-danger w-100 mt-3" id="profile-my-tours-link" style="display:none;">
+                <i class="bi bi-airplane-fill"></i> Xem tour của tôi
+              </a>
             </div>
-
-            <!-- Ảnh đại diện -->
-            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="160">
-              <div class="pcard h-100">
-                <div class="pcard-header">
-                  <div class="pcard-header-icon"><i class="bi bi-person-bounding-box"></i></div>
-                  <div>
-                    <h4>Ảnh đại diện</h4>
-                  </div>
-                </div>
-                <div class="pcard-body">
-                  <div class="avatar-preview-wrap">
-                    <div class="avatar-preview-large" id="avatar-preview">
-                      <span id="avatar-preview-initial">?</span>
-                    </div>
-                    <div style="width: 100%;">
-                      <div class="avatar-upload-zone" onclick="document.getElementById('avatar-file-input').click()">
-                        <i class="bi bi-cloud-arrow-up" style="font-size: 1.6rem; color: #adb5bd;"></i>
-                        <p>Nhấn vào đây hoặc kéo thả ảnh vào</p>
-                        <p style="font-size: 0.75rem;">JPEG, PNG, WEBP, GIF - tối da 10MB</p>
-                      </div>
-                      <input type="file" id="avatar-file-input" accept="image/jpeg,image/png,image/webp,image/gif">
-                      <div id="avatar-selected-name" style="display:none; margin-top:10px; font-size:0.82rem; color:#495057; text-align:center;"></div>
-                    </div>
-                  </div>
-                  <div class="d-flex gap-2 mt-2">
-                    <button type="button" id="btn-save-avatar" class="btn-save" disabled>
-                      <i class="bi bi-check2"></i> Lưu ảnh
-                    </button>
-                    <button type="button" id="btn-cancel-avatar" class="btn btn-sm btn-outline-secondary" style="border-radius:10px; display:none;" onclick="cancelAvatarSelection()">
-                      Hủy
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
           </div>
         </div>
-      </div>
-    </div>
 
+      </div>
+    </section>
   </main>
 
   <footer id="footer" class="footer dark-background">
+
     <div class="container footer-top">
       <div class="row gy-4">
         <div class="col-lg-4 col-md-6 footer-about">
           <a href="index.html" class="logo d-flex align-items-center">
             <span class="sitename">TurTour</span>
           </a>
-          <p class="mt-2">Nền tảng kết nối sinh viên với các tour tham quan thực tế tại doanh nghiệp.</p>
-          <div class="footer-contact pt-2">
+          <div class="footer-contact pt-3">
             <p>Gia Định, TP.HCM</p>
-            <p class="mt-3"><strong>Điện thoại:</strong> <span>Đang cập nhật</span></p>
-            <p><strong>Email:</strong> <span>Đang cập nhật</span></p>
+            <p class="mt-3"><strong>Phone:</strong> <span>Upcoming</span></p>
+            <p><strong>Email:</strong> <span>Upcoming</span></p>
           </div>
           <div class="social-links d-flex mt-4">
+            <a href=""><i class="bi bi-twitter-x"></i></a>
             <a href=""><i class="bi bi-facebook"></i></a>
             <a href=""><i class="bi bi-instagram"></i></a>
+            <a href=""><i class="bi bi-linkedin"></i></a>
           </div>
         </div>
-        <div class="col-lg-4 col-md-3 footer-links">
-          <h4>Liên kết nhanh</h4>
+
+        <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Useful Links</h4>
           <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="index.html#hero">Trang chủ</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="index.html#about">Giới thiệu</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="index.html#portfolio">Danh sách tour</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="index.html#team">Đối tác</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="index.html#staff">Đội ngũ</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Home</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">About us</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Services</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Terms of service</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Privacy policy</a></li>
           </ul>
         </div>
-        <div class="col-lg-4 col-md-3 footer-links">
-          <h4>Tài khoản</h4>
+
+        <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Our Services</h4>
           <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="my-tours.html">Tour của tôi</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="profile.html">Hồ sơ của tôi</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="notifications.html">Thông báo</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="/auth/sign-in" target="_top">Đăng nhập</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Design</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Development</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Product Management</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Marketing</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Graphic Design</a></li>
           </ul>
         </div>
+
+        <div class="col-lg-4 col-md-12 footer-newsletter">
+          <h4>Our Newsletter</h4>
+          <p>Subscribe to our newsletter and receive the latest news about our products and services!</p>
+          <form action="forms/newsletter.php" method="post" class="php-email-form">
+            <div class="newsletter-form"><input type="email" name="email"><input type="submit" value="Subscribe"></div>
+            <div class="loading">Loading</div>
+            <div class="error-message"></div>
+            <div class="sent-message">Your subscription request has been sent. Thank you!</div>
+          </form>
+        </div>
+
       </div>
     </div>
+
     <div class="container copyright text-center mt-4">
-      <p>© <span>Bản quyền</span> <strong class="px-1 sitename">TurTour</strong> <span>Đã đăng ký bản quyền</span></p>
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">TurTour</strong> <span>All Rights Reserved</span></p>
+      <div class="credits">
+        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed by <a href=“https://themewagon.com>ThemeWagon
+      </div>
     </div>
+
   </footer>
 
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
+  <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
+
+  <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
   <script src="assets/js/toast.js"></script>
   <script src="assets/js/auth-guard.js"></script>
-  <script src="assets/vendor/signalr/signalr.min.js"></script>
+    <script src="assets/vendor/signalr/signalr.min.js"></script>
   <script src="assets/js/realtime.js"></script>
-  <script src="assets/js/notifications-badge.js"></script>
-  <script src="assets/js/header-avatar.js"></script>
+<script src="assets/js/notifications-badge.js"></script>
 
   <script>
-  (function () {
-    var API_BASE = window.TURTOUR_API_BASE;
-    var session = null;
-    var currentProfile = null;
-    var pendingAvatarFile = null;
+    (function () {
+      var API_BASE = 'https://turtour-production.up.railway.app/api';
 
-    try { session = JSON.parse(localStorage.getItem('turtour.admin.session')); } catch (e) {}
+      var session = null;
+      try {
+        session = JSON.parse(localStorage.getItem('turtour.admin.session'));
+      } catch (e) {}
 
-    // Header auth setup
-    var guestBtn = document.getElementById('auth-guest');
-    var profileBox = document.getElementById('auth-profile');
-    var profileNameEl = document.getElementById('auth-profile-name');
-    var dashboardItem = document.getElementById('auth-dashboard-item');
-    var myToursItem = document.getElementById('auth-mytours-item');
-    var myReviewsItem = document.getElementById('auth-myreviews-item');
-    var savedToursItem = document.getElementById('auth-savedtours-item');
-    var logoutBtn = document.getElementById('auth-logout-btn');
+      var guestBtn = document.getElementById('auth-guest');
+      var profileBox = document.getElementById('auth-profile');
+      var profileName = document.getElementById('auth-profile-name');
+      var dashboardItem = document.getElementById('auth-dashboard-item');
+      var myToursItem = document.getElementById('auth-mytours-item');
+      var logoutBtn = document.getElementById('auth-logout-btn');
 
-    if (session && session.token) {
-      guestBtn.style.display = 'none';
-      profileBox.style.display = 'block';
-      profileNameEl.textContent = session.fullName || session.email || 'Tài khoản';
-      var headerRoles = session.roles || [];
-      if (headerRoles.includes('Admin') || headerRoles.includes('Organizator') || headerRoles.includes('Company')) {
-        var dashLink = dashboardItem.querySelector('a');
-        if (dashLink) dashLink.href = headerRoles.includes('Admin') ? '/admin/dashboard' : '/partner/dashboard';
-        dashboardItem.style.display = 'block';
+      if (session && session.token) {
+        guestBtn.style.display = 'none';
+        profileBox.style.display = 'block';
+        profileName.textContent = session.fullName || session.email || 'Tài khoản';
+
+        var headerRoles = session.roles || [];
+        if (headerRoles.includes('Admin') || headerRoles.includes('Organizator') || headerRoles.includes('Company')) {
+          dashboardItem.style.display = 'block';
+        }
+        if (headerRoles.includes('Student')) {
+          myToursItem.style.display = 'block';
+        }
       }
-      if (headerRoles.includes('Student')) {
-        myToursItem.style.display = 'block';
-        if (myReviewsItem) myReviewsItem.style.display = 'block';
-        if (savedToursItem) savedToursItem.style.display = 'block';
-      }
-    }
 
-    logoutBtn.addEventListener('click', function () {
-      localStorage.removeItem('turtour.admin.session');
-      window.parent.location.href = '/auth/sign-in';
-    });
-
-    if (!session || !session.token) {
-      document.getElementById('profile-loading').style.display = 'none';
-      document.getElementById('profile-guest').style.display = 'block';
-      return;
-    }
-
-    function authHeaders() { return { Authorization: 'Bearer ' + session.token }; }
-
-    function roleLabel(role) {
-      var map = { Student: 'Sinh viên', Admin: 'Quản trị', Company: 'Doanh nghiệp', Organizator: 'Tổ chức' };
-      return map[role] || role;
-    }
-
-    function setAvatar(avatarUrl, nameInitial) {
-      var heroAv = document.getElementById('hero-avatar');
-      var previewAv = document.getElementById('avatar-preview');
-      if (avatarUrl) {
-        heroAv.innerHTML = '<img src="' + avatarUrl + '" alt="avatar" onerror="this.parentNode.innerHTML=\'<span>' + nameInitial + '</span>\'">';
-        previewAv.innerHTML = '<img src="' + avatarUrl + '" alt="avatar" onerror="this.parentNode.innerHTML=\'<span id=avatar-preview-initial>' + nameInitial + '</span>\'">';
-      } else {
-        document.getElementById('hero-initial').textContent = nameInitial;
-        document.getElementById('avatar-preview-initial').textContent = nameInitial;
-      }
-    }
-
-    function renderProfile(profile) {
-      currentProfile = profile;
-      var name = profile.fullName || profile.email || 'Người dùng';
-      var initial = name.trim().charAt(0).toUpperCase();
-
-      document.getElementById('hero-name').textContent = name;
-      document.getElementById('hero-email').textContent = profile.email || '';
-      setAvatar(profile.avatarUrl, initial);
-
-      var rolesContainer = document.getElementById('hero-roles');
-      rolesContainer.innerHTML = '';
-      (profile.roles || []).forEach(function (role) {
-        var chip = document.createElement('span');
-        chip.className = 'role-chip ' + role.toLowerCase();
-        chip.textContent = roleLabel(role);
-        rolesContainer.appendChild(chip);
+      logoutBtn.addEventListener('click', function () {
+        localStorage.removeItem('turtour.admin.session');
+        window.parent.location.href = '/auth/sign-in';
       });
 
-      document.getElementById('inp-name').value = name;
-      document.getElementById('inp-email').value = profile.email || '';
-      document.getElementById('inp-phone').value = profile.phoneNumber || '';
-    }
-
-    // Load profile
-    fetch(API_BASE + '/auth/me', { headers: authHeaders() })
-      .then(function (res) {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-      })
-      .then(function (profile) {
+      if (!session || !session.token) {
         document.getElementById('profile-loading').style.display = 'none';
-        document.getElementById('profile-hero').style.display = 'block';
-        document.getElementById('profile-content').style.display = 'block';
-        renderProfile(profile);
-        if (typeof AOS !== 'undefined') AOS.refresh();
-      })
-      .catch(function (err) {
-        document.getElementById('profile-loading').style.display = 'none';
-        document.getElementById('profile-error').style.display = 'block';
-        document.getElementById('profile-error-msg').textContent = err.message || 'Không thể tải hồ sơ.';
-      });
-
-    // Save profile info
-    document.getElementById('btn-save-info').addEventListener('click', function () {
-      var btn = this;
-      var name = document.getElementById('inp-name').value.trim();
-      var phone = document.getElementById('inp-phone').value.trim();
-
-      if (!name || name.length < 2) {
-        showToast('Họ và tên phải có ít nhất 2 ký tự.', 'error');
+        document.getElementById('profile-guest').style.display = 'block';
         return;
       }
 
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Đang lưu...';
-
-      fetch(API_BASE + '/auth/me', {
-        method: 'PUT',
-        headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
-        body: JSON.stringify({ fullName: name, phoneNumber: phone || null })
-      })
-        .then(function (res) {
-          return res.json().then(function (data) {
-            if (!res.ok) throw new Error(data.message || 'Lưu thất bại.');
-            return data;
-          });
-        })
-        .then(function (profile) {
-          // Update session cache
-          session.fullName = profile.fullName;
-          localStorage.setItem('turtour.admin.session', JSON.stringify(session));
-          profileNameEl.textContent = profile.fullName || profile.email;
-          renderProfile(Object.assign({}, currentProfile, profile));
-          showToast('Cập nhật thông tin thành công!', 'success');
-        })
-        .catch(function (err) {
-          showToast(err.message || 'Lưu thất bại, vui lòng thử lại.', 'error');
-        })
-        .finally(function () {
-          btn.disabled = false;
-          btn.innerHTML = '<i class="bi bi-check2"></i> Lưu thay đổi';
-        });
-    });
-
-    // Avatar file selection
-    document.getElementById('avatar-file-input').addEventListener('change', function () {
-      var file = this.files && this.files[0];
-      if (!file) return;
-
-      pendingAvatarFile = file;
-      document.getElementById('avatar-selected-name').textContent = file.name;
-      document.getElementById('avatar-selected-name').style.display = 'block';
-      document.getElementById('btn-save-avatar').disabled = false;
-      document.getElementById('btn-cancel-avatar').style.display = 'inline-flex';
-
-      // Preview
-      var reader = new FileReader();
-      reader.onload = function (e) {
-        var previewAv = document.getElementById('avatar-preview');
-        previewAv.innerHTML = '<img src="' + e.target.result + '" alt="preview" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-      };
-      reader.readAsDataURL(file);
-    });
-
-    window.cancelAvatarSelection = function () {
-      pendingAvatarFile = null;
-      document.getElementById('avatar-file-input').value = '';
-      document.getElementById('avatar-selected-name').style.display = 'none';
-      document.getElementById('btn-save-avatar').disabled = true;
-      document.getElementById('btn-cancel-avatar').style.display = 'none';
-      if (currentProfile) {
-        var initial = (currentProfile.fullName || '?').charAt(0).toUpperCase();
-        setAvatar(currentProfile.avatarUrl, initial);
+      function authHeaders() {
+        return { Authorization: 'Bearer ' + session.token };
       }
-    };
 
-    // Save avatar
-    document.getElementById('btn-save-avatar').addEventListener('click', function () {
-      if (!pendingAvatarFile) return;
-      var btn = this;
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Đang tải lên...';
-
-      var formData = new FormData();
-      formData.append('file', pendingAvatarFile);
-
-      fetch(API_BASE + '/uploads/image', {
-        method: 'POST',
-        headers: authHeaders(),
-        body: formData
-      })
+      // Load profile info
+      fetch(API_BASE + '/auth/me', { headers: authHeaders() })
         .then(function (res) {
-          return res.json().then(function (data) {
-            if (!res.ok) throw new Error(data.message || 'Upload thất bại.');
-            return data;
-          });
-        })
-        .then(function (data) {
-          var avatarUrl = data.url;
-          // Save URL to profile
-          return fetch(API_BASE + '/auth/me', {
-            method: 'PUT',
-            headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
-            body: JSON.stringify({
-              fullName: currentProfile.fullName || document.getElementById('inp-name').value.trim(),
-              phoneNumber: currentProfile.phoneNumber || null,
-              avatarUrl: avatarUrl
-            })
-          }).then(function (res2) {
-            return res2.json().then(function (d2) {
-              if (!res2.ok) throw new Error(d2.message || 'Cập nhật ảnh thất bại.');
-              return d2;
-            });
-          });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
         })
         .then(function (profile) {
-          currentProfile = Object.assign({}, currentProfile, profile);
-          pendingAvatarFile = null;
-          document.getElementById('avatar-file-input').value = '';
-          document.getElementById('avatar-selected-name').style.display = 'none';
-          document.getElementById('btn-cancel-avatar').style.display = 'none';
-          var initial = (profile.fullName || '?').charAt(0).toUpperCase();
-          setAvatar(profile.avatarUrl, initial);
-          showToast('Cập nhật ảnh đại diện thành công!', 'success');
+          document.getElementById('profile-loading').style.display = 'none';
+          document.getElementById('profile-content').style.display = 'flex';
+
+          var name = profile.fullName || profile.email || 'Người dùng';
+          document.getElementById('profile-name').textContent = name;
+          document.getElementById('profile-initial').textContent = name.trim().charAt(0).toUpperCase();
+          document.getElementById('profile-email').textContent = profile.email || '—';
+          document.getElementById('profile-phone').textContent = profile.phoneNumber || '—';
+          document.getElementById('profile-active').textContent = profile.isActive ? 'Đang hoạt động' : 'Đã bị khóa';
+
+          var rolesEl = document.getElementById('profile-roles');
+          (profile.roles || []).forEach(function (role) {
+            var span = document.createElement('span');
+            span.className = 'role-badge';
+            span.textContent = role;
+            rolesEl.appendChild(span);
+          });
+
+          var roles = profile.roles || [];
+          if (roles.indexOf('Student') !== -1) {
+            document.getElementById('profile-my-tours-link').style.display = 'block';
+          }
         })
         .catch(function (err) {
-          showToast(err.message || 'Tải ảnh thất bại, vui lòng thử lại.', 'error');
-        })
-        .finally(function () {
-          btn.disabled = false;
-          btn.innerHTML = '<i class="bi bi-check2"></i> Lưu ảnh';
+          document.getElementById('profile-loading').style.display = 'none';
+          document.getElementById('profile-error').style.display = 'block';
+          document.getElementById('profile-error-msg').textContent = err.message || 'Không thể tải hồ sơ.';
         });
-    });
-
-  })();
+    })();
   </script>
 
 </body>
+
 </html>

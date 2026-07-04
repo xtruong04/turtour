@@ -7,7 +7,7 @@ import Grid from "@mui/material/Grid";
 import SoftBox from "components/SoftBox";
 import SoftButton from "components/SoftButton";
 import SoftTypography from "components/SoftTypography";
-import SkeletonLoader from "components/SkeletonLoader";
+import PageLoader from "components/PageLoader";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -16,16 +16,9 @@ import NeoStatCard from "components/NeoStatCard";
 import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
 
 import apiService from "../../services/apiService";
-import { hideSplash } from "utils/splash";
 
 function formatCurrency(value) {
   return Number(value || 0).toLocaleString("vi-VN") + " ₫";
-}
-
-function formatMonthLabel(month) {
-  if (!month) return "";
-  const [year, m] = month.split("-");
-  return `T${m}/${year}`;
 }
 
 function Dashboard() {
@@ -44,7 +37,6 @@ function Dashboard() {
         setErrorMessage(error?.message || "Không tải được số liệu tổng quan.");
       } finally {
         setLoading(false);
-        hideSplash();
       }
     }
 
@@ -53,21 +45,12 @@ function Dashboard() {
 
   const topCompanies = overview?.topCompanies || [];
   const completionRate = Number(overview?.completionRate || 0);
-  const registrationsByMonth = overview?.registrationsByMonth || [];
 
-  const companyChart = {
+  const chart = {
     labels: topCompanies.length > 0 ? topCompanies.map((c) => c.companyName) : ["Chưa có dữ liệu"],
     datasets: {
       label: "Lượt đăng ký",
       data: topCompanies.length > 0 ? topCompanies.map((c) => c.interestedCount) : [0],
-    },
-  };
-
-  const monthChart = {
-    labels: registrationsByMonth.length > 0 ? registrationsByMonth.map((m) => formatMonthLabel(m.month)) : ["Chưa có dữ liệu"],
-    datasets: {
-      label: "Đăng ký",
-      data: registrationsByMonth.length > 0 ? registrationsByMonth.map((m) => m.count) : [0],
     },
   };
 
@@ -81,7 +64,7 @@ function Dashboard() {
           </SoftButton>
         </SoftBox>
 
-        {loading ? <SkeletonLoader.Dashboard statCount={4} /> : null}
+        {loading ? <PageLoader label="Đang tải số liệu tổng quan..." /> : null}
         {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
 
         {!loading && !errorMessage ? (
@@ -133,7 +116,7 @@ function Dashboard() {
                   color="info"
                   title="Doanh nghiệp được quan tâm nhiều nhất"
                   description="Xếp theo số lượt sinh viên đăng ký tour của từng doanh nghiệp"
-                  chart={companyChart}
+                  chart={chart}
                 />
               </Grid>
               <Grid item xs={12} lg={5}>
@@ -160,14 +143,6 @@ function Dashboard() {
                     {overview?.completedRegistrations ?? 0} / {overview?.totalRegistrations ?? 0} lượt đăng ký đã hoàn thành chuyến đi
                   </SoftTypography>
                 </SoftBox>
-              </Grid>
-              <Grid item xs={12}>
-                <ReportsBarChart
-                  color="dark"
-                  title="Đăng ký theo tháng"
-                  description="Số lượt đăng ký tour trong 12 tháng gần nhất"
-                  chart={monthChart}
-                />
               </Grid>
             </Grid>
           </>

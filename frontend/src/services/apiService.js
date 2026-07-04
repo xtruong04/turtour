@@ -21,19 +21,6 @@ function clearSession() {
   localStorage.removeItem(AUTH_STORAGE_KEY);
 }
 
-function saveAuthResponse(payload) {
-  const session = {
-    userId: payload.userId,
-    token: payload.token,
-    email: payload.email,
-    fullName: payload.fullName,
-    roles: payload.roles || [],
-  };
-
-  saveSession(session);
-  return session;
-}
-
 function extractErrorDetails(payload) {
   if (Array.isArray(payload?.errors)) {
     return payload.errors.flatMap((entry) => {
@@ -69,13 +56,7 @@ function statusFallbackMessage(status) {
 
 async function parseResponse(response) {
   const contentType = response.headers.get('content-type') || '';
-  const text = await response.text();
-  let payload;
-  try {
-    payload = contentType.includes('application/json') && text ? JSON.parse(text) : text;
-  } catch {
-    payload = text;
-  }
+  const payload = contentType.includes('application/json') ? await response.json() : await response.text();
 
   if (!response.ok) {
     const details = typeof payload === 'string' ? [] : extractErrorDetails(payload);
@@ -140,8 +121,8 @@ async function uploadFile(path, file) {
   return parseResponse(response);
 }
 
-function normalizeStatusValue(status) {
-  return typeof status === 'string' ? status.toLowerCase() : '';
+function normalizeTourStatus(status) {
+  return typeof status === 'string' ? status.toLowerCase() : 'upcoming';
 }
 
 function normalizeTourImage(image) {
@@ -173,13 +154,10 @@ function normalizeTour(tour) {
     location: tour.location || '',
     startDate: tour.startDate,
     endDate: tour.endDate,
-    bookingOpenAt: tour.bookingOpenAt,
-    bookingCloseAt: tour.bookingCloseAt,
     capacity: tour.maxParticipants ?? 0,
     currentParticipants: tour.currentParticipants ?? 0,
     price: Number(tour.fee ?? 0),
-    approvalStatus: normalizeStatusValue(tour.approvalStatus),
-    publishStatus: normalizeStatusValue(tour.publishStatus),
+    status: normalizeTourStatus(tour.status),
     requirement: tour.requirement || '',
     companyId: tour.companyId || '',
     companyName: tour.company?.name || '',
@@ -200,10 +178,9 @@ function mapTourFormToPayload(form) {
     location: form.location?.trim() || '',
     startDate: form.startDate,
     endDate: form.endDate,
-    bookingOpenAt: form.bookingOpenAt,
-    bookingCloseAt: form.bookingCloseAt,
     maxParticipants: Number(form.capacity || 0),
     fee: Number(form.price || 0),
+    status: form.status || 'Upcoming',
     requirement: form.requirement?.trim() || '',
     thumbnailUrl: form.thumbnail?.trim() || '',
     companyId: form.companyId || null,
@@ -272,29 +249,21 @@ function normalizeCompany(company) {
     logoUrl: company.logoUrl || '',
     industry: company.industry || '',
     isActive: Boolean(company.isActive),
-    bankBin: company.bankBin || '',
-    bankAccountNo: company.bankAccountNo || '',
-    bankAccountName: company.bankAccountName || '',
     raw: company,
   };
 }
 
 function mapCompanyFormToPayload(form) {
-  // [Url]/[EmailAddress] ở backend coi chuỗi rỗng "" là không hợp lệ (chỉ null mới được bỏ qua
-  // validate) — field optional để trống phải gửi null, không gửi ''.
   return {
     name: form.name?.trim() || '',
-    description: form.description?.trim() || null,
+    description: form.description?.trim() || '',
     address: form.address?.trim() || '',
-    website: form.website?.trim() || null,
-    email: form.email?.trim() || null,
-    phone: form.phone?.trim() || null,
-    logoUrl: form.logoUrl?.trim() || null,
-    industry: form.industry?.trim() || null,
+    website: form.website?.trim() || '',
+    email: form.email?.trim() || '',
+    phone: form.phone?.trim() || '',
+    logoUrl: form.logoUrl?.trim() || '',
+    industry: form.industry?.trim() || '',
     isActive: Boolean(form.isActive),
-    bankBin: form.bankBin?.trim() || null,
-    bankAccountNo: form.bankAccountNo?.trim() || null,
-    bankAccountName: form.bankAccountName?.trim() || null,
   };
 }
 
@@ -305,23 +274,14 @@ function normalizeFeedback(feedback) {
     rating: Number(feedback.rating ?? 0),
     comment: feedback.comment || '',
     createdAt: feedback.createdAt,
-    studentName: feedback.student?.fullName || feedback.student?.name || feedback.studentName || 'Sinh viên',
+    studentName: feedback.student?.fullName || feedback.student?.name || 'Sinh viên',
     raw: feedback,
   };
-}
-
-// Trang đích sau khi đăng nhập/đăng ký, tùy role — Admin vào admin panel, Organizator/Company
-// vào dashboard đối tác riêng, Student về trang public.
-function getDefaultRouteForRoles(roles) {
-  if (roles.includes("Admin")) return "/admin/dashboard";
-  if (roles.includes("Organizator") || roles.includes("Company")) return "/partner/dashboard";
-  return "/";
 }
 
 export const apiService = {
   getAuthSession: getStoredSession,
   clearAuthSession: clearSession,
-  getDefaultRouteForRoles,
 
   async login(email, password) {
     const payload = await request('/auth/login', {
@@ -329,7 +289,15 @@ export const apiService = {
       body: JSON.stringify({ email, password }),
     });
 
-    return saveAuthResponse(payload);
+    const session = {
+      token: payload.token,
+      email: payload.email,
+      fullName: payload.fullName,
+      roles: payload.roles || [],
+    };
+
+    saveSession(session);
+    return session;
   },
 
   async logout() {
@@ -351,8 +319,6 @@ export const apiService = {
     }
   },
 
-  // Đăng ký không còn trả token/đăng nhập luôn — phải xác thực email trước,
-  // nên chỉ trả về message cho trang đăng ký hiển thị.
   async registerStudent(payload) {
     return request('/auth/register', {
       method: 'POST',
@@ -371,20 +337,6 @@ export const apiService = {
     return request('/auth/register-organizator', {
       method: 'POST',
       body: JSON.stringify(payload),
-    });
-  },
-
-  async confirmEmail(token) {
-    return request('/auth/confirm-email', {
-      method: 'POST',
-      body: JSON.stringify({ token }),
-    });
-  },
-
-  async resendConfirmation(email) {
-    return request('/auth/resend-confirmation', {
-      method: 'POST',
-      body: JSON.stringify({ email }),
     });
   },
 
@@ -418,25 +370,6 @@ export const apiService = {
     const query = new URLSearchParams(params).toString();
     const data = await request(`/tours${query ? `?${query}` : ''}`, { method: 'GET' });
     return Array.isArray(data) ? data.map(normalizeTour) : [];
-  },
-
-  // Chỉ tour của chính tài khoản đang đăng nhập (Company/Organizator) — dùng cho dashboard đối tác.
-  async getMyTours() {
-    const data = await request('/tours/mine', { method: 'GET' });
-    return Array.isArray(data) ? data.map(normalizeTour) : [];
-  },
-
-  async getMyCompany() {
-    const data = await request('/companies/me', { method: 'GET' });
-    return normalizeCompany(data);
-  },
-
-  async getPartnerOverview() {
-    return request('/dashboard/partner-overview');
-  },
-
-  async getPartnerReports() {
-    return request('/dashboard/partner-reports');
   },
 
   async getTourById(id) {
@@ -473,23 +406,11 @@ export const apiService = {
     });
   },
 
-  async approveTour(id) {
-    const data = await request(`/tours/${id}/approve`, { method: 'PATCH' });
-    return normalizeTour(data);
-  },
-
-  async rejectTour(id, reason) {
-    const data = await request(`/tours/${id}/reject`, {
+  async updateTourStatus(id, status) {
+    const data = await request(`/tours/${id}/status`, {
       method: 'PATCH',
-      body: JSON.stringify({ reason }),
+      body: JSON.stringify({ status }),
     });
-    return normalizeTour(data);
-  },
-
-  // Company/Organizator tự huỷ tour của mình, hoặc Admin lưu trữ tour bất kỳ — terminal,
-  // không có endpoint nào đưa tour Archived quay lại trạng thái khác.
-  async archiveTour(id) {
-    const data = await request(`/tours/${id}/archive`, { method: 'PATCH' });
     return normalizeTour(data);
   },
 
@@ -570,7 +491,7 @@ export const apiService = {
   },
 
   async getFeedbacksByTour(tourId) {
-    const data = await request(`/feedbacks/tour/${tourId}/public`, { method: 'GET' });
+    const data = await request(`/feedbacks/tour/${tourId}`, { method: 'GET' });
     return {
       averageRating: Number(data?.averageRating ?? 0),
       total: Number(data?.total ?? 0),
@@ -581,15 +502,6 @@ export const apiService = {
   async uploadImage(file) {
     const data = await uploadFile('/uploads/image', file);
     return data?.url || '';
-  },
-
-  async getContacts() {
-    const data = await request('/contacts', { method: 'GET' });
-    return Array.isArray(data) ? data : [];
-  },
-
-  async markContactRead(id) {
-    return request(`/contacts/${id}/read`, { method: 'PATCH' });
   },
 
   request,

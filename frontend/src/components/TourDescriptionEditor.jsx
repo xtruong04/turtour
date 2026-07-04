@@ -1,11 +1,8 @@
-import { useState } from "react";
 import PropTypes from "prop-types";
 
 import { Editor } from "@tinymce/tinymce-react";
 
-import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
-import Snackbar from "@mui/material/Snackbar";
 
 import apiService from "../services/apiService";
 
@@ -27,8 +24,6 @@ import "tinymce/skins/ui/oxide/skin.css";
 import "tinymce/skins/content/default/content.css";
 
 function TourDescriptionEditor({ value, onChange, height = 360 }) {
-  const [uploadError, setUploadError] = useState("");
-
   return (
     <Box
       sx={{
@@ -78,7 +73,7 @@ function TourDescriptionEditor({ value, onChange, height = 360 }) {
                 const url = await apiService.uploadImage(file);
                 callback(url, { title: file.name });
               } catch (error) {
-                setUploadError(error?.message || "Upload ảnh thất bại.");
+                window.alert(error?.message || "Upload ảnh thất bại.");
               }
             });
             input.click();
@@ -87,16 +82,6 @@ function TourDescriptionEditor({ value, onChange, height = 360 }) {
             "body { font-family: Roboto, Helvetica, Arial, sans-serif; font-size: 14px; padding: 12px; } img { max-width: 100%; height: auto; border-radius: 12px; }",
         }}
       />
-      <Snackbar
-        open={Boolean(uploadError)}
-        autoHideDuration={4000}
-        onClose={() => setUploadError("")}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert severity="error" variant="filled" onClose={() => setUploadError("")}>
-          {uploadError}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }

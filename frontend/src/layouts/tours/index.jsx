@@ -1,29 +1,28 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
 import Alert from "@mui/material/Alert";
+import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
-import Dialog from "@mui/material/Dialog";
-import Icon from "@mui/material/Icon";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
 import Grid from "@mui/material/Grid";
+import Icon from "@mui/material/Icon";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 
 import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
 import SoftButton from "components/SoftButton";
 import SoftInput from "components/SoftInput";
-import SkeletonLoader from "components/SkeletonLoader";
-import NeoDropdown from "components/NeoDropdown";
-import NeoBadge from "components/NeoBadge";
+import PageLoader from "components/PageLoader";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -33,8 +32,6 @@ import neoIconButtonSx from "assets/theme/functions/neoIconButtonSx";
 
 import apiService from "../../services/apiService";
 import realtimeService from "../../services/realtime";
-import { hideSplash } from "utils/splash";
-import useTourBasePath from "../../hooks/useTourBasePath";
 
 // Inline SVG icon components — no @mui/icons-material needed
 function IconEye() {
@@ -77,72 +74,130 @@ function IconUsers() {
   );
 }
 
-function IconCheck() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="20 6 9 17 4 12"/>
-    </svg>
-  );
-}
-
-function IconX() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18"/>
-      <line x1="6" y1="6" x2="18" y2="18"/>
-    </svg>
-  );
-}
-
-function IconArchive() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="21 8 21 21 3 21 3 8"/>
-      <rect x="1" y="3" width="22" height="5"/>
-      <line x1="10" y1="12" x2="14" y2="12"/>
-    </svg>
-  );
-}
-
-// Badge tổng hợp từ 2 trục ApprovalStatus + PublishStatus — chỉ hiện 1 badge duy nhất, vì
-// PublishStatus chỉ thật sự có ý nghĩa khi tour đã Approved (xem ToursController.
-// ComputeEffectivePublishStatus): Pending/Rejected luôn "thắng" và che PublishStatus.
-const statusBadgeConfig = {
-  Pending: { label: "Chờ duyệt", bgColor: "#A18F7A" },
-  Rejected: { label: "Bị từ chối", bgColor: "#dc3545" },
-  Published: { label: "Mở đăng ký", bgColor: "#198754" },
-  Expired: { label: "Đã đóng", bgColor: "#ffc107", textColor: "#212529" },
-  Archived: { label: "Đã hủy/Lưu trữ", bgColor: "#6c757d" },
-  Hidden: { label: "Ẩn", bgColor: "#A18F7A" },
+// Bảng màu theo chuẩn Bootstrap (primary/success/warning/danger/secondary)
+// để đồng bộ với badge trạng thái ở trang sinh viên (dewi).
+const statusColors = {
+  PendingApproval: "#A18F7A", // taupe — chờ Admin duyệt, tách biệt với các màu trạng thái đã duyệt
+  Upcoming: "#0d6efd", // primary
+  Open: "#198754", // success
+  Closed: "#ffc107", // warning
+  Cancelled: "#dc3545", // danger
+  Completed: "#6c757d", // secondary
 };
 
-function getStatusBadgeKey(tour) {
-  const approval = tour.raw?.approvalStatus;
-  if (approval === "Pending" || approval === "Rejected") {
-    return approval;
-  }
-  return tour.raw?.publishStatus || "Hidden";
-}
+const statusTextColors = {
+  Closed: "#212529", // chữ đen trên nền vàng (warning) để đủ độ tương phản
+};
 
 const statusFilterOptions = [
   { value: "", label: "Tất cả trạng thái" },
-  { value: "pending", label: "Chờ duyệt" },
-  { value: "rejected", label: "Bị từ chối" },
-  { value: "published", label: "Mở đăng ký" },
-  { value: "expired", label: "Đã đóng" },
-  { value: "archived", label: "Đã hủy/Lưu trữ" },
+  { value: "pendingapproval", label: "Chờ duyệt" },
+  { value: "upcoming", label: "Sắp diễn ra" },
+  { value: "open", label: "Mở đăng ký" },
+  { value: "closed", label: "Đã đóng" },
+  { value: "cancelled", label: "Đã hủy" },
+  { value: "completed", label: "Đã hoàn thành" },
 ];
 
+const statusUpdateOptions = [
+  { value: "PendingApproval", label: "Chờ duyệt" },
+  { value: "Upcoming", label: "Sắp diễn ra" },
+  { value: "Open", label: "Mở đăng ký" },
+  { value: "Closed", label: "Đã đóng" },
+  { value: "Cancelled", label: "Đã hủy" },
+  { value: "Completed", label: "Đã hoàn thành" },
+];
+
+// Nút trạng thái dạng button đặc (contained), tô màu đầy ô, không bo góc —
+// thay cho MUI Select để tránh các lỗi hiển thị do style chồng lớp DOM nội bộ của Select.
+function TourStatusButton({ tourId, status, disabled, canApprove, onChange }) {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const bgColor = statusColors[status] || "#8392ab";
+  const textColor = statusTextColors[status] || "#fff";
+  const currentLabel = statusUpdateOptions.find((option) => option.value === status)?.label || status || "—";
+  // Tour đang Chờ duyệt thì chỉ Admin được đổi trạng thái (duyệt) — Organizator/Company
+  // tạo tour đó chỉ xem, không tự duyệt được cho chính mình.
+  const isLockedForApproval = status === "PendingApproval" && !canApprove;
+  const isDisabled = disabled || isLockedForApproval;
+
+  const handleSelect = (value) => {
+    setAnchorEl(null);
+    if (value !== status) {
+      onChange(tourId, value);
+    }
+  };
+
+  return (
+    <>
+      <Button
+        fullWidth
+        disableElevation
+        disabled={isDisabled}
+        title={isLockedForApproval ? "Chỉ Admin mới được duyệt tour này." : undefined}
+        onClick={(event) => setAnchorEl(event.currentTarget)}
+        endIcon={<Icon sx={{ color: textColor }}>arrow_drop_down</Icon>}
+        sx={{
+          height: "100%",
+          minHeight: 48,
+          borderRadius: 0,
+          border: "2px solid #2b2a27",
+          fontSize: "0.7rem",
+          fontWeight: 700,
+          letterSpacing: "0.03em",
+          textTransform: "uppercase",
+          color: textColor,
+          backgroundColor: bgColor,
+          opacity: isDisabled ? 0.6 : 1,
+          "&:hover": { backgroundColor: bgColor, opacity: 0.85 },
+          "&.Mui-disabled": { color: textColor, backgroundColor: bgColor, border: "2px solid #2b2a27" },
+        }}
+      >
+        {currentLabel}
+      </Button>
+      <Menu anchorEl={anchorEl} open={open} onClose={() => setAnchorEl(null)}>
+        {statusUpdateOptions.map((option) => (
+          <MenuItem key={option.value} selected={option.value === status} onClick={() => handleSelect(option.value)}>
+            <SoftBox
+              component="span"
+              sx={{
+                width: 10,
+                height: 10,
+                borderRadius: 0,
+                border: "1.5px solid #2b2a27",
+                backgroundColor: statusColors[option.value] || "#8392ab",
+                display: "inline-block",
+                mr: 1,
+              }}
+            />
+            {option.label}
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
+  );
+}
+
+TourStatusButton.propTypes = {
+  tourId: PropTypes.string.isRequired,
+  status: PropTypes.string,
+  disabled: PropTypes.bool,
+  canApprove: PropTypes.bool,
+  onChange: PropTypes.func.isRequired,
+};
+
+TourStatusButton.defaultProps = {
+  status: "",
+  disabled: false,
+  canApprove: false,
+};
+
 function Tours() {
-  const base = useTourBasePath();
   const [tours, setTours] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [statusErrorMessage, setStatusErrorMessage] = useState("");
   const [updatingStatusId, setUpdatingStatusId] = useState(null);
-  const [rejecting, setRejecting] = useState(null);
-  const [rejectReason, setRejectReason] = useState("");
-  const [archivingTourId, setArchivingTourId] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [companyFilter, setCompanyFilter] = useState("");
@@ -151,39 +206,30 @@ function Tours() {
   const [dateTo, setDateTo] = useState("");
 
   const session = apiService.getAuthSession();
-  const isAdmin = (session?.roles || []).includes("Admin");
 
   useEffect(() => {
     async function fetchTours() {
       setLoading(true);
       setErrorMessage("");
       try {
-        // Trang đối tác chỉ thấy tour của chính họ — gọi endpoint đã lọc sẵn ở backend,
-        // còn trang admin thấy toàn bộ tour.
-        const data = base === "/partner" ? await apiService.getMyTours() : await apiService.getTours();
+        const data = await apiService.getTours();
         setTours(Array.isArray(data) ? data : []);
       } catch (error) {
         setErrorMessage(error?.message || "Không tải được danh sách tour.");
       } finally {
         setLoading(false);
-        hideSplash();
       }
     }
     fetchTours();
-  }, [base]);
+  }, []);
 
   // Tự cập nhật trạng thái khi tour được đổi từ tab/admin khác — không cần F5.
   useEffect(() => {
-    const unsubscribe = realtimeService.onTourUpdated(({ tourId, approvalStatus, publishStatus }) => {
+    const unsubscribe = realtimeService.onTourUpdated(({ tourId, status }) => {
       setTours((current) =>
         current.map((tour) =>
           tour.id === tourId
-            ? {
-                ...tour,
-                approvalStatus: approvalStatus.toLowerCase(),
-                publishStatus: publishStatus.toLowerCase(),
-                raw: { ...tour.raw, approvalStatus, publishStatus },
-              }
+            ? { ...tour, status: status.toLowerCase(), raw: { ...tour.raw, status } }
             : tour
         )
       );
@@ -193,20 +239,11 @@ function Tours() {
 
   const roleScopedTours = useMemo(() => {
     const roles = session?.roles || [];
-    let scoped = tours;
-
     if (roles.includes("Company")) {
-      scoped = scoped.filter((tour) => tour?.raw?.company?.email && tour.raw.company.email === session?.email);
+      return tours.filter((tour) => tour?.raw?.company?.email && tour.raw.company.email === session?.email);
     }
-
-    // Trang Tour chính của Admin không hiện tour Chờ duyệt nữa — đã có trang "Tour chờ duyệt"
-    // riêng. Đối tác vẫn cần thấy tour Chờ duyệt của chính mình ở đây để theo dõi tiến độ.
-    if (base !== "/partner") {
-      scoped = scoped.filter((tour) => tour?.raw?.approvalStatus !== "Pending");
-    }
-
-    return scoped;
-  }, [base, session?.email, session?.roles, tours]);
+    return tours;
+  }, [session?.email, session?.roles, tours]);
 
   const companyOptions = useMemo(() => {
     const names = new Set(roleScopedTours.map((tour) => tour.companyName).filter(Boolean));
@@ -224,46 +261,24 @@ function Tours() {
         if (!haystack.includes(term)) return false;
       }
       if (companyFilter && tour.companyName !== companyFilter) return false;
-      if (statusFilter && getStatusBadgeKey(tour).toLowerCase() !== statusFilter) return false;
+      if (statusFilter && tour.status !== statusFilter) return false;
       if (from && tour.startDate && new Date(tour.startDate) < from) return false;
       if (to && tour.startDate && new Date(tour.startDate) > to) return false;
       return true;
     });
   }, [roleScopedTours, searchTerm, companyFilter, statusFilter, dateFrom, dateTo]);
 
-  const runStatusAction = async (tourId, action) => {
+  const handleStatusChange = async (tourId, newStatus) => {
     setUpdatingStatusId(tourId);
     setStatusErrorMessage("");
     try {
-      const updated = await action();
+      const updated = await apiService.updateTourStatus(tourId, newStatus);
       setTours((current) => current.map((t) => (t.id === tourId ? updated : t)));
     } catch (error) {
       setStatusErrorMessage(error?.message || "Cập nhật trạng thái thất bại.");
     } finally {
       setUpdatingStatusId(null);
     }
-  };
-
-  const handleApprove = (tourId) => runStatusAction(tourId, () => apiService.approveTour(tourId));
-
-  const openReject = (tourId) => {
-    setRejecting(tourId);
-    setRejectReason("");
-  };
-
-  const submitReject = async () => {
-    const tourId = rejecting;
-    await runStatusAction(tourId, () => apiService.rejectTour(tourId, rejectReason.trim()));
-    setRejecting(null);
-  };
-
-  const handleArchive = (tourId) => setArchivingTourId(tourId);
-
-  const handleConfirmArchive = () => {
-    if (!archivingTourId) return;
-    const id = archivingTourId;
-    setArchivingTourId(null);
-    runStatusAction(id, () => apiService.archiveTour(id));
   };
 
   const hasActiveFilters = Boolean(searchTerm || companyFilter || statusFilter || dateFrom || dateTo);
@@ -287,7 +302,7 @@ function Tours() {
                 <SoftTypography variant="h5" fontWeight="bold">Danh sách Tour</SoftTypography>
                 <SoftTypography variant="button" color="text">Tour do tổ chức hoặc doanh nghiệp đã tạo.</SoftTypography>
               </div>
-              <SoftButton component={Link} to={`${base}/tours/create`} variant="gradient" color="info">
+              <SoftButton component={Link} to="/admin/tours/create" variant="gradient" color="info">
                 Tạo Tour
               </SoftButton>
             </SoftBox>
@@ -304,23 +319,20 @@ function Tours() {
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
                   <SoftTypography variant="caption" fontWeight="bold">Doanh nghiệp</SoftTypography>
-                  <NeoDropdown
-                    value={companyFilter}
-                    placeholder="Tất cả doanh nghiệp"
-                    options={[
-                      { value: "", label: "Tất cả doanh nghiệp" },
-                      ...companyOptions.map((name) => ({ value: name, label: name })),
-                    ]}
-                    onChange={setCompanyFilter}
-                  />
+                  <TextField select fullWidth size="small" value={companyFilter} onChange={(e) => setCompanyFilter(e.target.value)}>
+                    <MenuItem value="">Tất cả doanh nghiệp</MenuItem>
+                    {companyOptions.map((name) => (
+                      <MenuItem key={name} value={name}>{name}</MenuItem>
+                    ))}
+                  </TextField>
                 </Grid>
                 <Grid item xs={12} sm={6} md={2}>
                   <SoftTypography variant="caption" fontWeight="bold">Trạng thái</SoftTypography>
-                  <NeoDropdown
-                    value={statusFilter}
-                    options={statusFilterOptions.map((option) => ({ value: option.value, label: option.label }))}
-                    onChange={setStatusFilter}
-                  />
+                  <TextField select fullWidth size="small" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                    {statusFilterOptions.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+                    ))}
+                  </TextField>
                 </Grid>
                 <Grid item xs={6} sm={3} md={1.5}>
                   <SoftTypography variant="caption" fontWeight="bold">Từ ngày</SoftTypography>
@@ -343,7 +355,7 @@ function Tours() {
               ) : null}
             </SoftBox>
 
-            {loading ? <SkeletonLoader.Table rows={6} cols={7} /> : null}
+            {loading ? <PageLoader label="Đang tải danh sách tour..." /> : null}
             {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
             {statusErrorMessage ? (
               <Alert severity="error" onClose={() => setStatusErrorMessage("")}>
@@ -361,7 +373,7 @@ function Tours() {
                     "& th": {
                       fontSize: "0.75rem",
                       fontWeight: 700,
-                      color: "#2b2a27",
+                      color: "#344767",
                       whiteSpace: "nowrap",
                       py: 1.5,
                     },
@@ -406,104 +418,64 @@ function Tours() {
                               style={{ width: "50px", height: "35px", objectFit: "cover", borderRadius: "4px", display: "block" }}
                             />
                           ) : (
-                            <div style={{ width: "50px", height: "35px", backgroundColor: "#f6efdd", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px", fontSize: "10px", color: "#a3906c", border: "1px solid #d9caa6" }}>
+                            <div style={{ width: "50px", height: "35px", backgroundColor: "#f0f2f5", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px", fontSize: "10px", color: "#8392ab", border: "1px solid #e9ecef" }}>
                               Không ảnh
                             </div>
                           )}
                         </TableCell>
                         <TableCell title={tour.title || ""}>{tour.title || "-"}</TableCell>
                         <TableCell title={tour.companyName || ""}>{tour.companyName || "-"}</TableCell>
-                        <TableCell>
-                          <NeoBadge
-                            label={statusBadgeConfig[getStatusBadgeKey(tour)]?.label || getStatusBadgeKey(tour)}
-                            bgColor={statusBadgeConfig[getStatusBadgeKey(tour)]?.bgColor}
-                            textColor={statusBadgeConfig[getStatusBadgeKey(tour)]?.textColor}
+                        <TableCell sx={{ overflow: "visible", p: 0 }}>
+                          <TourStatusButton
+                            tourId={tour.id}
+                            status={tour.raw?.status || ""}
+                            disabled={
+                              updatingStatusId === tour.id ||
+                              (tour.raw?.status === "Completed" && tour.endDate && new Date(tour.endDate) < new Date())
+                            }
+                            canApprove={(session?.roles || []).includes("Admin")}
+                            onChange={handleStatusChange}
                           />
                         </TableCell>
                         <TableCell>{tour.startDate ? new Date(tour.startDate).toLocaleDateString("vi-VN") : "-"}</TableCell>
                         <TableCell align="center" sx={{ overflow: "visible" }}>
                           <SoftBox display="flex" justifyContent="center" alignItems="center" gap={0.5}>
-                            {isAdmin && tour.raw?.approvalStatus === "Pending" ? (
-                              <>
-                                <Tooltip title="Duyệt tour" arrow>
-                                  <SoftBox
-                                    component="button"
-                                    type="button"
-                                    disabled={updatingStatusId === tour.id}
-                                    onClick={() => handleApprove(tour.id)}
-                                    sx={neoIconButtonSx("#198754")}
-                                  >
-                                    <IconCheck />
-                                  </SoftBox>
-                                </Tooltip>
-                                <Tooltip title="Từ chối tour" arrow>
-                                  <SoftBox
-                                    component="button"
-                                    type="button"
-                                    disabled={updatingStatusId === tour.id}
-                                    onClick={() => openReject(tour.id)}
-                                    sx={neoIconButtonSx("#dc3545")}
-                                  >
-                                    <IconX />
-                                  </SoftBox>
-                                </Tooltip>
-                              </>
-                            ) : null}
-                            {tour.raw?.approvalStatus === "Approved" && tour.raw?.publishStatus !== "Archived" && (isAdmin || base === "/partner") ? (
-                              <Tooltip title="Huỷ/Lưu trữ tour" arrow>
-                                <SoftBox
-                                  component="button"
-                                  type="button"
-                                  disabled={updatingStatusId === tour.id}
-                                  onClick={() => handleArchive(tour.id)}
-                                  sx={neoIconButtonSx("#6c757d")}
-                                >
-                                  <IconArchive />
-                                </SoftBox>
-                              </Tooltip>
-                            ) : null}
                             <Tooltip title="Xem chi tiết" arrow>
                               <SoftBox
                                 component={Link}
-                                to={`${base}/tours/${tour.id}`}
-                                sx={neoIconButtonSx("#2b2a27")}
+                                to={`/admin/tours/${tour.id}`}
+                                sx={neoIconButtonSx("#344767")}
                               >
                                 <IconEye />
                               </SoftBox>
                             </Tooltip>
-                            {!isAdmin && tour.raw?.approvalStatus === "Approved" ? (
-                              <Tooltip title="Quản lý đăng ký" arrow>
-                                <SoftBox
-                                  component={Link}
-                                  to={`${base}/tours/${tour.id}/registrations`}
-                                  sx={neoIconButtonSx("#2dce89")}
-                                >
-                                  <IconUsers />
-                                </SoftBox>
-                              </Tooltip>
-                            ) : null}
-                            {!isAdmin ? (
-                              <Tooltip title="Chỉnh sửa" arrow>
-                                <SoftBox
-                                  component={Link}
-                                  to={`${base}/tours/${tour.id}/edit`}
-                                  sx={neoIconButtonSx("#17c1e8")}
-                                >
-                                  <IconEdit />
-                                </SoftBox>
-                              </Tooltip>
-                            ) : null}
-                            {!isAdmin ? (
-                              <Tooltip title="Xóa tour" arrow>
-                                <SoftBox
-                                  component={Link}
-                                  to={`${base}/tours/${tour.id}/delete`}
-                                  sx={neoIconButtonSx("#ea0606")}
-                                >
-                                  <IconTrash />
-                                </SoftBox>
-                              </Tooltip>
-                            ) : null}
+                            <Tooltip title="Quản lý đăng ký" arrow>
+                              <SoftBox
+                                component={Link}
+                                to={`/admin/tours/${tour.id}/registrations`}
+                                sx={neoIconButtonSx("#2dce89")}
+                              >
+                                <IconUsers />
+                              </SoftBox>
+                            </Tooltip>
+                            <Tooltip title="Chỉnh sửa" arrow>
+                              <SoftBox
+                                component={Link}
+                                to={`/admin/tours/${tour.id}/edit`}
+                                sx={neoIconButtonSx("#17c1e8")}
+                              >
+                                <IconEdit />
+                              </SoftBox>
+                            </Tooltip>
+                            <Tooltip title="Xóa tour" arrow>
+                              <SoftBox
+                                component={Link}
+                                to={`/admin/tours/${tour.id}/delete`}
+                                sx={neoIconButtonSx("#ea0606")}
+                              >
+                                <IconTrash />
+                              </SoftBox>
+                            </Tooltip>
                           </SoftBox>
                         </TableCell>
                       </TableRow>
@@ -525,72 +497,6 @@ function Tours() {
         </Card>
       </SoftBox>
       <Footer />
-
-      <Dialog open={Boolean(rejecting)} onClose={() => setRejecting(null)} fullWidth maxWidth="sm">
-        <DialogTitle>Lý do từ chối tour</DialogTitle>
-        <DialogContent>
-          <SoftInput
-            placeholder="Nhập lý do từ chối (không bắt buộc)"
-            value={rejectReason}
-            onChange={(e) => setRejectReason(e.target.value)}
-            multiline
-            rows={3}
-          />
-        </DialogContent>
-        <DialogActions>
-          <SoftButton variant="outlined" color="dark" onClick={() => setRejecting(null)}>Hủy</SoftButton>
-          <SoftButton variant="gradient" color="error" onClick={submitReject} disabled={updatingStatusId === rejecting}>
-            Từ chối tour
-          </SoftButton>
-        </DialogActions>
-      </Dialog>
-
-      {/* ── Archive confirm dialog ── */}
-      <Dialog
-        open={Boolean(archivingTourId)}
-        onClose={() => setArchivingTourId(null)}
-        maxWidth="xs"
-        fullWidth
-        PaperProps={{ sx: { borderRadius: "16px", p: 1 } }}
-      >
-        <DialogContent sx={{ textAlign: "center", pt: 3, pb: 1 }}>
-          <SoftBox
-            sx={{
-              width: 60, height: 60, borderRadius: "16px",
-              background: "linear-gradient(135deg, #fff7ed, #ffedd5)",
-              border: "1px solid #fed7aa",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              mx: "auto", mb: 2,
-            }}
-          >
-            <Icon sx={{ color: "#ea580c", fontSize: "1.8rem !important" }}>inventory_2</Icon>
-          </SoftBox>
-          <SoftTypography variant="h6" fontWeight="bold" sx={{ mb: 0.75, color: "#1a1a2e" }}>
-            Huỷ / lưu trữ tour?
-          </SoftTypography>
-          <SoftTypography variant="button" color="text" sx={{ display: "block", mb: 1.5 }}>
-            Tour sẽ bị ẩn khỏi danh sách công khai và không thể đăng ký thêm.
-          </SoftTypography>
-          <SoftBox
-            sx={{
-              background: "#fefce8", border: "1px solid #fef08a",
-              borderRadius: "10px", px: 2, py: 1.25, textAlign: "left",
-            }}
-          >
-            <SoftTypography variant="caption" sx={{ color: "#713f12", lineHeight: 1.5 }}>
-              Hành động này <strong>không thể hoàn tác</strong>. Tour sẽ chuyển sang trạng thái Lưu trữ.
-            </SoftTypography>
-          </SoftBox>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
-          <SoftButton variant="outlined" color="dark" fullWidth onClick={() => setArchivingTourId(null)}>
-            Hủy
-          </SoftButton>
-          <SoftButton variant="gradient" color="warning" fullWidth onClick={handleConfirmArchive}>
-            Xác nhận lưu trữ
-          </SoftButton>
-        </DialogActions>
-      </Dialog>
     </DashboardLayout>
   );
 }

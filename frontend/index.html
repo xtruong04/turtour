@@ -1,77 +1,25 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#b5281f" />
     <title>TurTour</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&display=swap" />
-    <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet" />
-
-    <style>
-      /* ── App-level loading splash (shows while JS bundle loads on F5) ── */
-      #app-loader {
-        position: fixed;
-        inset: 0;
-        background: #f2e6c9;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 99999;
-        opacity: 1;
-        transition: opacity 0.3s ease;
-      }
-      #app-loader.fade-out {
-        opacity: 0;
-        pointer-events: none;
-      }
-      #app-loader-brand {
-        font-family: 'Poppins', sans-serif;
-        font-size: 2rem;
-        font-weight: 800;
-        color: #2b2a27;
-        letter-spacing: -0.02em;
-        line-height: 1;
-        margin-bottom: 4px;
-      }
-      /* animation container — fixed size so layout doesn't jump */
-      #app-loader-anim {
-        width: 240px;
-        height: 138px;
-        margin: 8px 0 4px;
-      }
-      #app-loader-msg {
-        font-family: 'Roboto', sans-serif;
-        font-size: 0.8rem;
-        color: #7d6b51;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-      }
-      #app-loader-bar {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 5px;
-        background: linear-gradient(90deg, #b5281f 0%, #2b2a27 100%);
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&display=swap"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp"
+      rel="stylesheet"
+    />
   </head>
   <body>
-
-    <!-- Splash screen: visible immediately on F5 while React bundle downloads -->
-    <div id="app-loader" aria-hidden="true">
-      <span id="app-loader-brand">TurTour</span>
-
-      <div id="app-loader-anim"></div>
-
-      <span id="app-loader-msg">Đang tải...</span>
-      <div id="app-loader-bar"></div>
-    </div>
-
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

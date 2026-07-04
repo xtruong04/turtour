@@ -16,12 +16,8 @@ import { useSoftUIController, setOpenConfigurator } from "context";
 import brand from "assets/images/logo-ct.png";
 import UserLandingPage from "./components/UserLandingPage";
 import apiService from "./services/apiService";
-import RoleGate from "./components/RoleGate";
-import Forbidden403 from "./layouts/forbidden";
-import { hideSplash } from "./utils/splash";
 
-const ADMIN_PANEL_ROLES = ["Admin"];
-const PARTNER_PANEL_ROLES = ["Organizator", "Company"];
+const ADMIN_PANEL_ROLES = ["Admin", "Organizator", "Company"];
 
 function App() {
   const [controller, dispatch] = useSoftUIController();
@@ -29,13 +25,11 @@ function App() {
   const { pathname } = useLocation();
   const isAuthRoute = pathname.startsWith("/auth/");
   const isAdminRoute = pathname.startsWith("/admin");
-  const isPartnerRoute = pathname.startsWith("/partner");
   const showConfigurator = false;
 
   const session = apiService.getAuthSession();
   const sessionRoles = session?.roles || [];
   const hasAdminAccess = ADMIN_PANEL_ROLES.some((role) => sessionRoles.includes(role));
-  const hasPartnerAccess = PARTNER_PANEL_ROLES.some((role) => sessionRoles.includes(role));
 
   const rtlCache = useMemo(
     () =>
@@ -47,14 +41,6 @@ function App() {
   );
 
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
-
-  // Các route không cần load dữ liệu → ẩn splash ngay
-  useEffect(() => {
-    if (isAuthRoute || pathname === "/" || pathname === "/403-preview") {
-      hideSplash();
-    }
-    // Các route admin/partner → layout tự gọi hideSplash() sau khi fetch xong
-  }, [isAuthRoute, pathname]);
 
   useEffect(() => {
     document.body.setAttribute("dir", direction);
@@ -72,23 +58,13 @@ function App() {
       }
 
       if (route.route) {
-        const element = route.roles ? (
-          <RoleGate allowedRoles={route.roles}>{route.component}</RoleGate>
-        ) : (
-          route.component
-        );
-        return <Route exact path={route.route} element={element} key={route.key} />;
+        return <Route exact path={route.route} element={route.component} key={route.key} />;
       }
 
       return null;
     });
 
-  const adminNavRoutes = routes.filter(
-    (route) => route.type === "collapse" && !route.hidden && route.route?.startsWith("/admin")
-  );
-  const partnerNavRoutes = routes.filter(
-    (route) => route.type === "collapse" && !route.hidden && route.route?.startsWith("/partner")
-  );
+  const navRoutes = routes.filter((route) => route.type === "collapse" && !route.hidden);
 
   const configsButton = (
     <SoftBox
@@ -114,36 +90,21 @@ function App() {
     </SoftBox>
   );
 
-  if ((isAdminRoute || isPartnerRoute) && !isAuthRoute) {
-    if (!session?.token) {
-      return <Navigate to="/auth/sign-in" replace />;
-    }
-    if ((isAdminRoute && !hasAdminAccess) || (isPartnerRoute && !hasPartnerAccess)) {
-      return (
-        <ThemeProvider theme={direction === "rtl" ? themeRTL : theme}>
-          <CssBaseline />
-          <Forbidden403 />
-        </ThemeProvider>
-      );
-    }
+  if (isAdminRoute && !isAuthRoute && !hasAdminAccess) {
+    return <Navigate to="/auth/sign-in" replace />;
   }
-
-  const sidenavProps = isPartnerRoute
-    ? { brandName: "TurTour Đối tác", routes: partnerNavRoutes }
-    : { brandName: "TurTour Admin", routes: adminNavRoutes };
-  const showSidenav = (isAdminRoute || isPartnerRoute) && !isAuthRoute && layout === "dashboard";
 
   return direction === "rtl" ? (
     <CacheProvider value={rtlCache}>
       <ThemeProvider theme={themeRTL}>
         <CssBaseline />
-        {showSidenav && (
+        {isAdminRoute && !isAuthRoute && layout === "dashboard" && (
           <>
             <Sidenav
               color={sidenavColor}
               brand={brand}
-              brandName={sidenavProps.brandName}
-              routes={sidenavProps.routes}
+              brandName="TurTour Admin"
+              routes={navRoutes}
             />
             {showConfigurator ? <Configurator /> : null}
             {showConfigurator ? configsButton : null}
@@ -152,9 +113,7 @@ function App() {
         <Routes>
           {getRoutes(routes)}
           <Route path="/" element={<UserLandingPage />} />
-          <Route path="/admin" element={<Navigate to={apiService.getDefaultRouteForRoles(sessionRoles)} replace />} />
-          <Route path="/partner" element={<Navigate to={apiService.getDefaultRouteForRoles(sessionRoles)} replace />} />
-          <Route path="/403-preview" element={<Forbidden403 />} />
+          <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/auth/sign-in" />} />
         </Routes>
       </ThemeProvider>
@@ -162,13 +121,13 @@ function App() {
   ) : (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {showSidenav && (
+      {isAdminRoute && !isAuthRoute && layout === "dashboard" && (
         <>
           <Sidenav
             color={sidenavColor}
             brand={brand}
-            brandName={sidenavProps.brandName}
-            routes={sidenavProps.routes}
+            brandName="TurTour Admin"
+            routes={navRoutes}
           />
           {showConfigurator ? <Configurator /> : null}
           {showConfigurator ? configsButton : null}
@@ -177,9 +136,7 @@ function App() {
       <Routes>
         {getRoutes(routes)}
         <Route path="/" element={<UserLandingPage />} />
-        <Route path="/admin" element={<Navigate to={apiService.getDefaultRouteForRoles(sessionRoles)} replace />} />
-        <Route path="/partner" element={<Navigate to={apiService.getDefaultRouteForRoles(sessionRoles)} replace />} />
-        <Route path="/403-preview" element={<Forbidden403 />} />
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/auth/sign-in" />} />
       </Routes>
     </ThemeProvider>

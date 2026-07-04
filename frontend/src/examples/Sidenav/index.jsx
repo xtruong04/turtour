@@ -46,19 +46,11 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const { miniSidenav, transparentSidenav } = controller;
   const location = useLocation();
   const { pathname } = location;
-  // So khớp pathname với route.route dài nhất (cụ thể nhất) trong số các mục sidebar —
-  // ví dụ "/admin/tours/pending-approval" phải khớp mục "Tour chờ duyệt" chứ không phải
-  // mục "Tour" (chỉ lấy segment thứ 2 trước đây khiến 2 mục con cùng route cha bị nhập nhằng).
-  const activeKey = routes.reduce((best, candidate) => {
-    if (candidate.type !== "collapse" || !candidate.route) {
-      return best;
-    }
-    const isMatch = pathname === candidate.route || pathname.startsWith(`${candidate.route}/`);
-    if (isMatch && (!best || candidate.route.length > best.route.length)) {
-      return candidate;
-    }
-    return best;
-  }, null)?.key;
+  // Bỏ qua tiền tố "admin" trong URL (vd. /admin/tours/:id/edit) để lấy đúng segment
+  // khớp với route.key trong sidebar (vd. "tours") — trước đây luôn lấy "admin" nên
+  // không mục nào hiện active được.
+  const pathSegments = pathname.split("/").filter(Boolean);
+  const collapseName = pathSegments[0] === "admin" ? pathSegments[1] : pathSegments[0];
 
   const closeSidenav = () => setMiniSidenav(dispatch, true);
   const toggleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav);
@@ -98,7 +90,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
             color={color}
             name={name}
             icon={icon}
-            active={key === activeKey}
+            active={key === collapseName}
             noCollapse={noCollapse}
           />
         </Link>
@@ -109,7 +101,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
             key={key}
             name={name}
             icon={icon}
-            active={key === activeKey}
+            active={key === collapseName}
             noCollapse={noCollapse}
           />
         </NavLink>
@@ -140,56 +132,36 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   });
 
   return (
-    <>
-      {/* Toggle handle — anchored to the sidebar's right edge via fixed position.
-          Completely outside the Drawer so it never overlaps nav items. */}
+    <SidenavRoot {...rest} variant="permanent" ownerState={{ transparentSidenav, miniSidenav }}>
       <SoftBox
+        display={{ xs: "none", xl: "flex" }}
+        alignItems="center"
+        justifyContent="center"
         onClick={toggleMiniSidenav}
         title={miniSidenav ? "Mở rộng sidebar" : "Thu nhỏ sidebar"}
         sx={{
-          position: "fixed",
+          position: "absolute",
           top: "50%",
-          left: miniSidenav ? "96px" : "250px",
-          transform: "translateX(-50%) translateY(-50%)",
-          transition: "left 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
-          zIndex: 1300,
-          width: 28,
-          height: 44,
+          right: 6,
+          transform: "translateY(-50%)",
+          width: 22,
+          height: 22,
           cursor: "pointer",
-          backgroundColor: "#2b2a27",
-          border: "2px solid #2b2a27",
-          boxShadow: "2px 2px 0 #2b2a27",
-          display: { xs: "none", xl: "flex" },
-          alignItems: "center",
-          justifyContent: "center",
-          userSelect: "none",
-          "&:hover": {
-            backgroundColor: "#b5281f",
-            boxShadow: "3px 3px 0 #2b2a27",
-            "& .toggle-icon": { color: "#ffffff" },
-          },
-          "&:active": {
-            transform: "translateX(calc(-50% + 1px)) translateY(calc(-50% + 1px))",
-            boxShadow: "1px 1px 0 #2b2a27",
-            transition: "left 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms, box-shadow 0.1s, transform 0.1s",
-          },
+          zIndex: 10,
         }}
       >
         <Icon
-          className="toggle-icon"
+          fontSize="small"
           sx={{
-            fontSize: "1.1rem !important",
             color: "#c9c5bc",
             transition: "transform 0.25s ease, color 0.2s ease",
             transform: miniSidenav ? "rotate(180deg)" : "none",
-            lineHeight: 1,
+            "&:hover": { color: "#ffffff" },
           }}
         >
           chevron_left
         </Icon>
       </SoftBox>
-
-      <SidenavRoot {...rest} variant="permanent" ownerState={{ transparentSidenav, miniSidenav }}>
       <SoftBox pt={3} pb={1} px={4} textAlign="center">
         <SoftBox
           display={{ xs: "block", xl: "none" }}
@@ -227,7 +199,6 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
       <Divider light />
       <List>{renderRoutes}</List>
     </SidenavRoot>
-    </>
   );
 }
 

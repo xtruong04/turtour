@@ -36,18 +36,13 @@ Coded by www.creative-tim.com
 */
 
 import Dashboard from "layouts/dashboard";
-import PartnerDashboard from "layouts/partner/dashboard";
-import PartnerReports from "layouts/partner/reports";
-import PartnerPaymentSettings from "layouts/partner/payment-settings";
 import Tours from "layouts/tours";
-import TourPendingApproval from "layouts/tours/pending-approval";
 import TourCreate from "layouts/tours/create";
 import TourDetails from "layouts/tours/details";
 import TourEdit from "layouts/tours/edit";
 import TourDelete from "layouts/tours/delete";
 import TourRegistrations from "layouts/tours/registrations";
 import Companies from "layouts/companies";
-import Contacts from "layouts/contacts";
 import Payments from "layouts/payments";
 import Reports from "layouts/reports";
 import Tables from "layouts/tables";
@@ -57,7 +52,6 @@ import RTL from "layouts/rtl";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
-import ConfirmEmail from "layouts/authentication/confirm-email";
 
 import Shop from "examples/Icons/Shop";
 import Office from "examples/Icons/Office";
@@ -78,7 +72,6 @@ const routes = [
     icon: <Shop size="12px" />,
     component: <Dashboard />,
     noCollapse: true,
-    roles: ["Admin"],
   },
   {
     type: "collapse",
@@ -88,17 +81,6 @@ const routes = [
     icon: <Office size="12px" />,
     component: <Tours />,
     noCollapse: true,
-    roles: ["Admin"],
-  },
-  {
-    type: "collapse",
-    name: "Tour chờ duyệt",
-    key: "tour-pending-approval",
-    route: "/admin/tours/pending-approval",
-    icon: <Office size="12px" />,
-    component: <TourPendingApproval />,
-    noCollapse: true,
-    roles: ["Admin"],
   },
   {
     type: "collapse",
@@ -109,7 +91,6 @@ const routes = [
     component: <TourCreate />,
     noCollapse: true,
     hidden: true,
-    roles: ["Admin"],
   },
   {
     type: "collapse",
@@ -120,7 +101,6 @@ const routes = [
     component: <TourDetails />,
     noCollapse: true,
     hidden: true,
-    roles: ["Admin"],
   },
   {
     type: "collapse",
@@ -131,7 +111,6 @@ const routes = [
     component: <TourEdit />,
     noCollapse: true,
     hidden: true,
-    roles: ["Admin"],
   },
   {
     type: "collapse",
@@ -142,7 +121,6 @@ const routes = [
     component: <TourDelete />,
     noCollapse: true,
     hidden: true,
-    roles: ["Admin"],
   },
   {
     type: "collapse",
@@ -153,102 +131,6 @@ const routes = [
     component: <TourRegistrations />,
     noCollapse: true,
     hidden: true,
-    roles: ["Admin"],
-  },
-  {
-    type: "collapse",
-    name: "Đối tác Dashboard",
-    key: "partner-dashboard",
-    route: "/partner/dashboard",
-    icon: <Shop size="12px" />,
-    component: <PartnerDashboard />,
-    noCollapse: true,
-    roles: ["Organizator", "Company"],
-  },
-  {
-    type: "collapse",
-    name: "Tour của tôi",
-    key: "partner-tours",
-    route: "/partner/tours",
-    icon: <Office size="12px" />,
-    component: <Tours />,
-    noCollapse: true,
-    roles: ["Organizator", "Company"],
-  },
-  {
-    type: "collapse",
-    name: "Partner Tour Create",
-    key: "partner-tour-create",
-    route: "/partner/tours/create",
-    icon: <Office size="12px" />,
-    component: <TourCreate />,
-    noCollapse: true,
-    hidden: true,
-    roles: ["Organizator", "Company"],
-  },
-  {
-    type: "collapse",
-    name: "Partner Tour Details",
-    key: "partner-tour-details",
-    route: "/partner/tours/:id",
-    icon: <Office size="12px" />,
-    component: <TourDetails />,
-    noCollapse: true,
-    hidden: true,
-    roles: ["Organizator", "Company"],
-  },
-  {
-    type: "collapse",
-    name: "Partner Tour Edit",
-    key: "partner-tour-edit",
-    route: "/partner/tours/:id/edit",
-    icon: <Office size="12px" />,
-    component: <TourEdit />,
-    noCollapse: true,
-    hidden: true,
-    roles: ["Organizator", "Company"],
-  },
-  {
-    type: "collapse",
-    name: "Partner Tour Delete",
-    key: "partner-tour-delete",
-    route: "/partner/tours/:id/delete",
-    icon: <Office size="12px" />,
-    component: <TourDelete />,
-    noCollapse: true,
-    hidden: true,
-    roles: ["Organizator", "Company"],
-  },
-  {
-    type: "collapse",
-    name: "Partner Tour Registrations",
-    key: "partner-tour-registrations",
-    route: "/partner/tours/:id/registrations",
-    icon: <Office size="12px" />,
-    component: <TourRegistrations />,
-    noCollapse: true,
-    hidden: true,
-    roles: ["Organizator", "Company"],
-  },
-  {
-    type: "collapse",
-    name: "Báo cáo",
-    key: "partner-reports",
-    route: "/partner/reports",
-    icon: <Document size="12px" />,
-    component: <PartnerReports />,
-    noCollapse: true,
-    roles: ["Organizator", "Company"],
-  },
-  {
-    type: "collapse",
-    name: "Tài khoản thanh toán",
-    key: "partner-payment-settings",
-    route: "/partner/payment-settings",
-    icon: <Settings size="12px" />,
-    component: <PartnerPaymentSettings />,
-    noCollapse: true,
-    roles: ["Company"],
   },
   {
     type: "collapse",
@@ -258,17 +140,6 @@ const routes = [
     icon: <Basket size="12px" />,
     component: <Companies />,
     noCollapse: true,
-    roles: ["Admin"],
-  },
-  {
-    type: "collapse",
-    name: "Liên hệ",
-    key: "contacts",
-    route: "/admin/contacts",
-    icon: <CustomerSupport size="12px" />,
-    component: <Contacts />,
-    noCollapse: true,
-    roles: ["Admin"],
   },
   {
     type: "collapse",
@@ -278,7 +149,6 @@ const routes = [
     icon: <CreditCard size="12px" />,
     component: <Payments />,
     noCollapse: true,
-    roles: ["Admin"],
   },
   {
     type: "collapse",
@@ -288,7 +158,6 @@ const routes = [
     icon: <Document size="12px" />,
     component: <Reports />,
     noCollapse: true,
-    roles: ["Admin"],
   },
   {
     type: "collapse",
@@ -357,16 +226,6 @@ const routes = [
     route: "/auth/sign-up",
     icon: <SpaceShip size="12px" />,
     component: <SignUp />,
-    noCollapse: true,
-    hidden: true,
-  },
-  {
-    type: "collapse",
-    name: "Confirm Email",
-    key: "confirm-email",
-    route: "/auth/confirm-email",
-    icon: <Document size="12px" />,
-    component: <ConfirmEmail />,
     noCollapse: true,
     hidden: true,
   },

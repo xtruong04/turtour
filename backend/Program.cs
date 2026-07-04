@@ -73,15 +73,8 @@ namespace TurTour
             // Add JwtService to the DI container
             builder.Services.AddScoped<JwtService>();
 
-            builder.Services.AddHostedService<TourLifecycleService>();
-
             builder.Services.AddSignalR();
             builder.Services.AddSingleton<RealtimeNotifier>();
-            builder.Services.AddHttpClient("AddressApi", client =>
-            {
-                client.BaseAddress = new Uri("https://tinhthanhpho.com/api/v1/");
-                client.Timeout = TimeSpan.FromSeconds(10);
-            });
 
             // Cloudflare R2 (S3-compatible) storage
             var r2AccountId = builder.Configuration["R2:AccountId"];
