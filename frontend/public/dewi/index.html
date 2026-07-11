@@ -305,6 +305,28 @@
         @keyframes tt-shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
         .sk{display:block;background:linear-gradient(90deg,#ebebeb 25%,#f5f5f5 50%,#ebebeb 75%);background-size:600px 100%;animation:tt-shimmer 1.4s infinite linear;border-radius:4px;}
 
+        /* ── Load more ── */
+        #tours-load-more-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 36px;
+          border-radius: 10px;
+          border: 2px solid #e84545;
+          background: transparent;
+          color: #e84545;
+          font-weight: 700;
+          font-size: 0.9rem;
+          transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
+        }
+        #tours-load-more-btn:hover {
+          background: #e84545;
+          color: #fff;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(232,69,69,.28);
+        }
+        #tours-load-more-btn:active { transform: translateY(0); }
+
         /* ── Tour filter card ── */
         .tf-card {
           background:#fff; border-radius:16px;
@@ -402,10 +424,6 @@
         .tour-stat-chip.open         { background:#d1e7dd; color:#0a5c36; border-color:#b0d9c8; }
         .tour-stat-chip.ongoing-chip { background:#cfe2ff; color:#084298; border-color:#b1ccf5; }
 
-        /* Featured first card */
-        .col-featured .tc-thumb { height:300px; }
-        .col-featured .tc-title { font-size:1.15rem; }
-
         /* Mobile horizontal cards */
         @media (max-width:575.98px) {
           .tour-card { flex-direction:row; min-height:140px; }
@@ -414,8 +432,6 @@
           .tour-card .tc-body { padding:12px; font-size:.82rem; }
           .tour-card .tc-title { font-size:.9rem; }
           .tour-card .tc-footer { flex-direction:column; align-items:flex-start; gap:3px; padding:10px 12px; }
-          .col-featured .tour-card { flex-direction:column; }
-          .col-featured .tc-thumb { width:100%; min-width:unset; height:200px; }
         }
       </style>
 
@@ -514,8 +530,8 @@
 
         <!-- Load more -->
         <div id="tours-load-more-wrapper" style="display:none; text-align:center; margin-top:36px;">
-          <button type="button" id="tours-load-more-btn" class="btn btn-outline-danger px-5 py-2" onclick="window.loadMoreTours && window.loadMoreTours()">
-            <i class="bi bi-chevron-down me-1"></i>Xem thêm
+          <button type="button" id="tours-load-more-btn" onclick="window.loadMoreTours && window.loadMoreTours()">
+            <i class="bi bi-chevron-down"></i>Xem thêm
           </button>
         </div>
 
@@ -874,10 +890,8 @@
 
         emptyEl.style.display = 'none';
         var slice = currentFiltered.slice(0, visibleCount);
-        grid.innerHTML = slice.map(function (tour, idx) {
-          var isFirst = idx === 0 && currentFiltered.length > 1;
-          var colClass = isFirst ? 'col-xl-8 col-md-12 col-featured' : 'col-xl-4 col-md-6';
-          return '<div class="' + colClass + '">' + renderCard(tour) + '</div>';
+        grid.innerHTML = slice.map(function (tour) {
+          return '<div class="col-xl-4 col-md-6">' + renderCard(tour) + '</div>';
         }).join('');
         grid.style.display = '';
 
