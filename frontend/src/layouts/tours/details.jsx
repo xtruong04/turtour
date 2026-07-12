@@ -36,7 +36,9 @@ const statusColorMap = {
   pending: "warning",
   rejected: "error",
   published: "success",
+  ongoing: "info",
   expired: "warning",
+  completed: "success",
   archived: "default",
   hidden: "warning",
 };
@@ -45,8 +47,10 @@ const statusLabelMap = {
   pending: "Chờ duyệt",
   rejected: "Bị từ chối",
   published: "Mở đăng ký",
+  ongoing: "Đang diễn ra",
   expired: "Đã đóng",
-  archived: "Đã hủy/Lưu trữ",
+  completed: "Đã hoàn thành",
+  archived: "Đã hủy",
   hidden: "Ẩn",
 };
 
@@ -189,9 +193,9 @@ function TourDetails() {
                     </SoftButton>
                   </>
                 ) : null}
-                {tour && approvalStatus === "Approved" && tour.raw?.publishStatus !== "Archived" && (isAdmin || base === "/partner") ? (
+                {tour && approvalStatus === "Approved" && tour.raw?.publishStatus !== "Archived" && tour.raw?.publishStatus !== "Completed" && (isAdmin || base === "/partner") ? (
                   <SoftButton variant="outlined" color="secondary" disabled={actionBusy} onClick={handleArchive}>
-                    Huỷ/Lưu trữ
+                    Huỷ tour
                   </SoftButton>
                 ) : null}
                 <SoftButton component={Link} to={`${base}/tours`} variant="outlined" color="dark">Danh sách</SoftButton>
@@ -494,7 +498,7 @@ function TourDetails() {
             }}
           >
             <SoftTypography variant="caption" sx={{ color: "#713f12", lineHeight: 1.5 }}>
-              Hành động này <strong>không thể hoàn tác</strong>. Tour sẽ chuyển sang trạng thái Lưu trữ.
+              Hành động này <strong>không thể hoàn tác</strong>. Tour sẽ chuyển sang trạng thái Đã hủy.
             </SoftTypography>
           </SoftBox>
         </DialogContent>

@@ -45,12 +45,14 @@ function fmtMonth(m) {
 }
 
 const statusConfig = {
-  Published:  { label: "Mở đăng ký", bgColor: "#198754" },
-  Expired:    { label: "Đã đóng",     bgColor: "#ffc107", textColor: "#212529" },
-  Archived:   { label: "Đã hủy",      bgColor: "#6c757d" },
-  Hidden:     { label: "Ẩn",          bgColor: "#A18F7A" },
-  Pending:    { label: "Chờ duyệt",   bgColor: "#A18F7A" },
-  Rejected:   { label: "Bị từ chối",  bgColor: "#dc3545" },
+  Published:  { label: "Mở đăng ký",   bgColor: "#198754" },
+  OnGoing:    { label: "Đang diễn ra", bgColor: "#0d6efd" },
+  Expired:    { label: "Đã đóng",      bgColor: "#ffc107", textColor: "#212529" },
+  Completed:  { label: "Đã hoàn thành", bgColor: "#0aa871" },
+  Archived:   { label: "Đã hủy",       bgColor: "#6c757d" },
+  Hidden:     { label: "Ẩn",           bgColor: "#A18F7A" },
+  Pending:    { label: "Chờ duyệt",    bgColor: "#A18F7A" },
+  Rejected:   { label: "Bị từ chối",   bgColor: "#dc3545" },
 };
 
 function StatusBadge({ status }) {

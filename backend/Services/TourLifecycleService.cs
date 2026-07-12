@@ -5,8 +5,8 @@ using TurTour.Models.Enums;
 namespace TurTour.Services
 {
     // Chạy nền mỗi giờ, tự động chuyển trạng thái tour theo thời gian:
-    //   Published  → OnGoing  khi BookingCloseAt đã qua nhưng EndDate chưa tới
-    //   Published/OnGoing → Archived khi EndDate đã qua (tour hoàn thành → ẩn khỏi public)
+    //   Published  → OnGoing   khi BookingCloseAt đã qua nhưng EndDate chưa tới
+    //   Published/OnGoing → Completed khi EndDate đã qua (tour hoàn thành tự nhiên, không phải huỷ)
     public class TourLifecycleService : BackgroundService
     {
         private static readonly TimeSpan Interval = TimeSpan.FromHours(1);
@@ -41,17 +41,17 @@ namespace TurTour.Services
                 // Giờ VN (UTC+7) — khớp với ToursController.VietnamNow
                 var now = DateTime.UtcNow.AddHours(7);
 
-                // 1. Published → Archived (tour đã kết thúc)
+                // 1. Published → Completed (tour đã kết thúc tự nhiên)
                 var finishedCount = await db.Tours
                     .Where(t => t.PublishStatus == PublishStatus.Published
                              && t.EndDate < now)
-                    .ExecuteUpdateAsync(s => s.SetProperty(t => t.PublishStatus, PublishStatus.Archived), ct);
+                    .ExecuteUpdateAsync(s => s.SetProperty(t => t.PublishStatus, PublishStatus.Completed), ct);
 
-                // 2. OnGoing → Archived (tour đã kết thúc, bước trung gian)
+                // 2. OnGoing → Completed (tour đã kết thúc, bước trung gian)
                 var finishedOnGoingCount = await db.Tours
                     .Where(t => t.PublishStatus == PublishStatus.OnGoing
                              && t.EndDate < now)
-                    .ExecuteUpdateAsync(s => s.SetProperty(t => t.PublishStatus, PublishStatus.Archived), ct);
+                    .ExecuteUpdateAsync(s => s.SetProperty(t => t.PublishStatus, PublishStatus.Completed), ct);
 
                 // 3. Published → OnGoing (booking đóng nhưng tour vẫn đang diễn ra)
                 var onGoingCount = await db.Tours
@@ -62,7 +62,7 @@ namespace TurTour.Services
 
                 var totalChanged = finishedCount + finishedOnGoingCount + onGoingCount;
                 if (totalChanged > 0)
-                    _logger.LogInformation("[TourLifecycle] {Archived} archived, {OnGoing} → OnGoing at {Now:HH:mm} VN",
+                    _logger.LogInformation("[TourLifecycle] {Completed} completed, {OnGoing} → OnGoing at {Now:HH:mm} VN",
                         finishedCount + finishedOnGoingCount, onGoingCount, now);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)

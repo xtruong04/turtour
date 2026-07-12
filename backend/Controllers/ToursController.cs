@@ -33,12 +33,15 @@ namespace TurTour.Controllers
         // TourLifecycleService ghi DB không đồng bộ (mỗi giờ); hàm này bù khoảng trễ đó.
         internal static PublishStatus ComputeEffectivePublishStatus(Tour tour)
         {
+            // Archived (bị huỷ thủ công) và Completed (đã hoàn thành tự nhiên) đều là trạng thái
+            // chấm hết, không tính lại theo thời gian — giữ nguyên giá trị đã lưu.
             if (tour.PublishStatus == PublishStatus.Archived) return PublishStatus.Archived;
+            if (tour.PublishStatus == PublishStatus.Completed) return PublishStatus.Completed;
             if (tour.ApprovalStatus != ApprovalStatus.Approved) return PublishStatus.Hidden;
 
             // Published / OnGoing / Expired đã lưu → tính lại theo mốc thời gian thực tế
             var now = VietnamNow;
-            if (now > tour.EndDate)        return PublishStatus.Archived;
+            if (now > tour.EndDate)        return PublishStatus.Completed;
             if (now > tour.BookingCloseAt) return PublishStatus.OnGoing;
             return PublishStatus.Published;
         }
@@ -48,7 +51,7 @@ namespace TurTour.Controllers
         private static PublishStatus DecidePublishStatusOnApproval(Tour tour)
         {
             var now = VietnamNow;
-            if (now > tour.EndDate)        return PublishStatus.Archived;
+            if (now > tour.EndDate)        return PublishStatus.Completed;
             if (now > tour.BookingCloseAt) return PublishStatus.OnGoing;
             return PublishStatus.Published;
         }
@@ -489,7 +492,12 @@ namespace TurTour.Controllers
 
             if (tour.PublishStatus == PublishStatus.Archived)
             {
-                return BadRequest(new { message = "Tour đã lưu trữ/huỷ, không thể chỉnh sửa." });
+                return BadRequest(new { message = "Tour đã bị huỷ, không thể chỉnh sửa." });
+            }
+
+            if (tour.PublishStatus == PublishStatus.Completed)
+            {
+                return BadRequest(new { message = "Tour đã hoàn thành, không thể chỉnh sửa." });
             }
 
             var previousApproval = tour.ApprovalStatus;
@@ -647,8 +655,9 @@ namespace TurTour.Controllers
         }
 
         // Company/Organizator tự huỷ tour của mình (sau khi đã Published), hoặc Admin lưu trữ
-        // tour bất kỳ — Archived là trạng thái chấm hết, không có đường quay lại (phải tạo tour
-        // mới nếu muốn mở lại).
+        // tour bất kỳ — Archived là trạng thái chấm hết do HUỶ, không có đường quay lại (phải
+        // tạo tour mới nếu muốn mở lại). Không huỷ được tour đã Completed (đã hoàn thành tự
+        // nhiên) — 2 trạng thái chấm hết này tách biệt, không gộp chung.
         [HttpPatch("{id:guid}/archive")]
         [Authorize(Roles = "Admin,Organizator,Company")]
         public async Task<IActionResult> Archive(Guid id)
@@ -668,6 +677,11 @@ namespace TurTour.Controllers
             if (tour.PublishStatus == PublishStatus.Archived)
             {
                 return Ok(tour);
+            }
+
+            if (tour.PublishStatus == PublishStatus.Completed)
+            {
+                return BadRequest(new { message = "Tour đã hoàn thành, không thể huỷ." });
             }
 
             tour.PublishStatus = PublishStatus.Archived;

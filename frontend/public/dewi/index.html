@@ -183,6 +183,7 @@
         .tc-status.published { background: #198754; }
         .tc-status.ongoing   { background: #0d6efd; }
         .tc-status.expired   { background: #ffc107; color: #212529; text-shadow: none; }
+        .tc-status.completed { background: #0aa871; }
         .tc-status.archived  { background: #6c757d; }
         .tour-card .tc-body {
           padding: 20px;
@@ -592,7 +593,8 @@
           case 'published': return 'Mở đăng ký';
           case 'ongoing':   return 'Đang diễn ra';
           case 'expired':   return 'Đã đóng';
-          case 'archived':  return 'Đã hủy/Lưu trữ';
+          case 'completed': return 'Đã hoàn thành';
+          case 'archived':  return 'Đã hủy';
           case 'hidden':    return 'Chờ duyệt';
           default: return s;
         }
@@ -748,6 +750,8 @@
           btnText = 'Đã đóng';
         } else if (status === 'archived') {
           btnText = 'Đã hủy';
+        } else if (status === 'completed') {
+          btnText = 'Đã hoàn thành';
         } else if (status === 'published') {
           var phase = getBookingPhase(tour);
           if (phase === 'open') {
@@ -930,7 +934,7 @@
         var feeMax = maxSlider ? parseInt(maxSlider.value) : priceSliderMax;
         var isMaxed = feeMax >= priceSliderMax;
 
-        var statusOrder = { published: 0, ongoing: 1, expired: 2, hidden: 3, archived: 4 };
+        var statusOrder = { published: 0, ongoing: 1, expired: 2, hidden: 3, completed: 4, archived: 5 };
 
         currentFiltered = allTours.filter(function (tour) {
           if (term) {
@@ -1033,7 +1037,8 @@
           .then(function(tours) {
             document.getElementById('tours-loading').style.display = 'none';
             var visibleTours = (Array.isArray(tours) ? tours : []).filter(function (t) {
-              return (t.publishStatus || '').toLowerCase() !== 'archived';
+              var st = (t.publishStatus || '').toLowerCase();
+              return st !== 'archived' && st !== 'completed';
             });
             if (visibleTours.length === 0) {
               document.getElementById('tours-empty').style.display = 'block';
@@ -1068,7 +1073,8 @@
       if (window.TurTourRealtime) {
         window.TurTourRealtime.onTourUpdated(function (payload) {
           if (!payload) return;
-          if ((payload.publishStatus || '').toLowerCase() === 'archived') {
+          var newStatus = (payload.publishStatus || '').toLowerCase();
+          if (newStatus === 'archived' || newStatus === 'completed') {
             allTours = allTours.filter(function (t) { return t.id !== payload.tourId; });
             applyFilters();
             return;
