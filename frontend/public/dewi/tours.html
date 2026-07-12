@@ -410,7 +410,7 @@
                 <option value="">Tất cả trạng thái</option>
                 <option value="published">Mở đăng ký</option>
                 <option value="ongoing">Đang diễn ra</option>
-                <option value="expired">Đã đóng</option>
+                <option value="completed">Đã hoàn thành</option>
                 <option value="hidden">Chờ duyệt</option>
               </select>
             </div>
@@ -1025,8 +1025,7 @@
         .then(function (tours) {
           document.getElementById('tf-loading-state').style.display = 'none';
           allTours = (Array.isArray(tours) ? tours : []).filter(function (t) {
-            var st = (t.publishStatus || '').toLowerCase();
-            return st !== 'archived' && st !== 'completed';
+            return (t.publishStatus || '').toLowerCase() !== 'archived';
           });
 
           // Update total badge
@@ -1061,7 +1060,7 @@
       window.TurTourRealtime.onTourUpdated(function (payload) {
         if (!payload) return;
         var newStatus = (payload.publishStatus || '').toLowerCase();
-        if (newStatus === 'archived' || newStatus === 'completed') {
+        if (newStatus === 'archived') {
           allTours = allTours.filter(function (t) { return t.id !== payload.tourId; });
           document.getElementById('tf-total-count').textContent = allTours.length;
           applyFilters();
