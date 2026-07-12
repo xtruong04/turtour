@@ -89,8 +89,8 @@ namespace TurTour.Controllers
             }
 
             // Dùng RegistrationStatus.Completed (đánh dấu riêng cho từng lượt đăng ký, qua
-            // CompleteRegistration) thay vì tour.Status cũ — chính xác hơn vì không gộp lẫn
-            // với tour bị huỷ (giờ cùng PublishStatus.Archived với tour hoàn thành thật).
+            // CompleteRegistration) thay vì tour.PublishStatus — vì đăng ký hoàn thành theo
+            // từng sinh viên, độc lập với PublishStatus.Completed/Archived của cả tour.
             if (registration.Status != RegistrationStatus.Completed)
             {
                 return BadRequest(new { message = "Chỉ có thể đánh giá khi tour đã hoàn thành." });
