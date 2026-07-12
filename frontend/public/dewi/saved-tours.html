@@ -58,7 +58,9 @@
       font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
     }
     .tc-status.published { background: #d4edda; color: #155724; }
+    .tc-status.ongoing   { background: #cfe2ff; color: #084298; }
     .tc-status.expired   { background: #fff3cd; color: #856404; }
+    .tc-status.completed { background: #d4edda; color: #0f5132; }
     .tc-status.archived  { background: #f8d7da; color: #721c24; }
     .tc-status.hidden    { background: #e2e3e5; color: #383d41; }
     .tc-body { padding: 16px 18px 10px; flex: 1; display: flex; flex-direction: column; }
@@ -306,7 +308,9 @@
       function statusLabel(s) {
         switch ((s || '').toLowerCase()) {
           case 'published': return 'Mở đăng ký';
+          case 'ongoing':   return 'Đang diễn ra';
           case 'expired':   return 'Đã đóng';
+          case 'completed': return 'Đã hoàn thành';
           case 'archived':  return 'Đã hủy';
           default: return s || '—';
         }

@@ -31,8 +31,10 @@ const statusOptions = [
   { value: "Pending", label: "Chờ duyệt" },
   { value: "Rejected", label: "Bị từ chối" },
   { value: "Published", label: "Mở đăng ký" },
+  { value: "OnGoing", label: "Đang diễn ra" },
   { value: "Expired", label: "Đã đóng" },
-  { value: "Archived", label: "Đã hủy/Lưu trữ" },
+  { value: "Completed", label: "Đã hoàn thành" },
+  { value: "Archived", label: "Đã hủy" },
 ];
 
 // Bảng màu theo chuẩn Bootstrap, đồng bộ với badge trạng thái ở trang Tours và trang sinh viên.
@@ -40,7 +42,9 @@ const tourStatusColors = {
   Pending: { bgColor: "#A18F7A", textColor: "#fff" },
   Rejected: { bgColor: "#dc3545", textColor: "#fff" },
   Published: { bgColor: "#198754", textColor: "#fff" },
+  OnGoing: { bgColor: "#0d6efd", textColor: "#fff" },
   Expired: { bgColor: "#ffc107", textColor: "#212529" },
+  Completed: { bgColor: "#0aa871", textColor: "#fff" },
   Archived: { bgColor: "#6c757d", textColor: "#fff" },
 };
 

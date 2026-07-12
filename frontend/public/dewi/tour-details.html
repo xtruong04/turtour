@@ -135,7 +135,9 @@
     /* Bảng màu theo chuẩn Bootstrap (primary/success/warning/danger/secondary) */
     .status-badge.hidden { background-color: #A18F7A; }
     .status-badge.published { background-color: #198754; }
+    .status-badge.ongoing { background-color: #0d6efd; }
     .status-badge.expired { background-color: #ffc107; color: #212529; text-shadow: none; }
+    .status-badge.completed { background-color: #0aa871; }
     .status-badge.archived { background-color: #6c757d; }
 
     .tour-price-value {
@@ -717,8 +719,10 @@
         if (!s) return '—';
         switch (s.toLowerCase()) {
           case 'published': return 'Mở đăng ký';
+          case 'ongoing':   return 'Đang diễn ra';
           case 'expired':   return 'Đã đóng';
-          case 'archived':  return 'Đã hủy/Lưu trữ';
+          case 'completed': return 'Đã hoàn thành';
+          case 'archived':  return 'Đã hủy';
           case 'hidden':    return 'Chờ duyệt';
           default: return s;
         }
@@ -890,6 +894,8 @@
             var canRegisterStatus = false;
             if (status === 'archived') {
               btnReg.textContent = 'Tour đã bị hủy';
+            } else if (status === 'completed') {
+              btnReg.textContent = 'Tour đã hoàn thành';
             } else if (status === 'expired') {
               btnReg.textContent = 'Đã đóng đăng ký';
             } else if (status === 'published') {

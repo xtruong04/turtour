@@ -175,7 +175,7 @@ function TourEdit() {
   const [schedules, setSchedules] = useState([]);
   const [removedScheduleIds, setRemovedScheduleIds] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isArchived, setIsArchived] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
   const [statusInfo, setStatusInfo] = useState({ approvalStatus: "", publishStatus: "" });
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -193,9 +193,9 @@ function TourEdit() {
       form.capacity &&
       form.price &&
       form.companyId &&
-      !isArchived
+      !isLocked
     );
-  }, [form, isArchived]);
+  }, [form, isLocked]);
 
   useEffect(() => {
     async function fetchData() {
@@ -223,7 +223,7 @@ function TourEdit() {
           companyId: tour.companyId || safeCompanies[0]?.id || "",
         });
 
-        setIsArchived(tour.raw?.publishStatus === "Archived");
+        setIsLocked(tour.raw?.publishStatus === "Archived" || tour.raw?.publishStatus === "Completed");
         setStatusInfo({
           approvalStatus: tour.raw?.approvalStatus || "",
           publishStatus: tour.raw?.publishStatus || "",
@@ -403,9 +403,11 @@ function TourEdit() {
                         ? (statusInfo.approvalStatus === "Pending" ? "Đang chờ duyệt." : "Đã bị từ chối — sửa nội dung và lưu để gửi duyệt lại.")
                         : `Tự động: ${statusInfo.publishStatus || "—"} (theo ngày khởi hành). Sửa nội dung quan trọng sẽ phải duyệt lại.`}
                     </SoftTypography>
-                    {isArchived ? (
+                    {isLocked ? (
                       <SoftTypography variant="caption" color="error" display="block" mt={0.5}>
-                        Tour đã lưu trữ/huỷ, không thể chỉnh sửa.
+                        {statusInfo.publishStatus === "Completed"
+                          ? "Tour đã hoàn thành, không thể chỉnh sửa."
+                          : "Tour đã bị huỷ, không thể chỉnh sửa."}
                       </SoftTypography>
                     ) : null}
                   </Grid>

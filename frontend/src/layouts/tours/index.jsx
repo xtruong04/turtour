@@ -111,8 +111,10 @@ const statusBadgeConfig = {
   Pending: { label: "Chờ duyệt", bgColor: "#A18F7A" },
   Rejected: { label: "Bị từ chối", bgColor: "#dc3545" },
   Published: { label: "Mở đăng ký", bgColor: "#198754" },
+  OnGoing: { label: "Đang diễn ra", bgColor: "#0d6efd" },
   Expired: { label: "Đã đóng", bgColor: "#ffc107", textColor: "#212529" },
-  Archived: { label: "Đã hủy/Lưu trữ", bgColor: "#6c757d" },
+  Completed: { label: "Đã hoàn thành", bgColor: "#0aa871" },
+  Archived: { label: "Đã hủy", bgColor: "#6c757d" },
   Hidden: { label: "Ẩn", bgColor: "#A18F7A" },
 };
 
@@ -129,8 +131,10 @@ const statusFilterOptions = [
   { value: "pending", label: "Chờ duyệt" },
   { value: "rejected", label: "Bị từ chối" },
   { value: "published", label: "Mở đăng ký" },
+  { value: "ongoing", label: "Đang diễn ra" },
   { value: "expired", label: "Đã đóng" },
-  { value: "archived", label: "Đã hủy/Lưu trữ" },
+  { value: "completed", label: "Đã hoàn thành" },
+  { value: "archived", label: "Đã hủy" },
 ];
 
 function Tours() {
@@ -449,8 +453,8 @@ function Tours() {
                                 </Tooltip>
                               </>
                             ) : null}
-                            {tour.raw?.approvalStatus === "Approved" && tour.raw?.publishStatus !== "Archived" && (isAdmin || base === "/partner") ? (
-                              <Tooltip title="Huỷ/Lưu trữ tour" arrow>
+                            {tour.raw?.approvalStatus === "Approved" && tour.raw?.publishStatus !== "Archived" && tour.raw?.publishStatus !== "Completed" && (isAdmin || base === "/partner") ? (
+                              <Tooltip title="Huỷ tour" arrow>
                                 <SoftBox
                                   component="button"
                                   type="button"
@@ -578,7 +582,7 @@ function Tours() {
             }}
           >
             <SoftTypography variant="caption" sx={{ color: "#713f12", lineHeight: 1.5 }}>
-              Hành động này <strong>không thể hoàn tác</strong>. Tour sẽ chuyển sang trạng thái Lưu trữ.
+              Hành động này <strong>không thể hoàn tác</strong>. Tour sẽ chuyển sang trạng thái Đã hủy.
             </SoftTypography>
           </SoftBox>
         </DialogContent>
