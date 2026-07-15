@@ -199,18 +199,7 @@
       color: #4caf50; font-weight: 700; font-size: 0.82rem;
     }
 
-    /* ── QR panel ── */
-    .qr-panel {
-      display: none;
-      background: #f8f9fa;
-      border-top: 1px dashed #dee2e6;
-      padding: 20px;
-    }
-    .qr-panel.show { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
-    .qr-panel img {
-      width: 170px; height: 170px; border-radius: 10px;
-      background: #fff; border: 1px solid #e9ecef; flex-shrink: 0;
-    }
+    /* ── QR thanh toán (trong modal) ── */
     .qr-info-list {
       list-style: none; padding: 0; margin: 0 0 12px; font-size: 0.85rem;
     }
@@ -752,6 +741,7 @@
             emptyEl.style.display = 'none';
             renderStats(registrations);
 
+            var paymentDataByRegId = {};
             listEl.innerHTML = registrations.map(function (reg, index) {
               var tour = reg.tour || {};
               var title = tour.tittle || tour.title || '(Chưa đặt tên)';
@@ -791,7 +781,7 @@
                       + '<a href="tour-details.html?id=' + reg.tourId + '" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;">Chi tiết</a>';
 
               if (canPay) {
-                html += '<button type="button" class="btn-pay-now" data-toggle-qr="qr-' + index + '">'
+                html += '<button type="button" class="btn-pay-now" data-pay-now="' + reg.id + '">'
                   + '<i class="bi bi-qr-code-scan"></i> Thanh toán</button>';
               }
               if (canCancel) {
@@ -813,27 +803,16 @@
                 + '</div>'        // reg-body
                 + '</div>';       // reg-card-inner
 
-              // QR Panel
               if (canPay) {
-                var bankAccount = resolveBankAccount(tour);
-                var qrUrl = buildVietQrUrl(fee, transferContent, bankAccount);
-                html += '<div class="qr-panel" id="qr-' + index + '">'
-                  + '<img src="' + qrUrl + '" alt="QR chuyển khoản">'
-                  + '<div>'
-                    + '<ul class="qr-info-list">'
-                      + '<li><span>Số tiền</span><strong>' + feeText + '</strong></li>'
-                      + '<li><span>Nội dung CK</span><strong>' + transferContent + '</strong></li>'
-                      + '<li><span>Chủ tài khoản</span><strong>' + bankAccount.accountName + '</strong></li>'
-                    + '</ul>'
-                    + '<p class="qr-note">Mở app ngân hàng, quét mã hoặc chuyển khoản theo thông tin trên.</p>'
-                    + '<div class="d-flex gap-2 flex-wrap">'
-                      + '<button type="button" class="btn btn-sm btn-outline-primary" data-sepay-demo="' + reg.id + '" data-amount="' + fee + '" data-content="' + transferContent + '">'
-                        + '<i class="bi bi-lightning-charge-fill"></i> Giả lập đã nhận tiền (Demo SePay)'
-                      + '</button>'
-                    + '</div>'
-                    + '<p class="text-muted mt-2" style="font-size:0.72rem;">Nút demo mô phỏng webhook ngân hàng thật (SePay) - dùng khi chưa liên kết tài khoản ngân hàng thật.</p>'
-                  + '</div>'
-                + '</div>';
+                var payBankAccount = resolveBankAccount(tour);
+                paymentDataByRegId[reg.id] = {
+                  title: title,
+                  fee: fee,
+                  feeText: feeText,
+                  transferContent: transferContent,
+                  bankAccount: payBankAccount,
+                  qrUrl: buildVietQrUrl(fee, transferContent, payBankAccount)
+                };
               }
 
               // Feedback Panel
@@ -861,11 +840,12 @@
               return html;
             }).join('');
 
-            // Toggle QR (payment)
-            listEl.querySelectorAll('[data-toggle-qr]').forEach(function (btn) {
+            // Thanh toán → mở modal QR (thay vì panel nằm dưới nút)
+            listEl.querySelectorAll('[data-pay-now]').forEach(function (btn) {
               btn.addEventListener('click', function () {
-                var panel = document.getElementById(btn.getAttribute('data-toggle-qr'));
-                if (panel) panel.classList.toggle('show');
+                var regId = btn.getAttribute('data-pay-now');
+                var data = paymentDataByRegId[regId];
+                if (data) openPaymentQrModal(regId, data);
               });
             });
 
@@ -875,41 +855,6 @@
                 var regId = btn.getAttribute('data-reg-id');
                 var tourTitle = btn.closest('.reg-card').querySelector('.reg-title').textContent;
                 openCheckinQrModal(regId, tourTitle);
-              });
-            });
-
-            // SePay demo
-            listEl.querySelectorAll('[data-sepay-demo]').forEach(function (btn) {
-              btn.addEventListener('click', function () {
-                var amount = Number(btn.getAttribute('data-amount'));
-                var content = btn.getAttribute('data-content');
-                var originalHtml = btn.innerHTML;
-                btn.disabled = true;
-                btn.textContent = 'Đang xử lý...';
-                fetch(API_BASE + '/payments/sepay-webhook', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ gateway: 'Demo Bank', transferType: 'in', transferAmount: amount, content: content, referenceCode: 'DEMO' + Date.now() })
-                })
-                  .then(function (res) {
-                    if (!res.ok) throw new Error('HTTP ' + res.status);
-                    return res.json();
-                  })
-                  .then(function (data) {
-                    if (data.registrationId) {
-                      showToast('Giả lập thanh toán thành công!', 'success');
-                      loadRegistrations();
-                    } else {
-                      btn.disabled = false;
-                      btn.innerHTML = originalHtml;
-                      showToast(data.message || 'Không khớp giao dịch.', 'error');
-                    }
-                  })
-                  .catch(function () {
-                    btn.disabled = false;
-                    btn.innerHTML = originalHtml;
-                    showToast('Giả lập thất bại, vui lòng thử lại.', 'error');
-                  });
               });
             });
 
@@ -1056,6 +1001,7 @@
       }
 
       loadRegistrations();
+      window.refreshMyTours = loadRegistrations;
 
       // Tự refresh khi thanh toán được xác nhận qua real-time (webhook SePay, admin xác nhận
       // thủ công...) — không cần F5 thủ công để thấy trạng thái/nút mã QR cập nhật.
@@ -1212,6 +1158,141 @@
         frame.innerHTML = '<div class="ciqr-qr-error"><i class="bi bi-exclamation-circle" style="font-size:1.6rem;display:block;margin-bottom:8px;color:#dc3545;"></i>'
           + (err.message || 'Không tải được mã check-in.') + '</div>';
       });
+  };
+})();
+</script>
+
+<!-- ── Thanh toán QR Modal ── -->
+<div class="ciqr-overlay" id="payQrOverlay" role="dialog" aria-modal="true" aria-labelledby="payQrTitle">
+  <div class="ciqr-modal" id="payQrModal">
+    <div class="ciqr-status-bar" id="payQrStatusBar"></div>
+    <div class="ciqr-header">
+      <div class="ciqr-title">
+        <span class="icon"><i class="bi bi-qr-code-scan"></i></span>
+        <span id="payQrTitle">Thanh toán</span>
+      </div>
+      <button class="ciqr-close" id="payQrClose" aria-label="Đóng">&#x2715;</button>
+    </div>
+    <div class="ciqr-body">
+      <div class="ciqr-qr-frame">
+        <img id="payQrImg" alt="QR chuyển khoản" style="width:180px;height:180px;display:block;border-radius:6px;">
+      </div>
+      <ul class="qr-info-list" id="payQrInfoList"></ul>
+      <p class="qr-note">Mở app ngân hàng, quét mã hoặc chuyển khoản theo thông tin trên. Trạng thái sẽ tự cập nhật khi thanh toán được xác nhận, không cần đóng cửa sổ này.</p>
+      <div class="d-flex gap-2 flex-wrap" style="padding-bottom:16px;">
+        <button type="button" class="btn btn-sm btn-outline-primary" id="payQrDemoBtn">
+          <i class="bi bi-lightning-charge-fill"></i> Giả lập đã nhận tiền (Demo SePay)
+        </button>
+      </div>
+      <p class="text-muted" style="font-size:0.72rem;padding-bottom:20px;">Nút demo mô phỏng webhook ngân hàng thật (SePay) - dùng khi chưa liên kết tài khoản ngân hàng thật.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var overlay = document.getElementById('payQrOverlay');
+  var statusBar = document.getElementById('payQrStatusBar');
+  var titleEl = document.getElementById('payQrTitle');
+  var img = document.getElementById('payQrImg');
+  var infoList = document.getElementById('payQrInfoList');
+  var demoBtn = document.getElementById('payQrDemoBtn');
+  var demoBtnDefaultHtml = demoBtn.innerHTML;
+
+  var pollTimer = null;
+  var currentRegId = null;
+
+  function stopPoll() {
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  }
+
+  function closeModal() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+    stopPoll();
+    currentRegId = null;
+  }
+
+  document.getElementById('payQrClose').addEventListener('click', closeModal);
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); });
+
+  function authHeader() {
+    var session = null;
+    try { session = JSON.parse(localStorage.getItem('turtour.admin.session')); } catch (e) {}
+    return { Authorization: 'Bearer ' + (session && session.token ? session.token : '') };
+  }
+
+  // Poll mỗi 3s trong lúc modal mở — tự phát hiện thanh toán thành công (SePay webhook xác
+  // nhận ở phía server) mà không cần người dùng F5 hay chỉ trông chờ vào WebSocket.
+  function checkPaymentStatus() {
+    if (!currentRegId) return;
+    fetch(window.TURTOUR_API_BASE + '/registrations/my', { headers: authHeader() })
+      .then(function (res) { return res.ok ? res.json() : []; })
+      .then(function (list) {
+        var reg = (list || []).find(function (r) { return r.id === currentRegId; });
+        if (!reg) return;
+        var paid = (reg.payment && reg.payment.paymentStatus === 'Paid')
+          || ['Paid', 'CheckedIn', 'Completed'].indexOf(reg.status) !== -1;
+        if (paid) {
+          stopPoll();
+          statusBar.className = 'ciqr-status-bar checked-in';
+          if (window.showToast) window.showToast('Thanh toán thành công!', 'success');
+          setTimeout(function () {
+            closeModal();
+            if (window.refreshMyTours) window.refreshMyTours();
+          }, 1200);
+        }
+      })
+      .catch(function () {});
+  }
+
+  window.openPaymentQrModal = function (regId, data) {
+    currentRegId = regId;
+    statusBar.className = 'ciqr-status-bar loading';
+    titleEl.textContent = data.title || 'Thanh toán';
+    img.src = data.qrUrl;
+    infoList.innerHTML = ''
+      + '<li><span>Số tiền</span><strong>' + data.feeText + '</strong></li>'
+      + '<li><span>Nội dung CK</span><strong>' + data.transferContent + '</strong></li>'
+      + '<li><span>Chủ tài khoản</span><strong>' + data.bankAccount.accountName + '</strong></li>';
+
+    demoBtn.disabled = false;
+    demoBtn.innerHTML = demoBtnDefaultHtml;
+    demoBtn.onclick = function () {
+      demoBtn.disabled = true;
+      demoBtn.textContent = 'Đang xử lý...';
+      fetch(window.TURTOUR_API_BASE + '/payments/sepay-webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gateway: 'Demo Bank', transferType: 'in', transferAmount: data.fee,
+          content: data.transferContent, referenceCode: 'DEMO' + Date.now()
+        })
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (result) {
+          if (!result.registrationId) {
+            demoBtn.disabled = false;
+            demoBtn.innerHTML = demoBtnDefaultHtml;
+            if (window.showToast) window.showToast(result.message || 'Không khớp giao dịch.', 'error');
+          }
+          // Thành công thì không cần làm gì thêm ở đây — poll đang chạy sẽ tự phát hiện
+          // và đóng modal khi trạng thái chuyển sang "Paid".
+        })
+        .catch(function () {
+          demoBtn.disabled = false;
+          demoBtn.innerHTML = demoBtnDefaultHtml;
+          if (window.showToast) window.showToast('Giả lập thất bại, vui lòng thử lại.', 'error');
+        });
+    };
+
+    document.body.style.overflow = 'hidden';
+    overlay.classList.add('open');
+
+    stopPoll();
+    checkPaymentStatus();
+    pollTimer = setInterval(checkPaymentStatus, 3000);
   };
 })();
 </script>
