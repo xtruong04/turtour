@@ -763,7 +763,7 @@
               var canCancel = reg.status === 'Pending' || reg.status === 'Waitinglisted';
               var paymentIsPaid = Boolean(reg.payment && reg.payment.paymentStatus === 'Paid');
               var canReview = paymentIsPaid && reg.status === 'Completed' && !reg.hasFeedback;
-              var canShowCheckinQr = ['Approved', 'Paid', 'CheckedIn'].indexOf(reg.status) !== -1;
+              var canShowCheckinQr = isRegPaid(reg) && reg.status !== 'Completed';
               var transferContent = 'TT ' + (code || reg.tourId.slice(0, 8)) + ' ' + reg.id.slice(0, 8);
               var showPaymentBadge = ['Pending', 'Approved', 'Waitinglisted'].indexOf(reg.status) !== -1;
               var thumbUrl = thumbnail(tour);

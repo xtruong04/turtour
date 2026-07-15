@@ -154,19 +154,6 @@ function TourRegistrations() {
     }
   };
 
-  const handleComplete = async (registrationId) => {
-    setBusyId(registrationId);
-    setActionMessage("");
-    try {
-      await apiService.completeRegistration(registrationId);
-      refresh();
-    } catch (error) {
-      setActionMessage(error?.message || "Hoàn thành đăng ký thất bại.");
-    } finally {
-      setBusyId(null);
-    }
-  };
-
   const openConfirmPayment = (registrationId) => {
     setConfirming(registrationId);
     setPaymentForm({ paymentMethod: "", transactionCode: "", proofImageUrl: "" });
@@ -436,14 +423,9 @@ function TourRegistrations() {
                                   Xác nhận thanh toán
                                 </SoftButton>
                               ) : null}
-                              {reg.status === "Approved" || reg.status === "Paid" ? (
+                              {isPaid ? (
                                 <SoftButton size="small" variant="outlined" color="dark" disabled={busyId === reg.id} onClick={() => handleGenerateQr(reg.id)}>
                                   Tạo mã QR
-                                </SoftButton>
-                              ) : null}
-                              {reg.status === "CheckedIn" ? (
-                                <SoftButton size="small" variant="outlined" color="dark" disabled={busyId === reg.id} onClick={() => handleComplete(reg.id)}>
-                                  Hoàn thành
                                 </SoftButton>
                               ) : null}
                             </SoftBox>

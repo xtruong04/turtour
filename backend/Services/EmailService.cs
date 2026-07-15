@@ -11,11 +11,13 @@ namespace TurTour.Services
     {
         private readonly IConfiguration _configuration;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly R2StorageService _storage;
 
-        public EmailService(IConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public EmailService(IConfiguration configuration, IHttpClientFactory httpClientFactory, R2StorageService storage)
         {
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
+            _storage = storage;
         }
 
         private static byte[] GenerateQrPng(string text)
@@ -159,7 +161,8 @@ namespace TurTour.Services
             if (string.IsNullOrWhiteSpace(toEmail)) return;
 
             var qrBytes = GenerateQrPng(qrCodeText);
-            var qrBase64 = Convert.ToBase64String(qrBytes);
+            using var qrStream = new MemoryStream(qrBytes);
+            var qrImageUrl = await _storage.UploadAsync(qrStream, "checkin-qr.png", "image/png");
 
             var body = $@"
                 <p style=""margin:0 0 16px 0;font-size:15px;line-height:1.6;color:#495057;"">
@@ -171,7 +174,7 @@ namespace TurTour.Services
                 <table role=""presentation"" cellpadding=""0"" cellspacing=""0"" style=""margin:0 0 20px 0;"">
                   <tr>
                     <td style=""padding:16px;background:#f1f3f5;border-radius:12px;"">
-                      <img src=""data:image/png;base64,{qrBase64}"" alt=""Mã check-in"" width=""200"" height=""200"" style=""display:block;width:200px;height:200px;border-radius:8px;background:#ffffff;"" />
+                      <img src=""{qrImageUrl}"" alt=""Mã check-in"" width=""200"" height=""200"" style=""display:block;width:200px;height:200px;border-radius:8px;background:#ffffff;"" />
                     </td>
                   </tr>
                 </table>

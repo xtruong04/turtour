@@ -25,6 +25,9 @@ window.TURTOUR_HUB_URL = ${JSON.stringify(env.VITE_HUB_URL || '')};
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), dewiEnvConfig()],
+  server: {
+    host: true,
+  },
   optimizeDeps: {
     entries: ['index.html'],
   },
