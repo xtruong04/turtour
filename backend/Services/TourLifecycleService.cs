@@ -40,8 +40,9 @@ namespace TurTour.Services
                 using var scope = _scopeFactory.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                // Giờ VN (UTC+7) — khớp với ToursController.VietnamNow
-                var now = DateTime.UtcNow.AddHours(7);
+                // EndDate/BookingCloseAt đã được Npgsql quy đổi sang UTC thật khi ghi DB (xem
+                // ToursController.VietnamNow) — so sánh thẳng với UtcNow, không cộng thêm giờ.
+                var now = DateTime.UtcNow;
 
                 // 1. Published → Completed (tour đã kết thúc tự nhiên)
                 var finishedCount = await db.Tours
@@ -69,7 +70,7 @@ namespace TurTour.Services
 
                 var totalChanged = finishedCount + finishedOnGoingCount + onGoingCount + completedRegistrationsCount;
                 if (totalChanged > 0)
-                    _logger.LogInformation("[TourLifecycle] {Completed} completed, {OnGoing} → OnGoing, {RegCompleted} registrations completed at {Now:HH:mm} VN",
+                    _logger.LogInformation("[TourLifecycle] {Completed} completed, {OnGoing} → OnGoing, {RegCompleted} registrations completed at {Now:HH:mm} UTC",
                         finishedCount + finishedOnGoingCount, onGoingCount, completedRegistrationsCount, now);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
