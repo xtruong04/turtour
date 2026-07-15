@@ -27,6 +27,7 @@ import Footer from "examples/Footer";
 
 import apiService from "../../../services/apiService";
 import { hideSplash } from "utils/splash";
+import realtimeService from "../../../services/realtime";
 
 function fmt(v) {
   return Number(v || 0).toLocaleString("vi-VN") + " ₫";
@@ -199,6 +200,7 @@ function PartnerDashboard() {
   const [reports, setReports] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [refreshToken, setRefreshToken] = useState(0);
 
   const session = apiService.getAuthSession();
   const roleLabel = (session?.roles || []).includes("Company") ? "doanh nghiệp" : "người tổ chức";
@@ -222,6 +224,14 @@ function PartnerDashboard() {
       }
     }
     fetchAll();
+  }, [refreshToken]);
+
+  // Tự refresh khi có đăng ký/thanh toán mới — không cần F5 thủ công.
+  useEffect(() => {
+    const unsubscribe = realtimeService.onAdminBoardUpdated(() => {
+      setRefreshToken((value) => value + 1);
+    });
+    return unsubscribe;
   }, []);
 
   // Tính các chỉ số phụ từ reports

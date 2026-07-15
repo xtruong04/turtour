@@ -521,15 +521,6 @@ export const apiService = {
     return normalizeRegistration(data);
   },
 
-  async completeRegistration(id) {
-    const data = await request(`/registrations/${id}/complete`, {
-      method: 'PUT',
-      body: JSON.stringify({}),
-    });
-
-    return normalizeRegistration(data);
-  },
-
   async getPayments() {
     const data = await request('/payments', { method: 'GET' });
     return Array.isArray(data) ? data.map(normalizePayment) : [];

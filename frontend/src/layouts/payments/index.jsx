@@ -21,6 +21,7 @@ import Footer from "examples/Footer";
 
 import apiService from "../../services/apiService";
 import { hideSplash } from "utils/splash";
+import realtimeService from "../../services/realtime";
 
 function formatCurrency(value) {
   return Number(value || 0).toLocaleString("vi-VN") + " ₫";
@@ -50,6 +51,7 @@ function Payments() {
   const [revenue, setRevenue] = useState({ totalRevenue: 0, totalCount: 0 });
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [refreshToken, setRefreshToken] = useState(0);
 
   useEffect(() => {
     async function fetchData() {
@@ -74,6 +76,15 @@ function Payments() {
     }
 
     fetchData();
+  }, [refreshToken]);
+
+  // Tự refresh khi có thanh toán mới được xác nhận (webhook SePay, admin xác nhận thủ công...)
+  // — không cần F5 thủ công.
+  useEffect(() => {
+    const unsubscribe = realtimeService.onAdminBoardUpdated(() => {
+      setRefreshToken((value) => value + 1);
+    });
+    return unsubscribe;
   }, []);
 
   return (
