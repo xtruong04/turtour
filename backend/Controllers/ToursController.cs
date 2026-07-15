@@ -23,11 +23,13 @@ namespace TurTour.Controllers
             _realtime = realtime;
         }
 
-        // StartDate/EndDate/BookingOpenAt/BookingCloseAt được lưu theo giờ địa phương người dùng
-        // chọn (Frontend không quy đổi sang UTC — xem dateTimeToISO ở create.jsx), nên phải so
-        // sánh với thời điểm hiện tại theo giờ VN (UTC+7), không phải DateTime.UtcNow thật — nếu
-        // không sẽ lệch 7 giờ (tour đã mở đăng ký vẫn báo "chưa mở").
-        internal static DateTime VietnamNow => DateTime.UtcNow.AddHours(7);
+        // Frontend gửi StartDate/EndDate/BookingOpenAt/BookingCloseAt dưới dạng giờ VN không kèm
+        // offset (xem create.jsx), nhưng cột DB là timestamptz và Npgsql (legacy timestamp mode,
+        // theo timezone của container — đã đặt UTC+7) tự quy đổi giá trị này sang UTC thật khi
+        // ghi xuống DB. Vì vậy giá trị đọc lại từ DB đã là UTC chuẩn — so sánh thẳng với
+        // DateTime.UtcNow, KHÔNG cộng thêm 7 giờ nữa (cộng thêm sẽ lệch giờ, tour bị coi là hoàn
+        // thành sớm hơn thực tế 7 tiếng).
+        internal static DateTime VietnamNow => DateTime.UtcNow;
 
         // Tính trạng thái hiển thị hiệu lực ở runtime — không ghi DB, chỉ đọc.
         // TourLifecycleService ghi DB không đồng bộ (mỗi giờ); hàm này bù khoảng trễ đó.
