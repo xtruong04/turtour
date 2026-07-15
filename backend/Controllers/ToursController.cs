@@ -662,7 +662,11 @@ namespace TurTour.Controllers
         [Authorize(Roles = "Admin,Organizator,Company")]
         public async Task<IActionResult> Archive(Guid id)
         {
-            var tour = await _context.Tours.FirstOrDefaultAsync(t => t.Id == id);
+            var tour = await _context.Tours
+                .Include(t => t.Company)
+                .Include(t => t.TourSchedules.OrderBy(s => s.OrderIndex))
+                .Include(t => t.TourImages.OrderBy(i => i.DisplayOrder))
+                .FirstOrDefaultAsync(t => t.Id == id);
             if (tour == null)
             {
                 return NotFound();
