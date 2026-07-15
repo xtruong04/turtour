@@ -551,35 +551,5 @@ namespace TurTour.Controllers
             _context.Notifications.Add(notification);
             return notification;
         }
-
-        [HttpPut("{id:guid}/complete")]
-        [Authorize(Roles = "Organizator,Company")]
-        public async Task<IActionResult> Complete(Guid id)
-        {
-            var registration = await _context.Registrations
-                .Include(r => r.Tour)
-                .FirstOrDefaultAsync(r => r.Id == id);
-            if (registration == null)
-            {
-                return NotFound();
-            }
-
-            var ownershipError = await CheckTourOwnershipAsync(registration.Tour);
-            if (ownershipError != null)
-            {
-                return ownershipError;
-            }
-
-            if (registration.Status != RegistrationStatus.CheckedIn)
-            {
-                return BadRequest(new { message = "Only checked-in registrations can be completed." });
-            }
-
-            registration.Status = RegistrationStatus.Completed;
-            registration.UpdatedAt = DateTime.UtcNow;
-
-            await _context.SaveChangesAsync();
-            return Ok(registration);
-        }
     }
 }

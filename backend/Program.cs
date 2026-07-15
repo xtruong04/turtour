@@ -93,7 +93,7 @@ namespace TurTour
                     ServiceURL = $"https://{r2AccountId}.r2.cloudflarestorage.com",
                     ForcePathStyle = true
                 }));
-            builder.Services.AddScoped<R2StorageService>();
+            builder.Services.AddSingleton<R2StorageService>();
             builder.Services.AddSingleton<EmailService>();
             builder.Services.AddHttpClient("resend", client =>
             {
