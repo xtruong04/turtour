@@ -1066,6 +1066,10 @@
           }
         });
       }
+
+      // Poll mỗi 20s làm dự phòng — real-time có thể tạm gián đoạn (mất kết nối, tab nền...),
+      // poll đảm bảo trạng thái thanh toán/QR vẫn tự cập nhật mà không cần F5 thủ công.
+      setInterval(loadRegistrations, 20000);
     })();
   </script>
 
