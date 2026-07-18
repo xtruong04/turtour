@@ -60,6 +60,7 @@ Chi tiết: xem [frontend/docs/SETUP.md](frontend/docs/SETUP.md).
 |---|---|
 | [backend/docs/SETUP.md](backend/docs/SETUP.md) | Cài đặt & cấu hình backend: database, JWT, storage (R2/S3), email, thanh toán Sepay, chạy migration, Docker |
 | [frontend/docs/SETUP.md](frontend/docs/SETUP.md) | Cài đặt & cấu hình frontend: biến môi trường, scripts, cấu trúc thư mục |
+| [docs/HUONG_DAN_SU_DUNG.md](docs/HUONG_DAN_SU_DUNG.md) | Hướng dẫn sử dụng & luồng chức năng: vai trò người dùng, đăng ký/đăng nhập, đặt tour, thanh toán, check-in, duyệt tour, báo cáo |
 
 ## Công nghệ sử dụng
 
