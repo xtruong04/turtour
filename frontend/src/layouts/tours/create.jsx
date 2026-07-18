@@ -120,7 +120,7 @@ function getValidationMessage(form, schedules, skipCompanyName) {
     return "Thời gian đóng đăng ký phải trước hoặc bằng ngày khởi hành.";
   }
   if (Number(form.capacity) <= 0) return "Sức chứa phải lớn hơn 0.";
-  if (Number(form.price) <= 0) return "Chi phí phải lớn hơn 0.";
+  if (Number(form.price) < 0) return "Chi phí không được âm.";
   if (!skipCompanyName && !form.companyId) return "Vui lòng chọn doanh nghiệp.";
   if (form.thumbnail.trim() && !isSupportedImageSource(form.thumbnail.trim())) {
     return "Thumbnail phải là đường dẫn ảnh http/https hợp lệ hoặc data URL của ảnh.";
@@ -344,7 +344,7 @@ function TourCreate() {
                 </Grid>
                 <Grid item xs={12} md={4}>
                   <SoftTypography variant="caption" fontWeight="bold">Chi phí *</SoftTypography>
-                  <SoftInput type="number" min="1" value={form.price} onChange={(e) => handleChange("price", e.target.value)} />
+                  <SoftInput type="number" min="0" value={form.price} onChange={(e) => handleChange("price", e.target.value)} />
                 </Grid>
                 <Grid item xs={12} md={4}>
                   <SoftTypography variant="caption" fontWeight="bold">Trạng thái</SoftTypography>

@@ -37,7 +37,7 @@ namespace TurTour.DTOs.Tour
         [Range(1, int.MaxValue, ErrorMessage = "Số lượng tham gia tối đa phải lớn hơn 0.")]
         public int MaxParticipants { get; set; }
 
-        [Range(typeof(decimal), "0.01", "9999999999999999", ErrorMessage = "Chi phí tour phải lớn hơn 0.")]
+        [Range(typeof(decimal), "0", "9999999999999999", ErrorMessage = "Chi phí tour không được âm.")]
         public decimal Fee { get; set; }
 
         [MaxLength(1000, ErrorMessage = "Yêu cầu không được vượt quá 1000 ký tự.")]

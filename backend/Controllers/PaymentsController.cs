@@ -17,18 +17,16 @@ namespace TurTour.Controllers
     public class PaymentsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly EmailService _emailService;
         private readonly ILogger<PaymentsController> _logger;
         private readonly IConfiguration _configuration;
-        private readonly RealtimeNotifier _realtime;
+        private readonly PaymentService _paymentService;
 
-        public PaymentsController(ApplicationDbContext context, EmailService emailService, ILogger<PaymentsController> logger, IConfiguration configuration, RealtimeNotifier realtime)
+        public PaymentsController(ApplicationDbContext context, ILogger<PaymentsController> logger, IConfiguration configuration, PaymentService paymentService)
         {
             _context = context;
-            _emailService = emailService;
             _logger = logger;
             _configuration = configuration;
-            _realtime = realtime;
+            _paymentService = paymentService;
         }
 
         [HttpGet]
@@ -95,7 +93,7 @@ namespace TurTour.Controllers
                 }
             }
 
-            var payment = await ConfirmPaymentAsync(registration, request.PaymentMethod, request.TransactionCode, request.ProofImageUrl, confirmerId);
+            var payment = await _paymentService.ConfirmPaymentAsync(registration, request.PaymentMethod, request.TransactionCode, request.ProofImageUrl, confirmerId);
             return Ok(payment);
         }
 
@@ -150,79 +148,8 @@ namespace TurTour.Controllers
                 return Ok(new { success = true, message = "Transfer amount is lower than tour fee." });
             }
 
-            await ConfirmPaymentAsync(registration, "SePay", request.ReferenceCode, null, null);
+            await _paymentService.ConfirmPaymentAsync(registration, "SePay", request.ReferenceCode, null, null);
             return Ok(new { success = true, message = "Payment confirmed.", registrationId = registration.Id });
-        }
-
-        private async Task<Payment> ConfirmPaymentAsync(Registration registration, string paymentMethod, string? transactionCode, string? proofImageUrl, Guid? confirmerId)
-        {
-            var payment = await _context.Payments.FirstOrDefaultAsync(p => p.RegistrationId == registration.Id);
-            if (payment == null)
-            {
-                payment = new Payment
-                {
-                    RegistrationId = registration.Id,
-                    Amount = registration.Tour?.Fee ?? 0,
-                    PaymentMethod = paymentMethod,
-                    TransactionCode = transactionCode,
-                    ProofImageUrl = proofImageUrl,
-                    PaymentStatus = PaymentStatus.Paid,
-                    PaidAt = DateTime.UtcNow,
-                    ComfirmedBy = confirmerId,
-                    ComfirmedAt = DateTime.UtcNow
-                };
-                _context.Payments.Add(payment);
-            }
-            else
-            {
-                payment.PaymentMethod = paymentMethod;
-                payment.TransactionCode = transactionCode;
-                payment.ProofImageUrl = proofImageUrl;
-                payment.PaymentStatus = PaymentStatus.Paid;
-                payment.PaidAt = DateTime.UtcNow;
-                payment.ComfirmedBy = confirmerId;
-                payment.ComfirmedAt = DateTime.UtcNow;
-                payment.UpdatedAt = DateTime.UtcNow;
-            }
-
-            registration.Status = RegistrationStatus.Paid;
-            registration.UpdatedAt = DateTime.UtcNow;
-
-            var notification = new Notification
-            {
-                UserId = registration.StudentId,
-                Title = "Thanh toán đã được xác nhận",
-                Content = $"Thanh toán cho tour \"{registration.Tour?.Tittle}\" của bạn đã được xác nhận thành công.",
-                Type = "Payment",
-                TourId = registration.TourId,
-                IsRead = false
-            };
-            _context.Notifications.Add(notification);
-
-            var checkIn = await CheckInQrHelper.GenerateOrRefreshAsync(_context, registration.Id);
-
-            await _context.SaveChangesAsync();
-
-            await _realtime.NotifyUserAsync(notification);
-            await _realtime.NotifyAdminBoardAsync(registration.TourId, "payment-confirmed");
-
-            if (registration.Student != null)
-            {
-                try
-                {
-                    await _emailService.SendCheckInQrEmailAsync(
-                        registration.Student.Email,
-                        registration.Student.FullName,
-                        registration.Tour?.Tittle ?? "",
-                        checkIn.QrCode);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning(ex, "Gửi email mã check-in thất bại cho registration {RegistrationId}.", registration.Id);
-                }
-            }
-
-            return payment;
         }
 
         [HttpGet("revenue")]
