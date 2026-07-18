@@ -110,8 +110,8 @@ function getValidationMessage(form, schedules) {
     return "Sức chứa phải lớn hơn 0.";
   }
 
-  if (Number(form.price) <= 0) {
-    return "Chi phí phải lớn hơn 0.";
+  if (Number(form.price) < 0) {
+    return "Chi phí không được âm.";
   }
 
   if (!form.companyId) {
@@ -395,7 +395,7 @@ function TourEdit() {
                     </SoftTypography>
                   </Grid>
                   <Grid item xs={12} md={4}><SoftTypography variant="caption" fontWeight="bold">Sức chứa *</SoftTypography><SoftInput type="number" min="1" value={form.capacity} onChange={(event) => handleChange("capacity", event.target.value)} /></Grid>
-                  <Grid item xs={12} md={4}><SoftTypography variant="caption" fontWeight="bold">Chi phí *</SoftTypography><SoftInput type="number" min="1" value={form.price} onChange={(event) => handleChange("price", event.target.value)} /></Grid>
+                  <Grid item xs={12} md={4}><SoftTypography variant="caption" fontWeight="bold">Chi phí *</SoftTypography><SoftInput type="number" min="0" value={form.price} onChange={(event) => handleChange("price", event.target.value)} /></Grid>
                   <Grid item xs={12} md={4}>
                     <SoftTypography variant="caption" fontWeight="bold">Trạng thái</SoftTypography>
                     <SoftTypography variant="button" color="text" display="block" mt={0.5}>
