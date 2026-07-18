@@ -122,13 +122,15 @@ Ghi chú quan trọng:
 - Khi một suất `Approved`/`Paid` bị hủy hoặc từ chối, hệ thống tự động duyệt người đầu tiên trong danh sách chờ (theo thứ tự đăng ký sớm nhất) nếu còn chỗ trống.
 - Không thể hủy hoặc từ chối đăng ký đã `CheckedIn`/`Completed`; không thể từ chối đăng ký đã `Paid`.
 - Bước cuối `CheckedIn → Completed` **không xảy ra ngay khi quét QR** — `TourLifecycleService` (background service chạy mỗi giờ) mới là nơi tự động chuyển, và chỉ chuyển khi `Tour.EndDate` đã qua. Đây là điều kiện bắt buộc để sinh viên gửi được đánh giá (mục 17) — cùng một đợt chạy nền này cũng chuyển `Tour.PublishStatus`: `Published → OnGoing` (khi `BookingCloseAt` đã qua) và `Published/OnGoing → Completed` (khi `EndDate` đã qua).
+- **Tour miễn phí (`Fee = 0`) bỏ qua bước "chờ thanh toán"**: ngay khi đăng ký chuyển `Approved` (dù duyệt tay hay tự động đôn từ danh sách chờ), hệ thống tự gọi luôn `ConfirmPaymentAsync` với `Amount = 0` → nhảy thẳng `Approved → Paid`, tự sinh mã QR check-in và gửi email, không cần đối tác xác nhận thanh toán thủ công. Xem chi tiết ở mục 9.
 
 ## 9. Thanh toán
 
-Hai đường xác nhận thanh toán, cùng đổ về một hàm xử lý chung (`ConfirmPaymentAsync`) nên hiệu ứng như nhau: chuyển đăng ký sang `Paid`, sinh mã QR check-in, gửi email QR, đẩy thông báo realtime.
+Ba đường xác nhận thanh toán, cùng đổ về một hàm xử lý chung (`PaymentService.ConfirmPaymentAsync`) nên hiệu ứng như nhau: chuyển đăng ký sang `Paid`, sinh mã QR check-in, gửi email QR, đẩy thông báo realtime.
 
 - **Xác nhận thủ công**: `POST /api/payments/confirm` — Admin/Organizator/Company kiểm tra và xác nhận sau khi sinh viên báo đã chuyển khoản (`notify-payment`) hoặc gửi ảnh chứng từ.
 - **Xác nhận tự động qua SePay**: `POST /api/payments/sepay-webhook` (endpoint công khai, xác thực bằng API key trong header `Authorization: Apikey ...`, cấu hình trên SePay Dashboard). SePay gọi webhook mỗi khi có giao dịch chuyển khoản đến; hệ thống trích mã đăng ký (8 ký tự đầu của GUID) từ nội dung chuyển khoản, đối chiếu số tiền ≥ phí tour, rồi tự xác nhận — không cần thao tác tay.
+- **Tự động cho tour miễn phí**: khi `Tour.Fee == 0`, `RegistrationsController.Approve` (và `PromoteFromWaitlistAsync` khi tự đôn từ danh sách chờ) tự gọi `ConfirmPaymentAsync` với phương thức `"Miễn phí"` ngay khi đăng ký được duyệt — sinh viên không cần chuyển khoản, đối tác không cần bấm "Xác nhận thanh toán". Trang thanh toán (`my-tours.html`) cũng không hiện mã VietQR cho các tour này (`fee > 0` là điều kiện hiện nút "Thanh toán").
 
 ## 10. Thông báo realtime (SignalR)
 
@@ -230,13 +232,13 @@ Trang hiển thị bảng đăng ký của một tour cụ thể (Sinh viên, Em
 | Trạng thái đăng ký | Nút hiện ra |
 |---|---|
 | `Pending`, `Waitinglisted` | Duyệt, Từ chối |
-| `Approved` | Từ chối, Xác nhận thanh toán |
+| `Approved` (tour có phí) | Từ chối, Xác nhận thanh toán |
 | Đã thanh toán (`Paid`/`CheckedIn`/`Completed`) | Tạo mã QR |
 
-- **Duyệt** — mở dialog nhỏ, gọi thẳng `PUT /api/registrations/{id}/approve`.
+- **Duyệt** — mở dialog nhỏ, gọi thẳng `PUT /api/registrations/{id}/approve`. Với **tour miễn phí** (`Fee = 0`), backend tự chuyển thẳng `Approved → Paid` ngay trong request này — sau khi duyệt, dòng đăng ký hiện luôn nút "Tạo mã QR", **không** hiện "Xác nhận thanh toán" (xem mục 9).
 - **Từ chối** — bắt buộc nhập lý do trong hộp thoại, gọi `PUT /api/registrations/{id}/reject`.
-- **Xác nhận thanh toán** — mở dialog nhập Phương thức thanh toán (bắt buộc), Mã giao dịch (tùy chọn), và Ảnh chứng minh thanh toán (dán URL hoặc bấm "Upload ảnh" để tải file lên R2 qua `POST /api/uploads/image` rồi hiện preview). Gọi `POST /api/payments/confirm`.
-- **Tạo mã QR** — gọi `POST /api/check-ins/generate/{registrationId}`, hiển thị chuỗi mã QR trong hộp thoại để gửi tay cho sinh viên nếu cần (bình thường mã đã tự gửi qua email lúc xác nhận thanh toán).
+- **Xác nhận thanh toán** — chỉ xuất hiện với tour có phí và đăng ký đang `Approved`. Mở dialog nhập Phương thức thanh toán (bắt buộc), Mã giao dịch (tùy chọn), và Ảnh chứng minh thanh toán (dán URL hoặc bấm "Upload ảnh" để tải file lên R2 qua `POST /api/uploads/image` rồi hiện preview). Gọi `POST /api/payments/confirm`.
+- **Tạo mã QR** — gọi `POST /api/check-ins/generate/{registrationId}`, hiển thị chuỗi mã QR trong hộp thoại để gửi tay cho sinh viên nếu cần (bình thường mã đã tự gửi qua email lúc xác nhận thanh toán, kể cả xác nhận tự động cho tour miễn phí).
 
 Ngoài ra trang còn có:
 - **Ô quét mã check-in** ở đầu trang: nhập tay mã QR hoặc bấm "Quét bằng camera" (dùng `QrCameraScanner`, thư viện `html5-qrcode`) → gọi `POST /api/check-ins/scan`.
@@ -247,17 +249,20 @@ Ngoài ra trang còn có:
 
 ### 14.1 Sinh viên xem thông tin chuyển khoản
 
-Ở `my-tours.html`, khi đăng ký đã ở trạng thái `Approved` (đủ điều kiện thanh toán, `canPay`), trang tự dựng:
+Ở `my-tours.html`, khi đăng ký đã ở trạng thái `Approved` **và tour có phí** (`fee > 0`, đủ điều kiện `canPay`), trang tự dựng:
 - **Nội dung chuyển khoản** theo mẫu cố định: `TT <mã tour hoặc 8 ký tự đầu TourId> <8 ký tự đầu RegistrationId>` — đây chính là chuỗi mà webhook SePay dò tìm để khớp đăng ký (xem mục 9).
 - **Mã QR VietQR** dựng từ `https://img.vietqr.io/image/{bankBin}-{accountNo}-compact2.png` kèm số tiền và nội dung chuyển khoản đã điền sẵn — lấy `bankBin`/`bankAccountNo`/`bankAccountName` từ hồ sơ công ty sở hữu tour (mục 15). Sinh viên chỉ cần quét bằng app ngân hàng, mọi thông tin đã tự động khớp.
 - Nút **"Báo đã chuyển khoản"** (`POST /api/registrations/{id}/notify-payment`) để chủ động nhắc đối tác kiểm tra, dùng khi webhook SePay không tự khớp được (ví dụ ngân hàng không hỗ trợ SePay, hoặc sinh viên chuyển sai nội dung).
 
-### 14.2 Hai đường xác nhận thanh toán (nhắc lại, xem chi tiết code ở mục 9)
+Nếu tour **miễn phí** (`fee = 0`), khối thanh toán này không hiển thị — đăng ký được backend tự chuyển sang `Paid` ngay khi đối tác duyệt, sinh viên chỉ cần chờ email mã QR check-in.
 
-- **Tự động**: SePay gọi `POST /api/payments/sepay-webhook` mỗi khi có tiền vào tài khoản đã đăng ký webhook trên SePay Dashboard — khớp theo nội dung chuyển khoản + số tiền, không cần ai bấm tay.
-- **Thủ công**: đối tác/Admin xác nhận qua dialog "Xác nhận thanh toán" ở mục 13.2.
+### 14.2 Ba đường xác nhận thanh toán (nhắc lại, xem chi tiết code ở mục 9)
 
-Cả hai đường đều: đánh dấu `Registration.Status = Paid` → sinh mã QR check-in → gửi email QR cho sinh viên → đẩy thông báo realtime.
+- **Tự động qua SePay**: SePay gọi `POST /api/payments/sepay-webhook` mỗi khi có tiền vào tài khoản đã đăng ký webhook trên SePay Dashboard — khớp theo nội dung chuyển khoản + số tiền, không cần ai bấm tay.
+- **Thủ công**: đối tác/Admin xác nhận qua dialog "Xác nhận thanh toán" ở mục 13.2 (chỉ áp dụng cho tour có phí).
+- **Tự động cho tour miễn phí**: `RegistrationsController` tự gọi `PaymentService.ConfirmPaymentAsync` ngay khi đăng ký chuyển `Approved`, không cần webhook hay thao tác tay.
+
+Cả ba đường đều: đánh dấu `Registration.Status = Paid` → sinh mã QR check-in → gửi email QR cho sinh viên → đẩy thông báo realtime.
 
 ### 14.3 Trang quản lý thanh toán
 
@@ -281,7 +286,7 @@ Route `/partner/payment-settings`, chỉ role `Company` (Organizator không có 
 
 ## 17. Chi tiết: Đánh giá (Feedback)
 
-- Sinh viên chỉ đánh giá được khi **cả 3 điều kiện** đều đúng: đã đăng ký tour đó, đăng ký đã `Paid`, và trạng thái đăng ký đã lên `Completed` (tức tour đã thực sự kết thúc theo `EndDate`, do `TourLifecycleService` tự chuyển — không phải ngay sau khi check-in).
+- Sinh viên chỉ đánh giá được khi **cả 3 điều kiện** đều đúng: đã đăng ký tour đó, đăng ký đã `Paid`, và trạng thái đăng ký đã lên `Completed` (tức tour đã thực sự kết thúc theo `EndDate`, do `TourLifecycleService` tự chuyển — không phải ngay sau khi check-in). Với tour miễn phí, điều kiện `Paid` được hệ thống tự đáp ứng ngay lúc duyệt (mục 9) nên không phát sinh trở ngại gì thêm.
 - Nội dung gồm điểm sao (`Rating`, 1–5, bắt buộc), nhận xét (`Comment`, tối đa 1000 ký tự, tùy chọn), và tối đa 4 ảnh đính kèm (`PhotoUrls`, tùy chọn — upload từng ảnh qua `POST /api/uploads/image` trước khi gửi form).
 - Mỗi sinh viên chỉ đánh giá **một lần** cho mỗi tour (`POST /api/feedbacks` chặn nếu đã tồn tại).
 - Đối tác xem đánh giá của tour mình tại `GET /api/feedbacks/tour/{tourId}` (trang quản lý đăng ký, mục 13.2). Đánh giá công khai hiển thị ở trang chi tiết tour (`GET /api/feedbacks/tour/{tourId}/public`) và trang landing (`GET /api/feedbacks/all/public`).

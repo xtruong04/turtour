@@ -72,6 +72,7 @@ namespace TurTour
             });
             // Add JwtService to the DI container
             builder.Services.AddScoped<JwtService>();
+            builder.Services.AddScoped<PaymentService>();
 
             builder.Services.AddHostedService<TourLifecycleService>();
 
