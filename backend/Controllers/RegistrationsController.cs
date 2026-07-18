@@ -17,11 +17,13 @@ namespace TurTour.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly RealtimeNotifier _realtime;
+        private readonly PaymentService _paymentService;
 
-        public RegistrationsController(ApplicationDbContext context, RealtimeNotifier realtime)
+        public RegistrationsController(ApplicationDbContext context, RealtimeNotifier realtime, PaymentService paymentService)
         {
             _context = context;
             _realtime = realtime;
+            _paymentService = paymentService;
         }
 
         [HttpGet("my")]
@@ -363,6 +365,7 @@ namespace TurTour.Controllers
 
             var registration = await _context.Registrations
                 .Include(r => r.Tour)
+                .Include(r => r.Student)
                 .FirstOrDefaultAsync(r => r.Id == id);
             if (registration == null)
             {
@@ -441,6 +444,14 @@ namespace TurTour.Controllers
 
             await _realtime.NotifyUserAsync(approvedNotification);
             await _realtime.NotifyAdminBoardAsync(registration.TourId, "registration-updated");
+
+            // Tour miễn phí — không có gì để sinh viên chuyển khoản, nên tự "xác nhận thanh toán"
+            // (Amount = 0) ngay khi duyệt, thay vì bắt đối tác bấm thêm một bước xác nhận thủ công
+            // chỉ mang tính hình thức. Chuyển thẳng Approved → Paid, tự sinh mã QR check-in + gửi email.
+            if (registration.Tour.Fee == 0)
+            {
+                await _paymentService.ConfirmPaymentAsync(registration, "Miễn phí", null, null, approverId);
+            }
 
             return Ok(registration);
         }
@@ -523,6 +534,7 @@ namespace TurTour.Controllers
             }
 
             var nextInLine = await _context.Registrations
+                .Include(r => r.Student)
                 .Where(r => r.TourId == tour.Id && r.Status == RegistrationStatus.Waitinglisted)
                 .OrderBy(r => r.RegistrationDate)
                 .FirstOrDefaultAsync();
@@ -535,6 +547,7 @@ namespace TurTour.Controllers
             nextInLine.Status = RegistrationStatus.Approved;
             nextInLine.ApprovedDate = DateTime.UtcNow;
             nextInLine.UpdatedAt = DateTime.UtcNow;
+            nextInLine.Tour = tour;
 
             tour.CurrentParticipants += 1;
             tour.UpdatedAt = DateTime.UtcNow;
@@ -549,6 +562,14 @@ namespace TurTour.Controllers
                 IsRead = false
             };
             _context.Notifications.Add(notification);
+
+            // Tour miễn phí — không cần chờ ai xác nhận thanh toán, tự chuyển thẳng sang Paid
+            // giống hệt luồng duyệt thủ công (xem RegistrationsController.Approve).
+            if (tour.Fee == 0)
+            {
+                await _paymentService.ConfirmPaymentAsync(nextInLine, "Miễn phí", null, null, null);
+            }
+
             return notification;
         }
     }
